@@ -21,7 +21,7 @@ class SurveyJS_Pro_Creator {
             return $tabs;
         }
         unset( $tabs['survey'] );
-        return array( self::TAB => __( 'Creator', 'surveyjs-pro' ) ) + $tabs;
+        return array( self::TAB => __( 'Config', 'surveyjs-pro' ) ) + $tabs;
     }
 
     public static function render() {
