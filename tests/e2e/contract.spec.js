@@ -40,7 +40,7 @@ test.describe("extension contract of SurveyJS Forms", () => {
   test("editor tab, panel, per-form setting and JS API", async ({ page }) => {
     await page.goto(LIST_URL);
     await page.locator("#wpbody-content").getByRole("link", { name: "Add New Form" }).click();
-    await expect(page.locator(".monaco-editor")).toBeVisible();
+    await expect(page.locator(".svc-creator")).toBeVisible();
     formId = Number(new URL(page.url()).searchParams.get("id"));
 
     await page.getByRole("link", { name: "Contract Tab" }).click();
