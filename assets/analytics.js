@@ -100,10 +100,12 @@
             window.Chart.register(window.ChartDataLabels);
         }
         var dashboard = new SurveyAnalytics.Dashboard({
+            survey: survey,
             questions: survey.getAllQuestions(),
             data: rows(entries, "date"),
             dateFieldName: config.dateField
         });
+        dashboard.locale = survey.locale;
         persistState(dashboard);
         dashboard.render(container);
     }
@@ -117,6 +119,13 @@
     }
 
     var survey = new Survey.Model(config.survey);
+    if (config.locale && config.locale !== "en") {
+        survey.locale = config.locale;
+    }
+    survey.onTextMarkdown.add(function (_, options) {
+        var text = options.text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s()]+)\)/g, "$1");
+        if (text !== options.text) options.html = text;
+    });
     if (!survey.getAllQuestions().length) {
         showMessage(config.i18n.noQuestions);
         return;

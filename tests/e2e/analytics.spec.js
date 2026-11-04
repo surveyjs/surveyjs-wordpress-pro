@@ -26,9 +26,9 @@ test.describe("analytics on the results page", () => {
     fixture("cleanup", formId);
   });
 
-  test("Analytics view shows charts of submitted entries", async ({ page }) => {
+  test("Chart View shows charts of submitted entries", async ({ page }) => {
     await page.goto(`/wp-admin/admin.php?page=surveyjs_results&id=${formId}`);
-    await page.locator(".wp-sjs-results__views").getByRole("link", { name: "Analytics" }).click();
+    await page.locator(".wp-sjs-results__views").getByRole("link", { name: "Chart View" }).click();
     await expect(page).toHaveURL(/view=analytics/);
     const view = page.locator("#wp-sjs-pro-analytics");
     await expect(view.getByText("Favorite color").first()).toBeVisible();

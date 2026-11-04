@@ -10,3 +10,16 @@
     width: 100%;
     max-width: 320px;
 }
+
+/* WordPress admin styles input[type=date] with a higher specificity than the Dashboard's own class. */
+.wp-sjs-pro-analytics .sa-date-range_editor-input,
+.wp-sjs-pro-analytics .sa-date-range_editor-input:focus {
+    min-height: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    color: var(--sjs2-color-component-input-default-value, #1c1b20);
+    line-height: var(--sjs2-typography-line-height-default);
+}

@@ -23,7 +23,7 @@ class SurveyJS_Pro_Analytics {
             return $views;
         }
         return $views + array(
-            self::VIEW_CHARTS => __( 'Analytics', 'surveyjs-pro' ),
+            self::VIEW_CHARTS => __( 'Chart View', 'surveyjs-pro' ),
             self::VIEW_TABLE  => __( 'Table View', 'surveyjs-pro' ),
         );
     }
@@ -78,6 +78,7 @@ class SurveyJS_Pro_Analytics {
             'maxEntries' => self::max_entries(),
             'pageSize'   => self::page_size(),
             'dateField'  => self::DATE_FIELD,
+            'locale'     => self::locale(),
             'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
             'action'     => self::AJAX_ACTION,
             'nonce'      => wp_create_nonce( self::nonce_action( $survey->id ) ),
@@ -92,6 +93,11 @@ class SurveyJS_Pro_Analytics {
                 'date'        => __( 'Date', 'surveyjs-pro' ),
             ),
         );
+    }
+
+    private static function locale() {
+        $language = strtolower( strtok( determine_locale(), '_' ) );
+        return in_array( $language, array( 'nb', 'nn' ), true ) ? 'no' : $language;
     }
 
     public static function render( $view, $survey ) {

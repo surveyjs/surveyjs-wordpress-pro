@@ -40,6 +40,7 @@ class SurveyJS_Pro_Libs {
         return array(
             'creator'             => 'survey-creator-core/survey-creator-core.min.css',
             'analytics'           => 'survey-analytics/survey.analytics.min.css',
+            'tabulator'           => 'tabulator-tables/tabulator.min.css',
             'analytics-tabulator' => 'survey-analytics/survey.analytics.tabulator.min.css',
         );
     }
@@ -49,7 +50,7 @@ class SurveyJS_Pro_Libs {
             'creator'             => array( 'scripts' => array( 'creator' ), 'styles' => array( 'creator' ) ),
             'pdf'                 => array( 'scripts' => array( 'pdf' ), 'styles' => array() ),
             'analytics'           => array( 'scripts' => array( 'analytics' ), 'styles' => array( 'analytics' ) ),
-            'analytics-tabulator' => array( 'scripts' => array( 'analytics-tabulator' ), 'styles' => array( 'analytics-tabulator' ) ),
+            'analytics-tabulator' => array( 'scripts' => array( 'analytics-tabulator' ), 'styles' => array( 'tabulator', 'analytics-tabulator' ) ),
         );
     }
 

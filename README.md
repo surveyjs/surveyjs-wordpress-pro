@@ -79,7 +79,7 @@ add_action( 'surveyjs_admin_enqueue_scripts', function ( $page ) {
 
 ### Analytics
 
-`SurveyJS_Pro_Analytics` adds two views to the results page through `surveyjs_results_views` (only when the libraries are compatible) and renders them on `surveyjs_render_results_view`; no Base changes:
+`SurveyJS_Pro_Analytics` adds two views to the results page, Chart View and Table View, through `surveyjs_results_views` (only when the libraries are compatible) and renders them on `surveyjs_render_results_view`; no Base changes:
 
 | View | URL | What |
 |---|---|---|
