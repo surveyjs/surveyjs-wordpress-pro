@@ -83,7 +83,7 @@ add_action( 'surveyjs_admin_enqueue_scripts', function ( $page ) {
 
 | View | URL | What |
 |---|---|---|
-| `analytics` | `admin.php?page=surveyjs_results&id=<form>&view=analytics` | SurveyJS Dashboard charts (`SurveyAnalytics.Dashboard`, Chart.js + datalabels) with a date range filter on the entry date. |
+| `chart` | `admin.php?page=surveyjs_results&id=<form>&view=chart` | Chart View: SurveyJS Dashboard charts (`SurveyAnalytics.Dashboard`, Chart.js + datalabels) with a date range filter on the entry date. |
 | `table` | `admin.php?page=surveyjs_results&id=<form>&view=table` | SurveyJS Dashboard Table View (`SurveyAnalyticsTabulator.Tabulator`): search, sort, column show/hide/reorder, CSV download. The first column is the entry date. |
 
 Both views use submitted entries only (`unread`, `read`), newest first. `assets/analytics.js` loads them in pages from `wp_ajax_surveyjs_pro_analytics_entries` (`form`, `offset`, `limit`, nonce `surveyjs-pro-analytics_<form>`, capability `SurveyJS_SurveyJS::CAPABILITY`), which calls `SurveyJS_Entries::query()` with `limit`/`offset` and returns `id`, `date` (ISO 8601 UTC), `dateText` (site format) and `data` (file answers with admin download URLs). Charts and the table then work on the loaded entries in the browser. The chart layout and the table columns are kept per form in the browser's `localStorage` (`surveyjs-pro-<view>-<form>`).

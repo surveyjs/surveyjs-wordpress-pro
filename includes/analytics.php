@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class SurveyJS_Pro_Analytics {
 
-    const VIEW_CHARTS = 'analytics';
+    const VIEW_CHARTS = 'chart';
     const VIEW_TABLE = 'table';
     const SCRIPT = 'surveyjs-pro-analytics-view';
     const AJAX_ACTION = 'surveyjs_pro_analytics_entries';

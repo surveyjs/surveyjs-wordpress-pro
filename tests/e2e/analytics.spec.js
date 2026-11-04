@@ -29,7 +29,7 @@ test.describe("analytics on the results page", () => {
   test("Chart View shows charts of submitted entries", async ({ page }) => {
     await page.goto(`/wp-admin/admin.php?page=surveyjs_results&id=${formId}`);
     await page.locator(".wp-sjs-results__views").getByRole("link", { name: "Chart View" }).click();
-    await expect(page).toHaveURL(/view=analytics/);
+    await expect(page).toHaveURL(/view=chart/);
     const view = page.locator("#wp-sjs-pro-analytics");
     await expect(view.getByText("Favorite color").first()).toBeVisible();
     await expect(view.locator("canvas").first()).toBeVisible();
