@@ -233,6 +233,16 @@ Entries (`SurveyJS_Entries`):
 
 Questions and values (`SurveyJS_Survey_Values`): `survey_questions( $json_array )` — flat list of questions (`name`, `title`, `type`, …); `question_title( $question )`; `display_value( $question, $value )` — answer as text. File answers: `SurveyJS_Uploaded_Files::with_admin_urls( $data )` replaces stored file references with admin download URLs.
 
+### Links to Pro in Base
+
+Base links to Pro (no installer) in three places: the "Upgrade to Pro" item at the end of the SurveyJS Forms menu, a card at the bottom of Getting Started (`.wp-sjs-pro-upsell`), and a link under "Open in free UI Builder" in the form editor (`.wp-sjs-editor__pro-link`). All of them come from `SurveyJS_Upsell` (`src/trunk/upsell.php`); the URL is `SurveyJS_Upsell::URL` plus `utm_source=surveyjs-plugin&utm_medium=<admin-menu|getting-started|editor>`.
+
+Base hides the links when `SURVEYJS_PRO_VERSION` is defined, so Pro needs no code for this; keep defining that constant at file load.
+
+**`surveyjs_show_pro_upsell`** (filter) — `( bool $show )`, default `! defined( 'SURVEYJS_PRO_VERSION' )`.
+
+**`surveyjs_pro_url`** (filter) — `( string $url )`, default `SurveyJS_Upsell::URL`.
+
 ### Other Base hooks (already existed)
 
 - `wp_surveyjs_save_result` (action) — `( int $form_id, string $json, 'sjs_results', int $entry_id )` after a submitted entry is saved.
