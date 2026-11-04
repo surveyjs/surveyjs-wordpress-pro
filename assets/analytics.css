@@ -1,0 +1,12 @@
+.wp-sjs-pro-analytics {
+    margin-top: 16px;
+}
+
+.wp-sjs-pro-analytics [hidden] {
+    display: none;
+}
+
+.wp-sjs-pro-analytics__progress {
+    width: 100%;
+    max-width: 320px;
+}
