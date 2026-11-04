@@ -13,16 +13,14 @@ class SurveyJS_Pro_Creator {
     }
 
     public static function enabled() {
-        return SurveyJS_Pro_Libs::compatible() && apply_filters( 'surveyjs_pro_creator_enabled', true );
+        return SurveyJS_Pro_Libs::compatible() && apply_filters( 'surveyjs_pro_creator_enabled', SurveyJS_Pro_Settings::feature( 'creator' ) );
     }
 
-    // The JSON tab, CAPTCHA and Save & Resume move into Creator. Their panels stay in the page, hidden,
-    // so Base still loads and saves captchaEnabled and saveResume from their inputs.
     public static function tabs( $tabs ) {
         if ( ! self::enabled() || ! is_array( $tabs ) ) {
             return $tabs;
         }
-        unset( $tabs['survey'], $tabs['spam'], $tabs['resume'] );
+        unset( $tabs['survey'] );
         return array( self::TAB => __( 'Creator', 'surveyjs-pro' ) ) + $tabs;
     }
 
@@ -55,30 +53,11 @@ class SurveyJS_Pro_Creator {
     }
 
     private static function config() {
-        $captcha_configured = class_exists( 'SurveyJS_Captcha' ) && SurveyJS_Captcha::is_configured();
-        $honeypot = __( 'A hidden honeypot field is always on and blocks simple spam bots.', 'surveyjs-pro' );
-        if ( $captcha_configured ) {
-            $captcha_help = sprintf(
-                /* translators: %s: CAPTCHA type, for example "Cloudflare Turnstile" */
-                __( 'Respondents pass %s before the form is submitted. The service and keys are set in SurveyJS Forms > Settings.', 'surveyjs-pro' ),
-                SurveyJS_Captcha::type_label()
-            );
-        } else {
-            $captcha_help = __( 'CAPTCHA is not set up yet, so it cannot be turned on. Choose the CAPTCHA type and enter its keys in SurveyJS Forms > Settings.', 'surveyjs-pro' );
-        }
         return array(
-            'tab'               => self::TAB,
-            'captchaConfigured' => $captcha_configured,
-            'labels'            => array(
-                'category'         => __( 'SurveyJS Forms', 'surveyjs-pro' ),
-                'gdprAgreement'    => __( 'GDPR agreement', 'surveyjs-pro' ),
-                'gdprHelp'         => __( 'Adds a required consent checkbox with a link to your Privacy Policy page at the end of the form. Turn it off to remove the checkbox.', 'surveyjs-pro' ),
-                'gdprAdded'        => __( 'The GDPR agreement was added at the end of the form. Press Save to keep it.', 'surveyjs-pro' ),
-                'gdprRemoved'      => __( 'The GDPR agreement was removed from the form. Press Save to keep the change.', 'surveyjs-pro' ),
-                'captchaEnabled'   => __( 'Enable CAPTCHA', 'surveyjs-pro' ),
-                'captchaHelp'      => $captcha_help . ' ' . $honeypot,
-                'saveResume'       => __( 'Let respondents continue later', 'surveyjs-pro' ),
-                'saveResumeHelp'   => __( 'Save & Resume: unfinished answers are saved as the respondent fills in the form and restored when they come back. Visitors\' answers are kept in their browser. Logged-in users\' answers are kept on your site, so they can continue on another device. Unfinished answers are deleted after 30 days or when the form is submitted.', 'surveyjs-pro' ),
+            'tab'    => self::TAB,
+            'labels' => array(
+                'gdprAgreement'    => __( 'GDPR Agreement', 'surveyjs-pro' ),
+                'gdprHelp'         => __( 'A required consent checkbox with a link to your Privacy Policy page.', 'surveyjs-pro' ),
                 'adaptiveTheme'    => __( 'Adaptive is on in the Theme tab of the form editor, so the form on your site uses your site\'s theme styles instead of this theme. Turn Adaptive off there to use this theme.', 'surveyjs-pro' ),
                 'fullscreen'       => __( 'Full screen', 'surveyjs-pro' ),
                 'exitFullscreen'   => __( 'Exit full screen', 'surveyjs-pro' ),

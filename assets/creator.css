@@ -6,6 +6,21 @@
     display: none;
 }
 
+.wp-sjs-editor[data-active-tab="creator"].wp-sjs-pro-site-preview .wp-sjs-editor__columns {
+    position: relative;
+}
+
+.wp-sjs-editor[data-active-tab="creator"].wp-sjs-pro-site-preview .wp-sjs-editor__preview {
+    display: flex;
+    position: absolute;
+    z-index: 1;
+    border: 0;
+}
+
+.wp-sjs-pro-site-preview .svc-test-tab__content {
+    visibility: hidden;
+}
+
 .wp-sjs-pro-creator {
     height: calc(100vh - var(--wp-admin--admin-bar--height, 32px) - 150px);
     min-height: 560px;
@@ -23,18 +38,26 @@
     color: #646970;
 }
 
-.wp-sjs-editor__tabs .wp-sjs-pro-fullscreen-toggle {
+.wp-sjs-pro-toolbar-button {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    margin: 0 8px 4px auto;
 }
 
-.wp-sjs-editor__tabs .wp-sjs-pro-fullscreen-toggle ~ .wp-sjs-editor__save {
+.wp-sjs-editor__tabs .wp-sjs-pro-toolbar-button {
+    margin: 0 8px 4px 0;
+}
+
+.wp-sjs-editor__tabs .wp-sjs-pro-fullscreen-toggle {
+    margin-left: auto;
+}
+
+.wp-sjs-editor__tabs .wp-sjs-pro-toolbar-button ~ .wp-sjs-editor__full-preview,
+.wp-sjs-editor__tabs .wp-sjs-pro-toolbar-button ~ .wp-sjs-editor__save {
     margin-left: 0;
 }
 
-.wp-sjs-pro-fullscreen-toggle .dashicons {
+.wp-sjs-pro-toolbar-button .dashicons {
     width: 16px;
     height: 16px;
     font-size: 16px;
@@ -62,6 +85,11 @@ body.wp-sjs-pro-fullscreen-mode #wpfooter {
     padding: 8px 16px 16px;
     background: #f0f0f1;
     overflow: hidden;
+}
+
+/* Base's full preview is fixed inside this container, which sets the stacking level it can reach. */
+.wp-sjs-editor.wp-sjs-pro-fullscreen.wp-sjs-editor--full-preview {
+    z-index: 100000;
 }
 
 .wp-sjs-pro-fullscreen .wp-sjs-editor__columns {

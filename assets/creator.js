@@ -8,11 +8,19 @@
     const rootElement = document.querySelector(".wp-sjs-editor");
     const saveButton = document.getElementById("wp-sjs-save");
     const GDPR_NAME = "gdpr_agreement";
-    const CATEGORY = "surveyjsForms";
     const MEDIA_URL = "surveyjsMediaUrl";
     const FULLSCREEN_KEY = "surveyjs-pro-editor-fullscreen";
+    const SITE_PREVIEW_TABS = ["preview"];
+    const SITE_PREVIEW_CLASS = "wp-sjs-pro-site-preview";
+
+    const columns = rootElement.querySelector(".wp-sjs-editor__columns");
+    const sitePreview = rootElement.querySelector(".wp-sjs-editor__preview");
 
     let creator = null;
+    let sitePreviewFrame = 0;
+    let sitePreviewCanvas = null;
+    let fullPreviewOpen = Boolean(editor.isFullPreviewOpen && editor.isFullPreviewOpen());
+    const sitePreviewResize = new ResizeObserver(() => scheduleSitePreview());
     let editorSurvey = null;
     let editorTheme = null;
     let creatorSurvey = null;
@@ -22,83 +30,29 @@
         return typeof value === "object" && value !== null && !Array.isArray(value);
     }
 
-    function settingInput(key) {
-        return rootElement.querySelector(`input[data-setting="${key}"]`);
-    }
-
     function getSetting(key) {
-        const input = settingInput(key);
+        const input = rootElement.querySelector(`input[data-setting="${key}"]`);
         return Boolean(input && input.checked);
     }
 
-    function setSetting(key, value) {
-        const input = settingInput(key);
-        if (!input || input.checked === Boolean(value)) return;
-        input.checked = Boolean(value);
-        input.dispatchEvent(new Event("change", { bubbles: true }));
-    }
-
-    function gdprQuestions(survey) {
-        return survey.getAllQuestions(false, true, true).filter((question) => question.name === GDPR_NAME);
-    }
-
-    function setGdprAgreement(survey, add) {
-        const questions = gdprQuestions(survey);
-        if (Boolean(add) === (questions.length > 0) || !creator || survey !== creator.survey) return;
-        if (add) {
-            const page = survey.pages.length > 0 ? survey.pages[survey.pages.length - 1] : survey.addNewPage("page1");
-            const question = Survey.Serializer.createClass("boolean");
-            // A required boolean also accepts false (checked, then unchecked), so the validator demands true.
-            question.fromJSON({
+    // The question is a plain boolean, so the form renders on the site without anything registered there.
+    function addGdprToolboxItem(instance) {
+        const booleanItem = instance.toolbox.getItemByName("boolean");
+        instance.toolbox.addItem({
+            name: GDPR_NAME,
+            title: labels.gdprAgreement,
+            tooltip: labels.gdprHelp,
+            iconName: booleanItem ? booleanItem.iconName : undefined,
+            json: {
+                type: "boolean",
                 name: GDPR_NAME,
                 displayMode: "checkbox",
                 title: editor.config.gdpr.text,
                 isRequired: true,
+                // A required boolean also accepts false (checked, then unchecked), so the validator demands true.
                 validators: [{ type: "expression", expression: `{${GDPR_NAME}} = true`, text: editor.config.gdpr.error }]
-            });
-            page.addElement(question);
-            creator.setModified({ type: "ADDED_FROM_PAGEBUTTON", question: question });
-            creator.notify(labels.gdprAdded, "info");
-        } else {
-            questions.forEach((question) => {
-                question.delete();
-                creator.setModified({ type: "OBJECT_DELETED", target: question });
-            });
-            creator.notify(labels.gdprRemoved, "info");
-        }
-    }
-
-    function addFormProperties() {
-        const strings = SurveyCreatorCore.editorLocalization.getLocale("en");
-        strings.pe.tabs[CATEGORY] = labels.category;
-        strings.pehelp.gdprAgreement = labels.gdprHelp;
-        strings.pehelp.captchaEnabled = labels.captchaHelp;
-        strings.pehelp.saveResume = labels.saveResumeHelp;
-        const property = (name, displayName, rest) => Object.assign({
-            name: name,
-            type: "boolean",
-            displayName: displayName,
-            category: CATEGORY,
-            isSerializable: false
-        }, rest);
-        Survey.Serializer.addProperties("survey", [
-            property("gdprAgreement", labels.gdprAgreement, {
-                visibleIndex: 0,
-                onGetValue: (survey) => gdprQuestions(survey).length > 0,
-                onSetValue: (survey, value) => setGdprAgreement(survey, value)
-            }),
-            property("captchaEnabled", labels.captchaEnabled, {
-                visibleIndex: 1,
-                enableIf: () => options.captchaConfigured,
-                onGetValue: () => getSetting("captchaEnabled"),
-                onSetValue: (survey, value) => setSetting("captchaEnabled", value)
-            }),
-            property("saveResume", labels.saveResume, {
-                visibleIndex: 2,
-                onGetValue: () => getSetting("saveResume"),
-                onSetValue: (survey, value) => setSetting("saveResume", value)
-            })
-        ]);
+            }
+        });
     }
 
     function pushSurvey() {
@@ -179,7 +133,7 @@
     function createCreator() {
         const instance = new SurveyCreator.SurveyCreator({
             showLogicTab: true,
-            showThemeTab: true,
+            showThemeTab: false,
             showTranslationTab: true,
             showJSONEditorTab: true,
             showPreviewTab: true,
@@ -201,12 +155,75 @@
             instance.onOpenFileChooser.add((sender, chooser) => chooseMedia(chooser));
         }
         instance.onUploadFile.add((sender, upload) => uploadFile(upload));
+        addGdprToolboxItem(instance);
         return instance;
+    }
+
+    function sitePreviewTarget() {
+        const shown = creator && editor.getActiveTab() === options.tab && SITE_PREVIEW_TABS.includes(creator.activeTab);
+        return shown ? host.querySelector(".svc-test-tab__content") : null;
+    }
+
+    // Base's preview frame shows the form on a real page of the site and already follows every change Creator hands
+    // to the form editor, so it is laid over Creator's own preview canvas instead of moving it, which would reload it.
+    function placeSitePreview() {
+        cancelAnimationFrame(sitePreviewFrame);
+        if (fullPreviewOpen) return;
+        const target = sitePreviewTarget();
+        rootElement.classList.toggle(SITE_PREVIEW_CLASS, Boolean(target));
+        // Creator animates its side bar when it switches between the mobile and full layouts, so the canvas resizes
+        // after the DOM change that started it; watching the canvas itself catches the final size.
+        if (target !== sitePreviewCanvas) {
+            if (sitePreviewCanvas) sitePreviewResize.unobserve(sitePreviewCanvas);
+            if (target) sitePreviewResize.observe(target);
+            sitePreviewCanvas = target;
+        }
+        if (!target) {
+            sitePreview.removeAttribute("style");
+            return;
+        }
+        const box = target.getBoundingClientRect();
+        const origin = columns.getBoundingClientRect();
+        Object.assign(sitePreview.style, {
+            top: box.top - origin.top + "px",
+            left: box.left - origin.left + "px",
+            width: box.width + "px",
+            height: box.height + "px"
+        });
+    }
+
+    function scheduleSitePreview() {
+        cancelAnimationFrame(sitePreviewFrame);
+        sitePreviewFrame = requestAnimationFrame(placeSitePreview);
+    }
+
+    function watchSitePreview() {
+        if (!columns || !sitePreview) return;
+        creator.onActiveTabChanged.add(scheduleSitePreview);
+        creator.registerFunctionOnPropertyValueChanged("isMobileView", scheduleSitePreview);
+        sitePreviewResize.observe(host);
+        new MutationObserver(scheduleSitePreview).observe(host, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
+        host.addEventListener("transitionend", scheduleSitePreview);
+        window.addEventListener("resize", scheduleSitePreview);
+    }
+
+    // Base's full preview shows the same container, so the overlay placement must not stay on it meanwhile.
+    function onFullPreview(event) {
+        fullPreviewOpen = Boolean(event.detail && event.detail.open);
+        if (fullPreviewOpen) {
+            flushToEditor();
+            cancelAnimationFrame(sitePreviewFrame);
+            rootElement.classList.remove(SITE_PREVIEW_CLASS);
+            if (sitePreview) sitePreview.removeAttribute("style");
+        } else if (creator && sitePreview) {
+            placeSitePreview();
+        }
     }
 
     function showCreator() {
         if (creator) {
             pullFromEditor();
+            scheduleSitePreview();
             return;
         }
         host.replaceChildren();
@@ -215,13 +232,14 @@
         editorTheme = JSON.stringify(editor.getTheme());
         creatorSurvey = JSON.stringify(creator.JSON);
         creator.render(host);
+        watchSitePreview();
     }
 
     function readFullscreen() {
         try {
-            return window.localStorage.getItem(FULLSCREEN_KEY) === "1";
+            return window.localStorage.getItem(FULLSCREEN_KEY) !== "0";
         } catch (error) {
-            return false;
+            return true;
         }
     }
 
@@ -230,7 +248,7 @@
         document.body.classList.toggle("wp-sjs-pro-fullscreen-mode", on);
         button.setAttribute("aria-pressed", String(on));
         button.querySelector(".dashicons").className = "dashicons " + (on ? "dashicons-fullscreen-exit-alt" : "dashicons-fullscreen-alt");
-        button.querySelector(".wp-sjs-pro-fullscreen-toggle__label").textContent = on ? labels.exitFullscreen : labels.fullscreen;
+        button.querySelector(".wp-sjs-pro-toolbar-button__label").textContent = on ? labels.exitFullscreen : labels.fullscreen;
         try {
             window.localStorage.setItem(FULLSCREEN_KEY, on ? "1" : "0");
         } catch (error) {
@@ -238,29 +256,36 @@
         }
     }
 
-    function addFullscreenButton() {
+    function toolbarButton(className, iconName, text) {
         const button = document.createElement("button");
         button.type = "button";
-        button.className = "button wp-sjs-pro-fullscreen-toggle";
+        button.className = "button wp-sjs-pro-toolbar-button " + className;
         const icon = document.createElement("span");
-        icon.className = "dashicons";
+        icon.className = "dashicons " + iconName;
         icon.setAttribute("aria-hidden", "true");
         const label = document.createElement("span");
-        label.className = "wp-sjs-pro-fullscreen-toggle__label";
+        label.className = "wp-sjs-pro-toolbar-button__label";
+        label.textContent = text;
         button.append(icon, label);
+        return button;
+    }
+
+    function addFullscreenButton() {
+        const button = toolbarButton("wp-sjs-pro-fullscreen-toggle", "", "");
         button.addEventListener("click", () => setFullscreen(button, !rootElement.classList.contains("wp-sjs-pro-fullscreen")));
-        saveButton.before(button);
+        (document.getElementById("wp-sjs-full-preview") || saveButton).before(button);
         setFullscreen(button, readFullscreen());
     }
 
-    addFormProperties();
     if (saveButton) addFullscreenButton();
+    document.addEventListener("surveyjs:editor-full-preview", onFullPreview);
     document.addEventListener("click", (event) => {
         if (event.target.closest("#wp-sjs-save, .wp-sjs-editor__tabs .nav-tab")) flushToEditor();
     }, true);
     window.addEventListener("beforeunload", flushToEditor, true);
     document.addEventListener("surveyjs:editor-tab", (event) => {
         if (event.detail.tab === options.tab) showCreator();
+        else if (creator) placeSitePreview();
     });
     if (editor.getActiveTab() === options.tab) showCreator();
 })();
