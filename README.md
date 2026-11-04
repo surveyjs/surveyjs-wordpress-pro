@@ -235,7 +235,7 @@ Questions and values (`SurveyJS_Survey_Values`): `survey_questions( $json_array 
 
 ### Links to Pro in Base
 
-Base links to Pro (no installer) in three places: the "Upgrade to Pro" item at the end of the SurveyJS Forms menu, a card at the bottom of Getting Started (`.wp-sjs-pro-upsell`), and a link under "Open in free UI Builder" in the form editor (`.wp-sjs-editor__pro-link`). All of them come from `SurveyJS_Upsell` (`src/trunk/upsell.php`); the URL is `SurveyJS_Upsell::URL` plus `utm_source=surveyjs-plugin&utm_medium=<admin-menu|getting-started|editor>`.
+Base links to Pro (no installer) in three places: the "Get Pro – Free" item at the end of the SurveyJS Forms menu and of its toolbar menu (`utm_medium=admin-bar`), a card at the bottom of Getting Started (`.wp-sjs-pro-upsell`), and a link under "Open in free UI Builder" in the form editor (`.wp-sjs-editor__pro-link`). All of them come from `SurveyJS_Upsell` (`src/trunk/upsell.php`); the URL is `SurveyJS_Upsell::URL` plus `utm_source=surveyjs-plugin&utm_medium=<admin-menu|admin-bar|getting-started|editor>`.
 
 Base hides the links when `SURVEYJS_PRO_VERSION` is defined, so Pro needs no code for this; keep defining that constant at file load.
 
