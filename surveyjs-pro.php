@@ -26,6 +26,7 @@ require_once __DIR__ . '/includes/settings.php';
 require_once __DIR__ . '/includes/libs.php';
 require_once __DIR__ . '/includes/creator.php';
 require_once __DIR__ . '/includes/analytics.php';
+require_once __DIR__ . '/includes/dashboard.php';
 
 // Pro sorts before Base in the active plugins list, so Base is checked only after every plugin has loaded.
 add_action( 'plugins_loaded', array( 'SurveyJS_Pro', 'boot' ) );

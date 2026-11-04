@@ -18,6 +18,8 @@ Survey Creator: build forms visually right in the form editor — drag & drop de
 * Chart View: charts for every question of a form, with a date range filter, on the form's Results page.
 * Table View: a table of entries with search, sorting, column show/hide/reorder and CSV download.
 
+**Dashboard** (SurveyJS Forms > Dashboard): entries across all forms for the last 7, 30 or 90 days or 12 months, charts of entries over time and by form, the latest entries and entry counts per form.
+
 Pro needs SurveyJS Forms 2.5.6 or later. When SurveyJS Forms is missing or too old, Pro shows a notice and does not load.
 
 == Installation ==
@@ -32,3 +34,4 @@ Pro needs SurveyJS Forms 2.5.6 or later. When SurveyJS Forms is missing or too o
 * Plugin skeleton.
 * Survey Creator in the form editor.
 * Chart View and Table View on the Results page.
+* Dashboard across all forms.
