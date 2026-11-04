@@ -20,7 +20,7 @@ class SurveyJS_Pro_Dashboard {
     }
 
     public static function add_page( $parent, $capability ) {
-        self::$hook = (string) add_submenu_page( $parent, __( 'Dashboard', 'surveyjs-pro' ), __( 'Dashboard', 'surveyjs-pro' ), $capability, self::PAGE, array( __CLASS__, 'render' ), 0 );
+        self::$hook = (string) add_submenu_page( $parent, __( 'Dashboard', 'surveyjs-pro' ), __( 'Dashboard', 'surveyjs-pro' ), $capability, self::PAGE, array( __CLASS__, 'render' ), 1 );
     }
 
     public static function url( $args = array() ) {
