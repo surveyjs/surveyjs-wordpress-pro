@@ -1,0 +1,149 @@
+.wp-sjs-editor[data-active-tab="creator"] .wp-sjs-editor__columns {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.wp-sjs-editor[data-active-tab="creator"] .wp-sjs-editor__preview {
+    display: none;
+}
+
+.wp-sjs-pro-creator {
+    height: calc(100vh - var(--wp-admin--admin-bar--height, 32px) - 150px);
+    min-height: 560px;
+    border: 1px solid #c3c4c7;
+    background: #fff;
+}
+
+.wp-sjs-pro-creator__host {
+    height: 100%;
+}
+
+.wp-sjs-pro-creator__loading {
+    margin: 0;
+    padding: 12px;
+    color: #646970;
+}
+
+.wp-sjs-editor__tabs .wp-sjs-pro-fullscreen-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0 8px 4px auto;
+}
+
+.wp-sjs-editor__tabs .wp-sjs-pro-fullscreen-toggle ~ .wp-sjs-editor__save {
+    margin-left: 0;
+}
+
+.wp-sjs-pro-fullscreen-toggle .dashicons {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    line-height: 16px;
+}
+
+body.wp-sjs-pro-fullscreen-mode {
+    overflow: hidden;
+}
+
+body.wp-sjs-pro-fullscreen-mode #wpadminbar,
+body.wp-sjs-pro-fullscreen-mode #adminmenumain,
+body.wp-sjs-pro-fullscreen-mode #wpfooter {
+    display: none;
+}
+
+/* Below SurveyJS popups (z-index 2000), which Creator mounts in <body>. */
+.wp-sjs-editor.wp-sjs-pro-fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 8px 16px 16px;
+    background: #f0f0f1;
+    overflow: hidden;
+}
+
+.wp-sjs-pro-fullscreen .wp-sjs-editor__columns {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+
+.wp-sjs-pro-fullscreen[data-active-tab="creator"] .wp-sjs-editor__columns {
+    grid-template-rows: minmax(0, 1fr);
+    overflow: hidden;
+}
+
+.wp-sjs-pro-fullscreen .wp-sjs-pro-creator {
+    height: 100%;
+    min-height: 0;
+}
+
+.wp-sjs-pro-fullscreen .wp-sjs-editor__preview {
+    top: 0;
+    height: calc(100vh - 140px);
+}
+
+/* WordPress admin styles every input[type="text"], checkbox and li, and its rules outrank the
+   single-class survey-core ones. Same reset as Base's survey.css, for Creator and its popups. */
+:where(.svc-creator, .sv-popup) li {
+    margin-bottom: 0;
+}
+
+.svc-creator .sd-visuallyhidden,
+.sv-popup .sd-visuallyhidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    opacity: 0;
+}
+
+.svc-creator .sd-formbox__input,
+.svc-creator .sd-formbox__input:focus,
+.svc-creator .sd-dropdown__filter-string-input,
+.svc-creator .sd-dropdown__filter-string-input:focus,
+.sv-popup .sd-formbox__input,
+.sv-popup .sd-formbox__input:focus,
+.sv-popup .sd-dropdown__filter-string-input,
+.sv-popup .sd-dropdown__filter-string-input:focus {
+    height: auto;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    outline: none;
+    box-shadow: none;
+    background: none;
+}
+
+.svc-creator .sd-formbox__input,
+.sv-popup .sd-formbox__input {
+    min-height: calc(1lh + var(--sjs2-layout-component-input-medium-content-padding-vertical) * 2);
+    padding: var(--sjs2-layout-component-input-medium-content-padding-vertical) var(--sjs2-layout-component-input-medium-content-padding-horizontal);
+    color: var(--sjs2-color-component-input-default-value);
+    line-height: var(--sjs2-typography-line-height-component-input-content);
+}
+
+.svc-creator .svc-search__input,
+.svc-creator .svc-search__input:focus {
+    min-height: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    line-height: var(--sjs2-typography-line-height-small);
+}
+
+.svc-creator .sd-dropdown__filter-string-input,
+.sv-popup .sd-dropdown__filter-string-input {
+    min-height: 0;
+    padding: 0;
+    color: inherit;
+    line-height: inherit;
+}
