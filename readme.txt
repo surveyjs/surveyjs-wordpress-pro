@@ -13,6 +13,8 @@ Adds Survey Creator, PDF export and analytics to SurveyJS Forms.
 
 SurveyJS Forms Pro is an add-on for the free SurveyJS Forms plugin. SurveyJS Forms keeps your forms and entries; Pro adds features on top of them.
 
+**Dashboard** (SurveyJS Forms > Dashboard): entries across all forms for the last 7, 30 or 90 days or 12 months, charts of entries over time and by form, the latest entries and entry counts per form.
+
 Pro needs SurveyJS Forms 2.5.6 or later. When SurveyJS Forms is missing or too old, Pro shows a notice and does not load.
 
 == Installation ==
