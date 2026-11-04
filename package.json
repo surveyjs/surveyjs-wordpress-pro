@@ -1,0 +1,21 @@
+{
+  "name": "surveyjs-wordpress-pro",
+  "private": true,
+  "scripts": {
+    "copy-libs": "node scripts/copy-libs.js",
+    "test:e2e": "playwright test --project=setup --project=e2e"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.48.2",
+    "chart.js": "4.6.1",
+    "chartjs-plugin-datalabels": "2.2.0",
+    "jspdf": "4.2.1",
+    "survey-analytics": "3.2.2",
+    "survey-core": "3.2.2",
+    "survey-creator-core": "3.2.2",
+    "survey-creator-js": "3.2.2",
+    "survey-js-ui": "3.2.2",
+    "survey-pdf": "3.2.2",
+    "tabulator-tables": "6.7.1"
+  }
+}
