@@ -28,6 +28,8 @@ class SurveyJS_Pro_Libs {
             'creator'             => array( 'survey-creator-js/survey-creator-js.min.js', array( self::handle( 'creator-core' ), SurveyJS_SurveyJS::UI_SCRIPT ) ),
             'jspdf'               => array( 'jspdf/jspdf.umd.min.js', array() ),
             'pdf'                 => array( 'survey-pdf/survey.pdf.min.js', array( self::LICENSE_HANDLE, self::handle( 'jspdf' ) ) ),
+            'pdf-fonts'           => array( 'survey-pdf/survey.pdf.fonts.min.js', array( self::handle( 'pdf' ) ) ),
+            'pdf-spacious'        => array( 'survey-pdf/spacious.min.js', array() ),
             'chartjs'             => array( 'chart.js/chart.umd.min.js', array() ),
             'chartjs-datalabels'  => array( 'chartjs-plugin-datalabels/chartjs-plugin-datalabels.min.js', array( self::handle( 'chartjs' ) ) ),
             'analytics'           => array( 'survey-analytics/survey.analytics.min.js', array( self::LICENSE_HANDLE, self::handle( 'chartjs' ), self::handle( 'chartjs-datalabels' ) ) ),
@@ -87,6 +89,11 @@ class SurveyJS_Pro_Libs {
             wp_enqueue_style( self::handle( $name ) );
         }
         return true;
+    }
+
+    public static function script_url( $name ) {
+        $scripts = self::scripts();
+        return isset( $scripts[ $name ] ) && self::register() ? add_query_arg( 'ver', SURVEYJS_PRO_VERSION, self::url( $scripts[ $name ][0] ) ) : '';
     }
 
     private static function url( $file ) {
