@@ -31,7 +31,7 @@ test.describe("analytics on the results page", () => {
     await page.locator(".wp-sjs-results__views").getByRole("link", { name: "Chart View" }).click();
     await expect(page).toHaveURL(/view=chart/);
     const view = page.locator("#wp-sjs-pro-analytics");
-    await expect(view.getByText("Favorite color").first()).toBeVisible();
+    await expect(view.locator(".sa-question__title", { hasText: "Favorite color" })).toBeVisible();
     await expect(view.locator("canvas").first()).toBeVisible();
     await expect(view.locator(".wp-sjs-pro-analytics__progress")).toBeHidden();
   });
