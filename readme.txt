@@ -20,6 +20,13 @@ Survey Creator: build forms visually right in the form editor — drag & drop de
 
 **Dashboard** (SurveyJS Forms > Dashboard): entries across all forms for the last 7, 30 or 90 days or 12 months, charts of entries over time and by form, the latest entries and entry counts per form.
 
+= PDF export =
+
+* Download any entry as a PDF from the Results page, or select several entries and choose Export PDF in Bulk actions to get a ZIP with one PDF per entry.
+* Download the blank form as a fillable PDF that respondents can fill in a PDF viewer, or as a printable form.
+* Set the page size, orientation, font size, margins, layout and font for each form on the PDF tab of the form editor, and preview the result before saving.
+* PDFs are generated in your browser. No form data is sent to any external service.
+
 Pro needs SurveyJS Forms 2.5.6 or later. When SurveyJS Forms is missing or too old, Pro shows a notice and does not load.
 
 == Installation ==
@@ -35,3 +42,4 @@ Pro needs SurveyJS Forms 2.5.6 or later. When SurveyJS Forms is missing or too o
 * Survey Creator in the form editor.
 * Chart View and Table View on the Results page.
 * Dashboard across all forms.
+* PDF export of entries and blank forms.
