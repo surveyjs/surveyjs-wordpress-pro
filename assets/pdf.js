@@ -6,6 +6,16 @@
 
     const i18n = config.i18n;
     const MM_TO_PT = 72 / 25.4;
+    const MARGIN = 10;
+    const BRANDED_TOP_MARGIN = 24;
+    const LOGO_MAX_WIDTH = 50;
+    const LOGO_MAX_HEIGHT = 12;
+    const LOGO_GAP = 4;
+    // survey-pdf draws an image at no more than 0.75 pt per pixel, so an image smaller than 1.34 px per pt would not fill its rect.
+    const LOGO_PX_PER_PT = 3;
+    const WATERMARK_PX_PER_PT = 1.5;
+    const logoCache = new Map();
+    const watermarkCache = new Map();
     let fontsPromise = null;
     let busy = false;
 
@@ -57,24 +67,109 @@
         return Object.fromEntries(Object.entries(layout).filter(([key]) => !key.startsWith("--sjs2-pdf-layout-page-padding-")));
     }
 
+    function createCanvas(width, height) {
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(width));
+        canvas.height = Math.max(1, Math.round(height));
+        return canvas;
+    }
+
+    function loadLogo(url) {
+        if (!logoCache.has(url)) {
+            const promise = new Promise((resolve, reject) => {
+                const image = new Image();
+                image.crossOrigin = "anonymous";
+                image.onload = () => resolve(image);
+                image.onerror = () => reject(new Error(i18n.logoError));
+                image.src = url;
+            }).then((image) => {
+                if (!image.naturalWidth || !image.naturalHeight) throw new Error(i18n.logoError);
+                const scale = Math.min(LOGO_MAX_WIDTH * MM_TO_PT / image.naturalWidth, LOGO_MAX_HEIGHT * MM_TO_PT / image.naturalHeight);
+                const width = image.naturalWidth * scale;
+                const height = image.naturalHeight * scale;
+                const canvas = createCanvas(width * LOGO_PX_PER_PT, height * LOGO_PX_PER_PT);
+                canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
+                return { base64: canvas.toDataURL("image/png"), width, height };
+            });
+            promise.catch(() => logoCache.delete(url));
+            logoCache.set(url, promise);
+        }
+        return logoCache.get(url);
+    }
+
+    function watermarkImage(text, width, height) {
+        const key = `${width}x${height}:${text}`;
+        if (!watermarkCache.has(key)) {
+            const canvas = createCanvas(width * WATERMARK_PX_PER_PT, height * WATERMARK_PX_PER_PT);
+            const context = canvas.getContext("2d");
+            const font = (size) => `bold ${size}px Helvetica, Arial, sans-serif`;
+            context.font = font(100);
+            const size = Math.min(70 * Math.hypot(canvas.width, canvas.height) / context.measureText(text).width, canvas.width * 0.3);
+            context.font = font(size);
+            context.fillStyle = "rgba(128, 128, 128, 0.18)";
+            context.textAlign = "center";
+            context.textBaseline = "middle";
+            context.translate(canvas.width / 2, canvas.height / 2);
+            context.rotate(-Math.atan2(canvas.height, canvas.width));
+            context.fillText(text, 0, 0);
+            watermarkCache.set(key, canvas.toDataURL("image/png"));
+        }
+        return watermarkCache.get(key);
+    }
+
+    function hideUnansweredQuestions(survey) {
+        survey.getAllQuestions().forEach((question) => {
+            if (question.hasInput && question.isEmpty() && !question.comment) question.visible = false;
+        });
+    }
+
+    function addPageHeader(pdf, logo, title) {
+        const margin = MARGIN * MM_TO_PT;
+        pdf.onRenderHeader.add(async (_, canvas) => {
+            let left = margin;
+            if (logo) {
+                await canvas.drawImage({ base64: logo.base64, width: logo.width, height: logo.height, horizontalAlign: "left", margins: { left } });
+                left += logo.width + LOGO_GAP * MM_TO_PT;
+            }
+            if (title) {
+                canvas.drawText({ text: title, fontSize: 12, isBold: true, horizontalAlign: "left", margins: { left, right: margin } });
+            }
+        });
+    }
+
+    function addWatermark(pdf, text) {
+        const margin = MARGIN * MM_TO_PT;
+        pdf.onRenderFooter.add(async (_, canvas) => {
+            const rect = { xLeft: margin, xRight: canvas.rect.xRight - margin, yTop: margin, yBot: canvas.rect.yBot - margin };
+            await canvas.drawImage({ base64: watermarkImage(text, rect.xRight - rect.xLeft, rect.yBot - rect.yTop), rect });
+        });
+    }
+
     async function createPdf(source, settings, entry) {
         const json = withPlainLinks(source.json || {});
         const header = entry && settings.proPdfEntryHeader ? format(i18n.entryHeader, entry.id, entry.date) : "";
-        let font = settings.proPdfFont;
-        if (font !== "helvetica" && font !== "segoe") {
-            font = needsUnicodeFont(json, entry ? entry.data : null, header) ? "segoe" : "helvetica";
-        }
+        const title = String(settings.proPdfHeaderText || "").trim();
+        const watermark = String(settings.proPdfWatermark || "").trim();
+        const font = needsUnicodeFont(json, entry ? entry.data : null, header, title) ? "segoe" : "helvetica";
         if (font === "segoe") await loadFonts();
+        const logo = source.logoUrl ? await loadLogo(source.logoUrl) : null;
 
         const readOnly = Boolean(entry) || !settings.proPdfFillable;
-        const margin = clamp(settings.proPdfMargin, 0, 50, 10);
+        const blankShowsAll = entry ? {} : {
+            choiceComments: true,
+            choiceNestedContent: true,
+            conditionalChoices: true,
+            conditionalElements: true,
+            conditionalMatrixColumns: true,
+            conditionalMatrixRows: true
+        };
         const pdf = new SurveyPDF.SurveyPDF(json, {
-            format: settings.proPdfFormat || "a4",
-            orientation: settings.proPdfOrientation === "l" ? "l" : "p",
+            format: settings.proPdfFormat && settings.proPdfFormat !== "auto" ? settings.proPdfFormat : config.format || "a4",
             fontSize: clamp(settings.proPdfFontSize, 8, 24, 14),
-            margins: { left: margin, right: margin, top: margin, bot: margin },
+            margins: { left: MARGIN, right: MARGIN, top: logo || title ? BRANDED_TOP_MARGIN : MARGIN, bot: MARGIN },
             fontName: font,
             readonlyRenderAs: "text",
+            dynamicContent: blankShowsAll,
             // jsPDF drops the AcroForm fields of a compressed document, so a fillable form stays uncompressed.
             compress: readOnly
         });
@@ -84,15 +179,20 @@
         if (settings.proPdfThemeColors && settings.themeMode === "surveyjs" && source.theme && source.theme.colorPalette !== "dark") {
             pdf.applyTheme(source.theme);
         }
-        if (entry) pdf.data = entry.data;
+        if (entry) {
+            pdf.data = entry.data;
+            if (settings.proPdfHideEmpty) hideUnansweredQuestions(pdf);
+        }
         pdf.readOnly = readOnly;
 
-        const textMargins = { left: margin * MM_TO_PT, right: margin * MM_TO_PT };
+        const textMargins = { left: MARGIN * MM_TO_PT, right: MARGIN * MM_TO_PT };
+        if (logo || title) addPageHeader(pdf, logo, title);
         if (header) {
-            pdf.onRenderHeader.add((_, canvas) => {
+            pdf.onRenderFooter.add((_, canvas) => {
                 canvas.drawText({ text: header, fontSize: 9, horizontalAlign: "left", margins: textMargins });
             });
         }
+        if (watermark) addWatermark(pdf, watermark);
         if (settings.proPdfPageNumbers) {
             pdf.onRenderFooter.add((_, canvas) => {
                 canvas.drawText({ text: format(i18n.page, canvas.pageNumber, canvas.pageCount), fontSize: 9, horizontalAlign: "right", margins: textMargins });
@@ -182,6 +282,46 @@
         }
     }
 
+    function initLogoPicker(logoUrls) {
+        const input = document.getElementById("wp-sjs-pro-pdf-logo");
+        const preview = document.getElementById("wp-sjs-pro-pdf-logo-preview");
+        const chooseButton = document.getElementById("wp-sjs-pro-pdf-logo-choose");
+        const removeButton = document.getElementById("wp-sjs-pro-pdf-logo-remove");
+        if (!input || !preview || !chooseButton || !removeButton) return;
+
+        function render() {
+            const url = logoUrls.get(input.value) || "";
+            if (url) preview.src = url;
+            preview.hidden = !url;
+            removeButton.hidden = !url;
+        }
+
+        function setLogo(id, url) {
+            logoUrls.set(String(id), url);
+            input.value = String(id);
+            input.dispatchEvent(new Event("input", { bubbles: true }));
+            render();
+        }
+
+        chooseButton.disabled = !(window.wp && window.wp.media);
+        chooseButton.addEventListener("click", () => {
+            const frame = window.wp.media({
+                title: chooseButton.dataset.frameTitle,
+                button: { text: chooseButton.dataset.frameButton },
+                library: { type: "image" },
+                multiple: false
+            });
+            frame.on("select", () => {
+                const attachment = frame.state().get("selection").first().toJSON();
+                const url = attachment.sizes && attachment.sizes.large ? attachment.sizes.large.url : attachment.url;
+                if (url) setLogo(attachment.id, url);
+            });
+            frame.open();
+        });
+        removeButton.addEventListener("click", () => setLogo(0, ""));
+        render();
+    }
+
     function initEditor() {
         const api = window.surveyjsEditor;
         const previewButton = document.getElementById("wp-sjs-pro-pdf-preview");
@@ -195,10 +335,26 @@
             status.style.color = isError ? "#d63638" : "";
         }
 
-        function currentBlankPdf() {
-            const json = api.getSurvey();
-            if (!json) throw new Error(i18n.invalidJson);
-            return createPdf({ json, theme: api.getTheme() }, api.getSettings());
+        const logoUrls = new Map([[String(config.logo.id), config.logo.url]]);
+        initLogoPicker(logoUrls);
+
+        let pdfQueue = Promise.resolve();
+
+        // survey-pdf keeps render state in shared singletons, so two documents must not render at the same time.
+        function serial(task) {
+            const result = pdfQueue.then(task);
+            pdfQueue = result.catch(() => {});
+            return result;
+        }
+
+        function currentBlankPdf(isStale) {
+            return serial(() => {
+                if (isStale && isStale()) return null;
+                const json = api.getSurvey();
+                if (!json) throw new Error(i18n.invalidJson);
+                const settings = api.getSettings();
+                return createPdf({ json, theme: api.getTheme(), logoUrl: logoUrls.get(String(settings.proPdfLogo)) }, settings);
+            });
         }
 
         blankButton.addEventListener("click", () => run(async () => {
@@ -216,6 +372,75 @@
                 preview.location.href = URL.createObjectURL(await currentBlankPdf());
             }, setStatus, () => preview.close());
         });
+
+        initLivePreview(currentBlankPdf, setStatus);
+    }
+
+    function initLivePreview(buildPdf, setStatus) {
+        const frame = document.getElementById("wp-sjs-pro-pdf-live");
+        const panel = frame && frame.closest("[data-panel]");
+        if (!panel) return;
+        let frameUrl = null;
+        let timer = null;
+        let latest = 0;
+        let showsError = false;
+
+        async function refresh() {
+            clearTimeout(timer);
+            const request = ++latest;
+            try {
+                const blob = await buildPdf(() => request !== latest);
+                if (!blob || request !== latest || panel.hidden) return;
+                if (frameUrl) URL.revokeObjectURL(frameUrl);
+                frameUrl = URL.createObjectURL(blob);
+                frame.src = frameUrl;
+                if (showsError) setStatus("");
+                showsError = false;
+            } catch (error) {
+                if (request !== latest) return;
+                setStatus(format(i18n.error, error && error.message ? error.message : String(error)), true);
+                showsError = true;
+            }
+        }
+
+        function schedule() {
+            clearTimeout(timer);
+            if (!panel.hidden) timer = setTimeout(refresh, 500);
+        }
+
+        ["input", "change"].forEach((type) => panel.addEventListener(type, schedule));
+        document.addEventListener("surveyjs:editor-tab", (event) => {
+            if (event.detail && event.detail.tab === panel.dataset.panel) refresh();
+            else {
+                clearTimeout(timer);
+                setFullScreen(false);
+            }
+        });
+        if (!panel.hidden) refresh();
+
+        const previewPanel = document.getElementById("wp-sjs-pro-pdf-preview-panel");
+        const openButton = document.getElementById("wp-sjs-pro-pdf-full");
+        const closeButton = document.getElementById("wp-sjs-pro-pdf-full-close");
+        let fullScreen = false;
+
+        function setFullScreen(open) {
+            if (!previewPanel || open === fullScreen) return;
+            fullScreen = open;
+            previewPanel.classList.toggle("wp-sjs-pro-pdf__preview--full", open);
+            document.body.classList.toggle("wp-sjs-pro-pdf-full-open", open);
+            openButton.setAttribute("aria-expanded", String(open));
+            openButton.hidden = open;
+            closeButton.hidden = !open;
+            (open ? closeButton : openButton).focus();
+        }
+
+        if (previewPanel && openButton && closeButton) {
+            openButton.addEventListener("click", () => setFullScreen(true));
+            closeButton.addEventListener("click", () => setFullScreen(false));
+            document.addEventListener("keydown", (event) => {
+                if (event.key === "Escape" && fullScreen) setFullScreen(false);
+            });
+        }
     }
 
     function initResults() {
@@ -234,7 +459,7 @@
             notice.firstChild.textContent = text;
         }
 
-        const source = { json: config.json, theme: config.theme };
+        const source = { json: config.json, theme: config.theme, logoUrl: config.logo.url };
         const baseName = fileBase(config.formName);
 
         async function fetchEntries(ids) {
@@ -299,9 +524,11 @@
         }
     }
 
+    window.SurveyJSProPdf = { createPdf, download, fileBase };
+
     if (config.page === "editor") {
         initEditor();
-    } else {
+    } else if (config.page === "results") {
         initResults();
     }
 })();

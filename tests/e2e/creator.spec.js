@@ -46,7 +46,7 @@ test.describe("Survey Creator in the form editor", () => {
     await expect(tabs.getByRole("link", { name: "Config" })).toHaveCount(0);
     await expect(tabs.getByRole("link", { name: "Spam Protection" })).toHaveCount(0);
     await expect(tabs.getByRole("link", { name: "Save & Resume" })).toHaveCount(0);
-    await expect(tabs.getByRole("link", { name: "Email Notification" })).toBeVisible();
+    await expect(tabs.getByRole("link", { name: "Email", exact: true })).toBeVisible();
     await expect(page.locator(".svc-creator")).toBeVisible();
     for (const tab of ["Designer", "Preview", "Themes", "Logic", "JSON Editor"]) {
       await expect(page.locator(".svc-creator").getByText(tab, { exact: true }).first()).toBeVisible();
