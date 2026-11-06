@@ -300,13 +300,13 @@ Questions and values (`SurveyJS_Survey_Values`): `survey_questions( $json_array 
 
 ### Links to Pro in Base
 
-Base links to Pro (no installer) in three places: the "Get Pro – Free" item at the end of the SurveyJS Forms menu and of its toolbar menu (`utm_medium=admin-bar`), a card at the bottom of Getting Started (`.wp-sjs-pro-upsell`), and a link under "Open in free UI Builder" in the form editor (`.wp-sjs-editor__pro-link`). All of them come from `SurveyJS_Upsell` (`src/trunk/upsell.php`); the URL is `SurveyJS_Upsell::URL` plus `utm_source=surveyjs-plugin&utm_medium=<admin-menu|admin-bar|getting-started|editor>`.
+Base links to Pro (no installer) in three places: the "Get Pro – Free" item at the end of the SurveyJS Forms menu and of its toolbar menu (`utm_medium=admin-bar`), a card at the bottom of Getting Started (`.wp-sjs-pro-upsell`), and a link under "Open in free UI Builder" in the form editor (`.wp-sjs-editor__pro-link`). All of them come from `SurveyJS_Upsell` (`src/trunk/upsell.php`); the URL is `surveyjs_site_url( SurveyJS_Upsell::PATH )` plus `utm_source=surveyjs-plugin&utm_medium=<admin-menu|admin-bar|getting-started|editor>&wp_admin_url=<admin_url()>`.
 
 Base hides the links when `SURVEYJS_PRO_VERSION` is defined, so Pro needs no code for this; keep defining that constant at file load.
 
 **`surveyjs_show_pro_upsell`** (filter) — `( bool $show )`, default `! defined( 'SURVEYJS_PRO_VERSION' )`.
 
-**`surveyjs_pro_url`** (filter) — `( string $url )`, default `SurveyJS_Upsell::URL`.
+**`surveyjs_site_url`** (filter) — `( string $site )`, default the `SURVEYJS_SITE_URL` constant or `https://surveyjs.io`. The Pro page (`/wordpress-pro`) and UI Builder (`/wordpress-ui-builder`) links are built from it; set it to a test site to test both.
 
 ### Front-end form
 
@@ -330,7 +330,7 @@ JS events on `document` (`assets/survey.js`), `detail`: `id`, `survey` (the `Sur
 ### Other Base hooks (already existed)
 
 - `wp_surveyjs_save_result` (action) — `( int $form_id, string $json, 'sjs_results', int $entry_id )` after a submitted entry is saved.
-- `surveyjs_ui_builder_url`, `surveyjs_partial_entry_lifetime`, `surveyjs_entry_ip`, `surveyjs_allowed_upload_extensions`, `surveyjs_max_upload_size`, `surveyjs_unattached_upload_lifetime`, `surveyjs_import_entries_per_request` (filters).
+- `surveyjs_partial_entry_lifetime`, `surveyjs_entry_ip`, `surveyjs_allowed_upload_extensions`, `surveyjs_max_upload_size`, `surveyjs_unattached_upload_lifetime`, `surveyjs_import_entries_per_request` (filters).
 
 ## Development
 
