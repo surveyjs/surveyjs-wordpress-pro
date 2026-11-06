@@ -13,7 +13,7 @@ Adds Survey Creator, PDF export and analytics to SurveyJS Forms.
 
 SurveyJS Forms Pro is an add-on for the free SurveyJS Forms plugin. SurveyJS Forms keeps your forms and entries; Pro adds features on top of them.
 
-Survey Creator: build forms visually right in the form editor — drag & drop designer, logic, themes, translations, JSON editor and preview, with a full-screen mode. GDPR agreement, CAPTCHA and Save & Resume are form properties in Creator. Images come from your Media Library.
+Survey Creator: build forms visually right in the form editor — drag & drop designer, logic, translations, JSON editor and preview, with a full-screen mode. A GDPR Agreement question in the toolbox. Images come from your Media Library.
 
 * Chart View: charts for every question of a form, with a date range filter, on the form's Results page.
 * Table View: a table of entries with search, sorting, column show/hide/reorder and CSV download.
