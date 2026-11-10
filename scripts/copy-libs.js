@@ -17,6 +17,7 @@ const FILES = {
     "LICENSE"
   ],
   "jspdf": ["dist/jspdf.umd.min.js", "LICENSE"],
+  "jspdf-autotable": ["dist/jspdf.plugin.autotable.min.js", "LICENSE.txt"],
   "chart.js": ["dist/chart.umd.min.js", "LICENSE.md"],
   "chartjs-plugin-datalabels": ["dist/chartjs-plugin-datalabels.min.js", "LICENSE.md"],
   "tabulator-tables": ["dist/js/tabulator.min.js", "dist/css/tabulator.min.css", "LICENSE"]

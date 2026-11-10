@@ -51,6 +51,7 @@ On WordPress VIP `wpcom_vip_load_plugin()` does not fire activation hooks, so th
 | survey-pdf | 3.2.2 | `survey.pdf.min.js`, `survey.pdf.fonts.min.js` (Segoe UI for non-Latin text), `spacious.min.js` (from `layouts/`, the Spacious layout preset, global `DocLayout.Spacious`) |
 | survey-analytics | 3.2.2 | `survey.analytics.min.js/.css` (Chart.js), `survey.analytics.tabulator.min.js/.css` |
 | jspdf | 4.2.1 | `jspdf.umd.min.js` (needed by survey-pdf) |
+| jspdf-autotable | 5.0.9 | `jspdf.plugin.autotable.min.js` (Table View PDF export; applies itself to `window.jspdf` when loaded after jsPDF) |
 | chart.js | 4.6.1 | `chart.umd.min.js` (needed by survey-analytics) |
 | chartjs-plugin-datalabels | 2.2.0 | `chartjs-plugin-datalabels.min.js` (optional for survey-analytics; register it with `Chart.register(ChartDataLabels)` if wanted) |
 | tabulator-tables | 6.7.1 | `tabulator.min.js` (needed by survey.analytics.tabulator) |
@@ -68,7 +69,7 @@ SurveyJS_Pro_Libs::enqueue( 'analytics' );           // chart.js + datalabels + 
 SurveyJS_Pro_Libs::enqueue( 'analytics-tabulator' ); // tabulator + survey.analytics.tabulator and CSS
 ```
 
-`enqueue()` returns `false` when the libraries are unavailable (version mismatch). `script_url( $name )` returns the versioned URL of a script handle's file (for loading it on demand, e.g. `pdf-fonts`, 1.8 MB), or `''`. Call it from `admin_enqueue_scripts` or `surveyjs_admin_enqueue_scripts`. To make your own script depend on a library, call `SurveyJS_Pro_Libs::register()` (or `enqueue()`) first and use `SurveyJS_Pro_Libs::handle( $name )` as the dependency. Handles (`surveyjs-pro-<name>`): `creator-core`, `creator`, `jspdf`, `pdf`, `pdf-fonts`, `pdf-spacious`, `chartjs`, `chartjs-datalabels`, `analytics`, `tabulator`, `analytics-tabulator`; styles `creator`, `analytics`, `analytics-tabulator`.
+`enqueue()` returns `false` when the libraries are unavailable (version mismatch). `script_url( $name )` returns the versioned URL of a script handle's file (for loading it on demand, e.g. `pdf-fonts`, 1.8 MB), or `''`. Call it from `admin_enqueue_scripts` or `surveyjs_admin_enqueue_scripts`. To make your own script depend on a library, call `SurveyJS_Pro_Libs::register()` (or `enqueue()`) first and use `SurveyJS_Pro_Libs::handle( $name )` as the dependency. Handles (`surveyjs-pro-<name>`): `creator-core`, `creator`, `jspdf`, `jspdf-autotable`, `pdf`, `pdf-fonts`, `pdf-spacious`, `chartjs`, `chartjs-datalabels`, `analytics`, `tabulator`, `analytics-tabulator`; styles `creator`, `analytics`, `analytics-tabulator`.
 
 **License key.** All library handles depend on `surveyjs-pro-license`, a script without a file that runs `Survey.setLicenseKey(<key>)` right after survey-core when the key is set. One key covers Creator, PDF and Dashboard. Don't call `setLicenseKey` yourself.
 
@@ -86,9 +87,11 @@ add_action( 'surveyjs_admin_enqueue_scripts', function ( $page ) {
 | View | URL | What |
 |---|---|---|
 | `chart` | `admin.php?page=surveyjs_results&id=<form>&view=chart` | Chart View: SurveyJS Dashboard charts (`SurveyAnalytics.Dashboard`, Chart.js + datalabels) with a date range filter on the entry date. |
-| `table` | `admin.php?page=surveyjs_results&id=<form>&view=table` | SurveyJS Dashboard Table View (`SurveyAnalyticsTabulator.Tabulator`): search, sort, column show/hide/reorder, CSV download. The first column is the entry date. |
+| `table` | `admin.php?page=surveyjs_results&id=<form>&view=table` | SurveyJS Dashboard Table View (`SurveyAnalyticsTabulator.Tabulator`): search, sort, column show/hide/reorder, export to PDF and CSV (see below). The first column is the entry date. |
 
 Both views use submitted entries only (`unread`, `read`), newest first. `assets/analytics.js` loads them in pages from `wp_ajax_surveyjs_pro_analytics_entries` (`form`, `offset`, `limit`, nonce `surveyjs-pro-analytics_<form>`, capability `SurveyJS_SurveyJS::CAPABILITY`), which calls `SurveyJS_Entries::query()` with `limit`/`offset` and returns `id`, `date` (ISO 8601 UTC), `dateText` (site format) and `data` (file answers with admin download URLs). Charts and the table then work on the loaded entries in the browser. The chart layout and the table columns are kept per form in the browser's `localStorage` (`surveyjs-pro-<view>-<form>`).
+
+Table View export (the library's "Export As..." menu: PDF, CSV) writes the rows that pass the current search and column filters (`downloadRowRange: "active"`), in the current order, with the visible columns only, to `<form name>-entries.<ext>` (`sanitize_file_name`). CSV gets a UTF-8 BOM so Excel opens non-Latin text correctly. survey-analytics shows the PDF item only if `window.jspdf` exists when the table is created, so `assets/analytics.js` sets `downloadButtons` itself and loads jsPDF + `jspdf-autotable` by URL (`config.export.scripts`, from `SurveyJS_Pro_Libs::script_url()`) on the first PDF export; the table page itself loads nothing extra. The PDF is A4 landscape in the Helvetica-based font embedded in survey-analytics: Latin, Cyrillic and Greek work; CJK characters are dropped and Hebrew/Arabic come out unshaped and in the wrong order.
 
 Filters:
 

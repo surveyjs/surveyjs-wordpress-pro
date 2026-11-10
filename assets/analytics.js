@@ -110,10 +110,61 @@
         dashboard.render(container);
     }
 
+    function loadScript(src) {
+        return new Promise(function (resolve, reject) {
+            var script = document.createElement("script");
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = function () {
+                script.remove();
+                reject(new Error(src));
+            };
+            document.head.appendChild(script);
+        });
+    }
+
+    var exportLibraries = {};
+
+    function loadExportLibraries(type) {
+        var scripts = config.export.scripts;
+        if (!exportLibraries[type]) {
+            if (type === "pdf") {
+                exportLibraries[type] = (window.jspdf ? Promise.resolve() : loadScript(scripts.jspdf)).then(function () {
+                    return window.jspdf.jsPDF.API.autoTable ? null : loadScript(scripts.autotable);
+                });
+            } else {
+                exportLibraries[type] = Promise.resolve();
+            }
+            exportLibraries[type].catch(function () {
+                exportLibraries[type] = null;
+            });
+        }
+        return exportLibraries[type];
+    }
+
+    // jsPDF and AutoTable are loaded on the first export, not with the table.
+    function loadExportOnDemand(table) {
+        var download = table.download.bind(table);
+        table.download = function (type) {
+            showMessage("");
+            loadExportLibraries(type).then(function () {
+                download(type);
+            }).catch(function () {
+                showMessage(config.i18n.exportError);
+            });
+        };
+    }
+
     function renderTable(survey, entries) {
         var dateQuestion = survey.pages[0].addNewQuestion("text", config.dateField, 0);
         dateQuestion.title = config.i18n.date;
-        var table = new SurveyAnalyticsTabulator.Tabulator(survey, rows(entries, "dateText"), { pageSize: 25 });
+        var table = new SurveyAnalyticsTabulator.Tabulator(survey, rows(entries, "dateText"), {
+            pageSize: 25,
+            downloadButtons: ["pdf", "csv"],
+            downloadOptions: { fileName: config.export.fileName, csv: { delimiter: ",", bom: true } },
+            tabulatorOptions: { downloadRowRange: "active" }
+        });
+        loadExportOnDemand(table);
         persistState(table);
         table.render(container);
     }

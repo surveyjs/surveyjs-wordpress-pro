@@ -70,7 +70,7 @@ class SurveyJS_Pro_Analytics {
     private static function config( $survey, $view ) {
         $counts = SurveyJS_Entries::counts( $survey->id );
         $json = SurveyJS_Client::decode_survey_json( $survey->json );
-        return array(
+        $config = array(
             'view'       => $view,
             'formId'     => (int) $survey->id,
             'survey'     => empty( $json ) ? new stdClass() : SurveyJS_Client::decode_survey_json( $survey->json, false ),
@@ -86,13 +86,24 @@ class SurveyJS_Pro_Analytics {
                 /* translators: 1: number of loaded entries, 2: number of entries to load */
                 'loading'     => __( 'Loading entries: %1$s of %2$s…', 'surveyjs-pro' ),
                 /* translators: 1: number of shown entries, 2: number of all submitted entries */
-                'limited'     => __( 'Showing the latest %1$s of %2$s entries. Export CSV includes all of them.', 'surveyjs-pro' ),
+                'limited'     => __( 'Showing the latest %1$s of %2$s entries. Export CSV at the top of the page includes all of them.', 'surveyjs-pro' ),
                 'noEntries'   => __( 'No entries yet.', 'surveyjs-pro' ),
                 'noQuestions' => __( 'This form has no questions yet.', 'surveyjs-pro' ),
                 'error'       => __( 'Could not load the entries. Reload the page to try again.', 'surveyjs-pro' ),
                 'date'        => __( 'Date', 'surveyjs-pro' ),
+                'exportError' => __( 'Could not export the table. Reload the page and try again.', 'surveyjs-pro' ),
             ),
         );
+        if ( self::VIEW_TABLE === $view ) {
+            $config['export'] = array(
+                'fileName' => sanitize_file_name( $survey->name . '-entries' ),
+                'scripts'  => array(
+                    'jspdf'     => SurveyJS_Pro_Libs::script_url( 'jspdf' ),
+                    'autotable' => SurveyJS_Pro_Libs::script_url( 'jspdf-autotable' ),
+                ),
+            );
+        }
+        return $config;
     }
 
     private static function locale() {
