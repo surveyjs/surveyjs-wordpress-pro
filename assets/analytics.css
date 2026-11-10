@@ -6,6 +6,15 @@
     display: none;
 }
 
+/* survey-analytics keeps both date editors on one row (max-width: min-content, inputs min-width: max-content), wider than a phone screen. */
+.wp-sjs-pro-analytics .sa-date-range-container {
+    max-width: 100%;
+}
+
+.wp-sjs-pro-analytics .sa-date-range_editors {
+    flex-wrap: wrap;
+}
+
 .wp-sjs-pro-analytics__progress {
     width: 100%;
     max-width: 320px;

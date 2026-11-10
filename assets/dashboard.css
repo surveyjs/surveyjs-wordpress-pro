@@ -141,4 +141,27 @@ html.wp-sjs-pro-dark .wp-sjs-pro-dashboard__panel a {
     .wp-sjs-pro-dashboard__chart {
         height: 220px;
     }
+
+    .wp-sjs-pro-dashboard__panel .widefat {
+        table-layout: fixed;
+        width: 100%;
+    }
+
+    .wp-sjs-pro-dashboard__panel .widefat th,
+    .wp-sjs-pro-dashboard__panel .widefat td {
+        padding: 8px 3px;
+        overflow-wrap: break-word;
+    }
+
+    .wp-sjs-pro-dashboard__panel .widefat thead th {
+        font-size: 12px;
+    }
+
+    .wp-sjs-pro-dashboard__forms th:first-child {
+        width: 28%;
+    }
+
+    .wp-sjs-pro-dashboard__forms th:nth-child(n+2):nth-child(-n+4) {
+        width: 14%;
+    }
 }
