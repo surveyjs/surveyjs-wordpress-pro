@@ -24,6 +24,7 @@ require_once __DIR__ . '/includes/plugin.php';
 require_once __DIR__ . '/includes/install.php';
 require_once __DIR__ . '/includes/settings.php';
 require_once __DIR__ . '/includes/libs.php';
+require_once __DIR__ . '/includes/admin-theme.php';
 require_once __DIR__ . '/includes/creator.php';
 require_once __DIR__ . '/includes/analytics.php';
 require_once __DIR__ . '/includes/dashboard.php';

@@ -39,8 +39,9 @@ class SurveyJS_Pro_Creator {
         if ( 'surveyjs_editor' !== $page || ! self::enabled() || ! SurveyJS_Pro_Libs::enqueue( 'creator' ) ) {
             return;
         }
-        wp_enqueue_style( self::HANDLE, self::asset_url( 'creator.css' ), array( SurveyJS_Pro_Libs::handle( 'creator' ), 'dashicons' ), self::asset_version( 'creator.css' ) );
-        wp_enqueue_script( self::HANDLE, self::asset_url( 'creator.js' ), array( SurveyJS_Pro_Libs::handle( 'creator' ), SurveyJS_SurveyJS::EDITOR_SCRIPT, 'wp-api-fetch' ), self::asset_version( 'creator.js' ), true );
+        SurveyJS_Pro_Admin_Theme::enqueue();
+        wp_enqueue_style( self::HANDLE, self::asset_url( 'creator.css' ), array( SurveyJS_Pro_Libs::handle( 'creator' ), SurveyJS_Pro_Admin_Theme::HANDLE, 'dashicons' ), self::asset_version( 'creator.css' ) );
+        wp_enqueue_script( self::HANDLE, self::asset_url( 'creator.js' ), array( SurveyJS_Pro_Libs::handle( 'creator' ), SurveyJS_SurveyJS::EDITOR_SCRIPT, SurveyJS_Pro_Admin_Theme::HANDLE, 'wp-api-fetch' ), self::asset_version( 'creator.js' ), true );
         wp_add_inline_script( self::HANDLE, 'window.surveyjsProCreator = ' . wp_json_encode( self::config() ) . ';', 'before' );
     }
 

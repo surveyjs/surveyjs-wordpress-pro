@@ -32,8 +32,8 @@
 .wp-sjs-pro-creator {
     height: calc(100vh - var(--wp-admin--admin-bar--height, 32px) - 150px);
     min-height: 560px;
-    border: 1px solid #c3c4c7;
-    background: #fff;
+    border: 1px solid var(--wp-sjs-pro-border);
+    background: var(--wp-sjs-pro-surface);
 }
 
 .wp-sjs-pro-creator__host {
@@ -43,7 +43,7 @@
 .wp-sjs-pro-creator__loading {
     margin: 0;
     padding: 12px;
-    color: #646970;
+    color: var(--wp-sjs-pro-text-3);
 }
 
 .wp-sjs-pro-toolbar-button {
@@ -91,8 +91,13 @@ body.wp-sjs-pro-fullscreen-mode #wpfooter {
     flex-direction: column;
     margin: 0;
     padding: 8px 16px 16px;
-    background: #f0f0f1;
+    background: var(--wp-sjs-pro-page);
+    color: var(--wp-sjs-pro-text);
     overflow: hidden;
+}
+
+.wp-sjs-editor.wp-sjs-pro-fullscreen h1 {
+    color: inherit;
 }
 
 /* Base's full preview is fixed inside this container, which sets the stacking level it can reach. */
@@ -165,8 +170,8 @@ body.wp-sjs-pro-fullscreen-mode #wpfooter {
     line-height: var(--sjs2-typography-line-height-component-input-content);
 }
 
-.svc-creator .svc-search__input,
-.svc-creator .svc-search__input:focus {
+#wpbody .svc-creator .svc-search__input,
+#wpbody .svc-creator .svc-search__input:focus {
     min-height: 0;
     padding: 0;
     border: none;

@@ -156,7 +156,15 @@
         }
         instance.onUploadFile.add((sender, upload) => uploadFile(upload));
         addGdprToolboxItem(instance);
+        applyAdminTheme(instance);
         return instance;
+    }
+
+    function applyAdminTheme(instance) {
+        const adminTheme = window.surveyjsProAdminTheme;
+        if (!adminTheme) return;
+        instance.preferredColorPalette = adminTheme.isDark() ? "dark" : "light";
+        instance.applyCreatorTheme(adminTheme.surveyjsTheme());
     }
 
     function sitePreviewTarget() {
@@ -269,6 +277,7 @@
         creatorSurvey = JSON.stringify(creator.JSON);
         creator.render(host);
         watchSitePreview();
+        if (window.surveyjsProAdminTheme) window.surveyjsProAdminTheme.onChange(() => applyAdminTheme(creator));
     }
 
     function readFullscreen() {

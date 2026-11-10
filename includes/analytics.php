@@ -58,9 +58,10 @@ class SurveyJS_Pro_Analytics {
         if ( '' === $bundle || ! SurveyJS_Pro_Libs::enqueue( $bundle ) ) {
             return;
         }
+        SurveyJS_Pro_Admin_Theme::enqueue();
         $library = SurveyJS_Pro_Libs::handle( $bundle );
-        wp_enqueue_style( self::SCRIPT, plugins_url( 'assets/analytics.css', SURVEYJS_PRO_FILE ), array( $library ), SURVEYJS_PRO_VERSION );
-        wp_enqueue_script( self::SCRIPT, plugins_url( 'assets/analytics.js', SURVEYJS_PRO_FILE ), array( $library ), SURVEYJS_PRO_VERSION, true );
+        wp_enqueue_style( self::SCRIPT, plugins_url( 'assets/analytics.css', SURVEYJS_PRO_FILE ), array( $library, SurveyJS_Pro_Admin_Theme::HANDLE ), SURVEYJS_PRO_VERSION );
+        wp_enqueue_script( self::SCRIPT, plugins_url( 'assets/analytics.js', SURVEYJS_PRO_FILE ), array( $library, SurveyJS_Pro_Admin_Theme::HANDLE ), SURVEYJS_PRO_VERSION, true );
         wp_add_inline_script( self::SCRIPT, 'window.surveyjsProAnalytics = ' . wp_json_encode( self::config( $survey, $view ), JSON_HEX_TAG | JSON_HEX_AMP ) . ';', 'before' );
     }
 

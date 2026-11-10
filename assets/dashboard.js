@@ -1,22 +1,32 @@
 (function () {
     var data = window.surveyjsProDashboard;
-    if (!data || !window.Chart) {
+    var adminTheme = window.surveyjsProAdminTheme;
+    if (!data || !window.Chart || !adminTheme) {
         return;
     }
-    var styles = window.getComputedStyle(document.body);
-    var color = styles.getPropertyValue("--wp-admin-theme-color").trim() || "#2271b1";
-    var gridColor = "#f0f0f1";
+    var charts = [];
 
-    Chart.defaults.font.family = styles.fontFamily;
+    function palette() {
+        adminTheme.isDark();
+        return {
+            bar: adminTheme.color("chart-1"),
+            grid: adminTheme.color("grid"),
+            axis: adminTheme.color("border"),
+            text: adminTheme.color("text-2")
+        };
+    }
+
+    var colors = palette();
+    Chart.defaults.font.family = window.getComputedStyle(document.body).fontFamily;
     Chart.defaults.font.size = 12;
-    Chart.defaults.color = "#50575e";
+    Chart.defaults.color = colors.text;
 
     function bars(values) {
         return {
             label: data.i18n.entries,
             data: values,
-            backgroundColor: color,
-            hoverBackgroundColor: color,
+            backgroundColor: colors.bar,
+            hoverBackgroundColor: colors.bar,
             borderRadius: 4,
             borderSkipped: "start",
             maxBarThickness: 28
@@ -27,18 +37,41 @@
         return {
             beginAtZero: true,
             ticks: { precision: 0 },
-            grid: { color: gridColor },
+            grid: { color: colors.grid },
             border: { display: false }
         };
     }
 
     function categoryAxis(extra) {
-        return Object.assign({ grid: { display: false }, border: { color: "#c3c4c7" } }, extra);
+        return Object.assign({ grid: { display: false }, border: { color: colors.axis } }, extra);
     }
+
+    function recolor(chart) {
+        chart.data.datasets.forEach(function (dataset) {
+            dataset.backgroundColor = colors.bar;
+            dataset.hoverBackgroundColor = colors.bar;
+        });
+        Object.keys(chart.options.scales).forEach(function (key) {
+            var scale = chart.options.scales[key];
+            scale.ticks.color = colors.text;
+            if (scale.grid.display !== false) {
+                scale.grid.color = colors.grid;
+            } else {
+                scale.border.color = colors.axis;
+            }
+        });
+        chart.update();
+    }
+
+    adminTheme.onChange(function () {
+        colors = palette();
+        Chart.defaults.color = colors.text;
+        charts.forEach(recolor);
+    });
 
     var timeline = document.getElementById("wp-sjs-pro-dashboard-timeline");
     if (timeline) {
-        new Chart(timeline, {
+        charts.push(new Chart(timeline, {
             type: "bar",
             data: { labels: data.timeline.labels, datasets: [bars(data.timeline.values)] },
             options: {
@@ -59,7 +92,7 @@
                     y: countAxis()
                 }
             }
-        });
+        }));
     }
 
     var forms = document.getElementById("wp-sjs-pro-dashboard-forms");
@@ -67,7 +100,7 @@
         var urlAt = function (elements) {
             return elements.length ? data.forms.urls[elements[0].index] : "";
         };
-        new Chart(forms, {
+        charts.push(new Chart(forms, {
             type: "bar",
             data: { labels: data.forms.labels, datasets: [bars(data.forms.values)] },
             options: {
@@ -96,6 +129,6 @@
                     }
                 }
             }
-        });
+        }));
     }
 })();

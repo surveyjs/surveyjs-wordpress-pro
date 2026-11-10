@@ -15,6 +15,7 @@ Plugin files are at the repository root, so `git archive` gives the plugin zip a
 | `includes/install.php` | `SurveyJS_Pro_Install`: migrations on `init` by a stored version number. |
 | `includes/settings.php` | `SurveyJS_Pro_Settings`: the Pro section on Base's Settings page (license key). |
 | `includes/libs.php` | `SurveyJS_Pro_Libs`: registers/enqueues the SurveyJS libraries and applies the license key. |
+| `includes/admin-theme.php`, `assets/admin-theme.{css,js}` | `SurveyJS_Pro_Admin_Theme`: one palette and light/dark mode for Creator, Charts and Dashboard (see "Admin colors"). |
 | `includes/creator.php`, `assets/creator.js`, `assets/creator.css` | `SurveyJS_Pro_Creator`: Survey Creator in the form editor (see "Creator"). |
 | `includes/analytics.php`, `assets/analytics.js`, `assets/analytics.css` | `SurveyJS_Pro_Analytics`: the Charts view of the results page. |
 | `includes/dashboard.php`, `assets/dashboard.{js,css}` | `SurveyJS_Pro_Dashboard`: SurveyJS Forms > Dashboard (see "Dashboard" below). |
@@ -97,6 +98,18 @@ Filters:
 `SurveyJS_Pro_Dashboard` adds SurveyJS Forms > Dashboard (`admin.php?page=surveyjs-pro-dashboard[&range=7d|30d|90d|12m]`, default `30d`) through `surveyjs_admin_menu`, right after Getting Started in the submenu. Across all published forms it shows: entries in the period (with the change vs the previous period of the same length), all entries, unread, number of forms; a bar chart of entries per day (per month for `12m`) and a horizontal bar chart of entries per form in the period (top 10 + "Other", a bar opens the form's results); the 10 latest entries (link opens the entry on the results page via `&entry=<id>`); a table of forms that have entries (period, all, unread, last entry) with totals.
 
 Counts are submitted entries only (`unread`, `read`); partial and spam are left out. Every query is an aggregate or `LIMIT` over Base's `form_status_date` index, so no entry JSON is loaded: per-form counts are one `GROUP BY form_id, status`; the chart is one `GROUP BY` day/month over the period, shifted by the site's current UTC offset (`CONVERT_TZ()` needs MySQL time zone tables, often missing); latest entries are a `UNION ALL` of per-form/status `ORDER BY created_at DESC LIMIT 10` subqueries (in chunks of 100), each read in index order. Charts use Chart.js from `libs/` (handle `surveyjs-pro-chartjs`); when the libraries are off (version mismatch), the page shows the numbers and tables without charts.
+
+### Admin colors
+
+Creator, Charts and Dashboard take every color from one place, `assets/admin-theme.css`: `--wp-sjs-pro-*` tokens on `body` (accent, surfaces, text, borders, grid, chart colors 1–10 and their label colors, font), redefined under `html.wp-sjs-pro-dark`. A designer changes colors only there. The accent is `--wp-admin-theme-color`, which WordPress sets for the user's admin color scheme (Users > Profile); in dark mode its lightness is raised for contrast. Chart color 1 is the accent, 2–10 a fixed categorical palette (checked for color-blind separation in both modes).
+
+`assets/admin-theme.js` (handle `surveyjs-pro-admin-theme`, in the head) sets `html.wp-sjs-pro-dark` and exposes `window.surveyjsProAdminTheme`: `isDark()`, `color( token )` (resolved `rgba()`, for canvas charts), `surveyjsTheme()` (a SurveyJS theme whose `--sjs2-*` variables point to the tokens; passed to `creator.applyCreatorTheme()` and to `applyTheme()` of the SurveyJS Dashboard) and `onChange( callback )` (also the `surveyjs-pro:admin-theme` event on `document`). Pages switch live, without a reload, and Chart.js / survey-analytics charts are redrawn. To theme a new Pro page: call `SurveyJS_Pro_Admin_Theme::enqueue()`, depend on its handle, use the tokens in CSS.
+
+Color mode — Settings → SurveyJS Forms Pro → "Color mode" (`surveyjs_pro_settings[admin_theme]`, filter `surveyjs_pro_admin_theme_mode`):
+
+- `auto` (default) — match the WordPress admin. Core has no dark admin, so dark comes from dark mode plugins; they all repaint the admin background, so Pro checks the first opaque background behind `#wpbody-content` (luminance < 0.2) and re-checks when `html`/`body` classes or styles change (plugin toggles) and on `prefers-color-scheme` changes. Filter `surveyjs_pro_admin_theme_dark_selectors` adds CSS selectors that mean "dark" (for plugins that darken without repainting the background).
+- `system` — the device setting (`prefers-color-scheme`).
+- `light`, `dark` — fixed. With `dark` and a light admin only Pro's own parts turn dark.
 
 ### Settings
 

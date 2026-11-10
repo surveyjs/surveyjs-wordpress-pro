@@ -49,7 +49,8 @@ class SurveyJS_Pro_Dashboard {
         if ( '' === self::$hook || $hook_suffix !== self::$hook ) {
             return;
         }
-        wp_enqueue_style( self::SCRIPT, plugins_url( 'assets/dashboard.css', SURVEYJS_PRO_FILE ), array(), SURVEYJS_PRO_VERSION );
+        SurveyJS_Pro_Admin_Theme::enqueue();
+        wp_enqueue_style( self::SCRIPT, plugins_url( 'assets/dashboard.css', SURVEYJS_PRO_FILE ), array( SurveyJS_Pro_Admin_Theme::HANDLE ), SURVEYJS_PRO_VERSION );
         if ( ! SurveyJS_Pro_Libs::register() ) {
             return;
         }
@@ -57,7 +58,7 @@ class SurveyJS_Pro_Dashboard {
         if ( ! $data['forms'] ) {
             return;
         }
-        wp_enqueue_script( self::SCRIPT, plugins_url( 'assets/dashboard.js', SURVEYJS_PRO_FILE ), array( SurveyJS_Pro_Libs::handle( 'chartjs' ) ), SURVEYJS_PRO_VERSION, true );
+        wp_enqueue_script( self::SCRIPT, plugins_url( 'assets/dashboard.js', SURVEYJS_PRO_FILE ), array( SurveyJS_Pro_Libs::handle( 'chartjs' ), SurveyJS_Pro_Admin_Theme::HANDLE ), SURVEYJS_PRO_VERSION, true );
         wp_add_inline_script( self::SCRIPT, 'var surveyjsProDashboard = ' . wp_json_encode( self::chart_data( $data ), JSON_HEX_TAG | JSON_HEX_AMP ) . ';', 'before' );
     }
 

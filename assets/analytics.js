@@ -95,6 +95,17 @@
         });
     }
 
+    function applyAdminTheme(visualizer) {
+        var adminTheme = window.surveyjsProAdminTheme;
+        if (!adminTheme || typeof visualizer.applyTheme !== "function") {
+            return;
+        }
+        visualizer.applyTheme(adminTheme.surveyjsTheme());
+        adminTheme.onChange(function () {
+            visualizer.applyTheme(adminTheme.surveyjsTheme());
+        });
+    }
+
     function renderCharts(survey, entries) {
         if (window.Chart && window.ChartDataLabels) {
             window.Chart.register(window.ChartDataLabels);
@@ -107,6 +118,7 @@
         });
         dashboard.locale = survey.locale;
         persistState(dashboard);
+        applyAdminTheme(dashboard);
         dashboard.render(container);
     }
 
