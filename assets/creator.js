@@ -178,18 +178,53 @@
             if (target) sitePreviewResize.observe(target);
             sitePreviewCanvas = target;
         }
+        const model = target ? previewModel() : null;
+        if (editor.setPreviewShowInvisibleElements) {
+            editor.setPreviewShowInvisibleElements(Boolean(model && model.showInvisibleElements));
+        }
         if (!target) {
             sitePreview.removeAttribute("style");
             return;
         }
-        const box = target.getBoundingClientRect();
+        const canvas = target.getBoundingClientRect();
         const origin = columns.getBoundingClientRect();
+        const frame = model && model.simulator ? model.simulator.simulatorFrame : null;
+        const screen = frame ? target.querySelector(".svd-simulator-content") : null;
+        if (!screen) {
+            Object.assign(sitePreview.style, {
+                top: canvas.top - origin.top + "px",
+                left: canvas.left - origin.left + "px",
+                width: canvas.width + "px",
+                height: canvas.height + "px",
+                transform: "",
+                transformOrigin: "",
+                clipPath: ""
+            });
+            return;
+        }
+        // The site page is laid out at the device's CSS size and scaled like Creator's simulator, so it shows the theme's real breakpoints.
+        const box = screen.getBoundingClientRect();
+        const scale = box.width / frame.deviceWidth || 1;
+        const clip = [
+            canvas.top - box.top,
+            box.right - canvas.right,
+            box.bottom - canvas.bottom,
+            canvas.left - box.left
+        ].map((overflow) => Math.max(0, overflow) / scale + "px");
         Object.assign(sitePreview.style, {
             top: box.top - origin.top + "px",
             left: box.left - origin.left + "px",
-            width: box.width + "px",
-            height: box.height + "px"
+            width: frame.deviceWidth + "px",
+            height: frame.deviceHeight + "px",
+            transform: scale === 1 ? "" : `scale(${scale})`,
+            transformOrigin: "0 0",
+            clipPath: `inset(${clip.join(" ")})`
         });
+    }
+
+    function previewModel() {
+        const plugin = creator && creator.getPlugin ? creator.getPlugin("preview") : null;
+        return plugin ? plugin.model : null;
     }
 
     function scheduleSitePreview() {
@@ -204,6 +239,7 @@
         sitePreviewResize.observe(host);
         new MutationObserver(scheduleSitePreview).observe(host, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
         host.addEventListener("transitionend", scheduleSitePreview);
+        host.addEventListener("scroll", scheduleSitePreview, true);
         window.addEventListener("resize", scheduleSitePreview);
     }
 

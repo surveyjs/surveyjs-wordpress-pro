@@ -21,6 +21,14 @@
     visibility: hidden;
 }
 
+.wp-sjs-pro-site-preview .svc-test-tab__content .svd-simulator-wrapper {
+    visibility: visible;
+}
+
+.wp-sjs-pro-site-preview .svc-test-tab__content .svd-simulator-content {
+    visibility: hidden;
+}
+
 .wp-sjs-pro-creator {
     height: calc(100vh - var(--wp-admin--admin-bar--height, 32px) - 150px);
     min-height: 560px;
