@@ -26,9 +26,9 @@ test.describe("analytics on the results page", () => {
     fixture("cleanup", formId);
   });
 
-  test("Chart View shows charts of submitted entries", async ({ page }) => {
+  test("Charts shows charts of submitted entries", async ({ page }) => {
     await page.goto(`/wp-admin/admin.php?page=surveyjs_results&id=${formId}`);
-    await page.locator(".wp-sjs-results__views").getByRole("link", { name: "Chart View" }).click();
+    await page.locator(".wp-sjs-results__views").getByRole("link", { name: "Charts" }).click();
     await expect(page).toHaveURL(/view=chart/);
     const view = page.locator("#wp-sjs-pro-analytics");
     await expect(view.locator(".sa-question__title", { hasText: "Favorite color" })).toBeVisible();
@@ -36,17 +36,9 @@ test.describe("analytics on the results page", () => {
     await expect(view.locator(".wp-sjs-pro-analytics__progress")).toBeHidden();
   });
 
-  test("Table View lists submitted entries with their date", async ({ page }) => {
-    await page.goto(`/wp-admin/admin.php?page=surveyjs_results&id=${formId}&view=table`);
-    const view = page.locator("#wp-sjs-pro-analytics");
-    await expect(view.locator(".tabulator-col-title", { hasText: "Date" })).toBeVisible();
-    await expect(view.locator(".tabulator-col-title", { hasText: "Favorite color" })).toBeVisible();
-    await expect(view.locator(".tabulator-row")).toHaveCount(3);
-    await expect(view.locator(".tabulator-row", { hasText: "Green" })).toHaveCount(0);
-  });
 
   test("the entries endpoint rejects a wrong nonce", async ({ page }) => {
-    await page.goto(`/wp-admin/admin.php?page=surveyjs_results&id=${formId}&view=table`);
+    await page.goto(`/wp-admin/admin.php?page=surveyjs_results&id=${formId}&view=chart`);
     const status = await page.evaluate(async id => {
       const response = await fetch(window.ajaxurl, {
         method: "POST",

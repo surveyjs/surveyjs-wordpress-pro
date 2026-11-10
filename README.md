@@ -16,7 +16,7 @@ Plugin files are at the repository root, so `git archive` gives the plugin zip a
 | `includes/settings.php` | `SurveyJS_Pro_Settings`: the Pro section on Base's Settings page (license key). |
 | `includes/libs.php` | `SurveyJS_Pro_Libs`: registers/enqueues the SurveyJS libraries and applies the license key. |
 | `includes/creator.php`, `assets/creator.js`, `assets/creator.css` | `SurveyJS_Pro_Creator`: Survey Creator in the form editor (see "Creator"). |
-| `includes/analytics.php`, `assets/analytics.js`, `assets/analytics.css` | `SurveyJS_Pro_Analytics`: the Chart View and Table View views of the results page. |
+| `includes/analytics.php`, `assets/analytics.js`, `assets/analytics.css` | `SurveyJS_Pro_Analytics`: the Charts view of the results page. |
 | `includes/dashboard.php`, `assets/dashboard.{js,css}` | `SurveyJS_Pro_Dashboard`: SurveyJS Forms > Dashboard (see "Dashboard" below). |
 | `includes/pdf.php`, `assets/pdf.js`, `assets/pdf.css` | `SurveyJS_Pro_Pdf`: PDF export (see "PDF export" below). |
 | `includes/pdf-respondent.php`, `assets/pdf-respondent.js` | `SurveyJS_Pro_Pdf_Respondent`: PDFs for respondents and emails (see "PDF for respondents and emails" below). |
@@ -49,12 +49,10 @@ On WordPress VIP `wpcom_vip_load_plugin()` does not fire activation hooks, so th
 | survey-creator-core | 3.2.2 | `survey-creator-core.min.js`, `survey-creator-core.min.css`, `images/` |
 | survey-creator-js | 3.2.2 | `survey-creator-js.min.js` |
 | survey-pdf | 3.2.2 | `survey.pdf.min.js`, `survey.pdf.fonts.min.js` (Segoe UI for non-Latin text), `spacious.min.js` (from `layouts/`, the Spacious layout preset, global `DocLayout.Spacious`) |
-| survey-analytics | 3.2.2 | `survey.analytics.min.js/.css` (Chart.js), `survey.analytics.tabulator.min.js/.css` |
+| survey-analytics | 3.2.2 | `survey.analytics.min.js/.css` (Chart.js) |
 | jspdf | 4.2.1 | `jspdf.umd.min.js` (needed by survey-pdf) |
-| jspdf-autotable | 5.0.9 | `jspdf.plugin.autotable.min.js` (Table View PDF export; applies itself to `window.jspdf` when loaded after jsPDF) |
 | chart.js | 4.6.1 | `chart.umd.min.js` (needed by survey-analytics) |
 | chartjs-plugin-datalabels | 2.2.0 | `chartjs-plugin-datalabels.min.js` (optional for survey-analytics; register it with `Chart.register(ChartDataLabels)` if wanted) |
-| tabulator-tables | 6.7.1 | `tabulator.min.js` (needed by survey.analytics.tabulator) |
 
 **survey-core and survey-js-ui are not copied.** They come from Base (`src/trunk/libs/library/`, v3.2.2), so a page never loads two copies of the Form Library (Base's editor and results pages already load it). They are still in `package.json` to pin the peer version. `SurveyJS_Pro_Libs::compatible()` compares `SurveyJS_SurveyJS::library_version()` (read from Base's `survey.core.min.js` header) with `SURVEYJS_PRO_LIBRARY_VERSION`; on a mismatch Pro's libraries are not registered and an admin notice explains why. When Base updates the Form Library, update `package.json`, `SURVEYJS_PRO_LIBRARY_VERSION`, run `npm install && npm run copy-libs`, and release both plugins together.
 
@@ -66,10 +64,9 @@ To add a file (e.g. a Creator locale, PDF fonts, plotly/apexcharts builds), add 
 SurveyJS_Pro_Libs::enqueue( 'creator' );             // creator-core + creator-js (+ Base survey-core, survey-js-ui) and CSS
 SurveyJS_Pro_Libs::enqueue( 'pdf' );                 // jspdf + survey-pdf
 SurveyJS_Pro_Libs::enqueue( 'analytics' );           // chart.js + datalabels + survey.analytics and CSS
-SurveyJS_Pro_Libs::enqueue( 'analytics-tabulator' ); // tabulator + survey.analytics.tabulator and CSS
 ```
 
-`enqueue()` returns `false` when the libraries are unavailable (version mismatch). `script_url( $name )` returns the versioned URL of a script handle's file (for loading it on demand, e.g. `pdf-fonts`, 1.8 MB), or `''`. Call it from `admin_enqueue_scripts` or `surveyjs_admin_enqueue_scripts`. To make your own script depend on a library, call `SurveyJS_Pro_Libs::register()` (or `enqueue()`) first and use `SurveyJS_Pro_Libs::handle( $name )` as the dependency. Handles (`surveyjs-pro-<name>`): `creator-core`, `creator`, `jspdf`, `jspdf-autotable`, `pdf`, `pdf-fonts`, `pdf-spacious`, `chartjs`, `chartjs-datalabels`, `analytics`, `tabulator`, `analytics-tabulator`; styles `creator`, `analytics`, `analytics-tabulator`.
+`enqueue()` returns `false` when the libraries are unavailable (version mismatch). `script_url( $name )` returns the versioned URL of a script handle's file (for loading it on demand, e.g. `pdf-fonts`, 1.8 MB), or `''`. Call it from `admin_enqueue_scripts` or `surveyjs_admin_enqueue_scripts`. To make your own script depend on a library, call `SurveyJS_Pro_Libs::register()` (or `enqueue()`) first and use `SurveyJS_Pro_Libs::handle( $name )` as the dependency. Handles (`surveyjs-pro-<name>`): `creator-core`, `creator`, `jspdf`, `pdf`, `pdf-fonts`, `pdf-spacious`, `chartjs`, `chartjs-datalabels`, `analytics`; styles `creator`, `analytics`.
 
 **License key.** All library handles depend on `surveyjs-pro-license`, a script without a file that runs `Survey.setLicenseKey(<key>)` right after survey-core when the key is set. One key covers Creator, PDF and Dashboard. Don't call `setLicenseKey` yourself.
 
@@ -83,19 +80,16 @@ add_action( 'surveyjs_admin_enqueue_scripts', function ( $page ) {
 
 ### Analytics
 
-`SurveyJS_Pro_Analytics` adds two views to the results page, Chart View and Table View, through `surveyjs_results_views` (only when the libraries are compatible) and renders them on `surveyjs_render_results_view`; no Base changes:
+`SurveyJS_Pro_Analytics` adds the Charts view to the results page through `surveyjs_results_views` (only when the libraries are compatible) and renders them on `surveyjs_render_results_view`; no Base changes:
 | View | URL | What |
 |---|---|---|
-| `chart` | `admin.php?page=surveyjs_results&id=<form>&view=chart` | Chart View: SurveyJS Dashboard charts (`SurveyAnalytics.Dashboard`, Chart.js + datalabels) with a date range filter on the entry date. |
-| `table` | `admin.php?page=surveyjs_results&id=<form>&view=table` | SurveyJS Dashboard Table View (`SurveyAnalyticsTabulator.Tabulator`): search, sort, column show/hide/reorder, export to PDF and CSV (see below). The first column is the entry date. |
+| `chart` | `admin.php?page=surveyjs_results&id=<form>&view=chart` | Charts: SurveyJS Dashboard charts (`SurveyAnalytics.Dashboard`, Chart.js + datalabels) with a date range filter on the entry date. |
 
-Both views use submitted entries only (`unread`, `read`), newest first. `assets/analytics.js` loads them in pages from `wp_ajax_surveyjs_pro_analytics_entries` (`form`, `offset`, `limit`, nonce `surveyjs-pro-analytics_<form>`, capability `SurveyJS_SurveyJS::CAPABILITY`), which calls `SurveyJS_Entries::query()` with `limit`/`offset` and returns `id`, `date` (ISO 8601 UTC), `dateText` (site format) and `data` (file answers with admin download URLs). Charts and the table then work on the loaded entries in the browser. The chart layout and the table columns are kept per form in the browser's `localStorage` (`surveyjs-pro-<view>-<form>`).
-
-Table View export (the library's "Export As..." menu: PDF, CSV) writes the rows that pass the current search and column filters (`downloadRowRange: "active"`), in the current order, with the visible columns only, to `<form name>-entries.<ext>` (`sanitize_file_name`). CSV gets a UTF-8 BOM so Excel opens non-Latin text correctly. survey-analytics shows the PDF item only if `window.jspdf` exists when the table is created, so `assets/analytics.js` sets `downloadButtons` itself and loads jsPDF + `jspdf-autotable` by URL (`config.export.scripts`, from `SurveyJS_Pro_Libs::script_url()`) on the first PDF export; the table page itself loads nothing extra. The PDF is A4 landscape in the Helvetica-based font embedded in survey-analytics: Latin, Cyrillic and Greek work; CJK characters are dropped and Hebrew/Arabic come out unshaped and in the wrong order.
+The view uses submitted entries only (`unread`, `read`), newest first. `assets/analytics.js` loads them in pages from `wp_ajax_surveyjs_pro_analytics_entries` (`form`, `offset`, `limit`, nonce `surveyjs-pro-analytics_<form>`, capability `SurveyJS_SurveyJS::CAPABILITY`), which calls `SurveyJS_Entries::query()` with `limit`/`offset` and returns `id`, `date` (ISO 8601 UTC) and `data` (file answers with admin download URLs). Charts then work on the loaded entries in the browser. The chart layout is kept per form in the browser's `localStorage` (`surveyjs-pro-<view>-<form>`).
 
 Filters:
 
-- `surveyjs_pro_analytics_max_entries` (default `10000`, `0` = no limit) — how many of the latest entries the views load. Above it the view says "Showing the latest N of M entries"; Export CSV still has all of them.
+- `surveyjs_pro_analytics_max_entries` (default `10000`, `0` = no limit) — how many of the latest entries the view loads. Above it the view says "Showing the latest N of M entries"; Export CSV still has all of them.
 - `surveyjs_pro_analytics_page_size` (default `500`) — entries per AJAX request.
 
 ### Dashboard

@@ -12,15 +12,11 @@ const FILES = {
   "survey-analytics": [
     "survey.analytics.min.js",
     "survey.analytics.min.css",
-    "survey.analytics.tabulator.min.js",
-    "survey.analytics.tabulator.min.css",
     "LICENSE"
   ],
   "jspdf": ["dist/jspdf.umd.min.js", "LICENSE"],
-  "jspdf-autotable": ["dist/jspdf.plugin.autotable.min.js", "LICENSE.txt"],
   "chart.js": ["dist/chart.umd.min.js", "LICENSE.md"],
-  "chartjs-plugin-datalabels": ["dist/chartjs-plugin-datalabels.min.js", "LICENSE.md"],
-  "tabulator-tables": ["dist/js/tabulator.min.js", "dist/css/tabulator.min.css", "LICENSE"]
+  "chartjs-plugin-datalabels": ["dist/chartjs-plugin-datalabels.min.js", "LICENSE.md"]
 };
 
 const SURVEYJS_PACKAGES = ["survey-core", "survey-js-ui", "survey-creator-core", "survey-creator-js", "survey-pdf", "survey-analytics"];

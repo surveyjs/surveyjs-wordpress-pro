@@ -4,7 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class SurveyJS_Pro_Analytics {
 
     const VIEW_CHARTS = 'chart';
-    const VIEW_TABLE = 'table';
     const SCRIPT = 'surveyjs-pro-analytics-view';
     const AJAX_ACTION = 'surveyjs_pro_analytics_entries';
     const DATE_FIELD = '_surveyjs_pro_date';
@@ -23,8 +22,7 @@ class SurveyJS_Pro_Analytics {
             return $views;
         }
         return $views + array(
-            self::VIEW_CHARTS => __( 'Chart View', 'surveyjs-pro' ),
-            self::VIEW_TABLE  => __( 'Table View', 'surveyjs-pro' ),
+            self::VIEW_CHARTS => __( 'Charts', 'surveyjs-pro' ),
         );
     }
 
@@ -39,7 +37,6 @@ class SurveyJS_Pro_Analytics {
     private static function bundle( $view ) {
         $bundles = array(
             self::VIEW_CHARTS => 'analytics',
-            self::VIEW_TABLE  => 'analytics-tabulator',
         );
         return $bundles[ $view ] ?? '';
     }
@@ -70,7 +67,7 @@ class SurveyJS_Pro_Analytics {
     private static function config( $survey, $view ) {
         $counts = SurveyJS_Entries::counts( $survey->id );
         $json = SurveyJS_Client::decode_survey_json( $survey->json );
-        $config = array(
+        return array(
             'view'       => $view,
             'formId'     => (int) $survey->id,
             'survey'     => empty( $json ) ? new stdClass() : SurveyJS_Client::decode_survey_json( $survey->json, false ),
@@ -86,24 +83,12 @@ class SurveyJS_Pro_Analytics {
                 /* translators: 1: number of loaded entries, 2: number of entries to load */
                 'loading'     => __( 'Loading entries: %1$s of %2$s…', 'surveyjs-pro' ),
                 /* translators: 1: number of shown entries, 2: number of all submitted entries */
-                'limited'     => __( 'Showing the latest %1$s of %2$s entries. Export CSV at the top of the page includes all of them.', 'surveyjs-pro' ),
+                'limited'     => __( 'Showing the latest %1$s of %2$s entries. Export CSV includes all of them.', 'surveyjs-pro' ),
                 'noEntries'   => __( 'No entries yet.', 'surveyjs-pro' ),
                 'noQuestions' => __( 'This form has no questions yet.', 'surveyjs-pro' ),
                 'error'       => __( 'Could not load the entries. Reload the page to try again.', 'surveyjs-pro' ),
-                'date'        => __( 'Date', 'surveyjs-pro' ),
-                'exportError' => __( 'Could not export the table. Reload the page and try again.', 'surveyjs-pro' ),
             ),
         );
-        if ( self::VIEW_TABLE === $view ) {
-            $config['export'] = array(
-                'fileName' => sanitize_file_name( $survey->name . '-entries' ),
-                'scripts'  => array(
-                    'jspdf'     => SurveyJS_Pro_Libs::script_url( 'jspdf' ),
-                    'autotable' => SurveyJS_Pro_Libs::script_url( 'jspdf-autotable' ),
-                ),
-            );
-        }
-        return $config;
     }
 
     private static function locale() {
@@ -153,7 +138,6 @@ class SurveyJS_Pro_Analytics {
         return array(
             'id'       => $entry->id,
             'date'     => $timestamp > 0 ? gmdate( 'c', $timestamp ) : '',
-            'dateText' => SurveyJS_Entries::format_date( $entry->created_at ),
             'data'     => (object) SurveyJS_Uploaded_Files::with_admin_urls( $entry->data ),
         );
     }

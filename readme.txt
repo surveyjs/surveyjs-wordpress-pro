@@ -15,8 +15,7 @@ SurveyJS Forms Pro is an add-on for the free SurveyJS Forms plugin. SurveyJS For
 
 Survey Creator: build forms visually right in the form editor — drag & drop designer, logic, translations, JSON editor and preview, with a full-screen mode. A GDPR Agreement question in the toolbox. Images come from your Media Library.
 
-* Chart View: charts for every question of a form, with a date range filter, on the form's Results page.
-* Table View: a table of entries with search, sorting, column show/hide/reorder and CSV download.
+* Charts: charts for every question of a form, with a date range filter, on the form's Results page.
 
 **Dashboard** (SurveyJS Forms > Dashboard): entries across all forms for the last 7, 30 or 90 days or 12 months, charts of entries over time and by form, the latest entries and entry counts per form.
 
@@ -42,7 +41,7 @@ Pro needs SurveyJS Forms 2.5.6 or later. When SurveyJS Forms is missing or too o
 = 0.1.0 =
 * Plugin skeleton.
 * Survey Creator in the form editor.
-* Chart View and Table View on the Results page.
+* Charts on the Results page.
 * Dashboard across all forms.
 * PDF export of entries and blank forms.
 * PDF logo, header text, watermark, the option to leave out unanswered questions and a live preview on the PDF tab.

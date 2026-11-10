@@ -27,15 +27,12 @@ class SurveyJS_Pro_Libs {
             'creator-core'        => array( 'survey-creator-core/survey-creator-core.min.js', array( self::LICENSE_HANDLE ) ),
             'creator'             => array( 'survey-creator-js/survey-creator-js.min.js', array( self::handle( 'creator-core' ), SurveyJS_SurveyJS::UI_SCRIPT ) ),
             'jspdf'               => array( 'jspdf/jspdf.umd.min.js', array() ),
-            'jspdf-autotable'     => array( 'jspdf-autotable/jspdf.plugin.autotable.min.js', array( self::handle( 'jspdf' ) ) ),
             'pdf'                 => array( 'survey-pdf/survey.pdf.min.js', array( self::LICENSE_HANDLE, self::handle( 'jspdf' ) ) ),
             'pdf-fonts'           => array( 'survey-pdf/survey.pdf.fonts.min.js', array( self::handle( 'pdf' ) ) ),
             'pdf-spacious'        => array( 'survey-pdf/spacious.min.js', array() ),
             'chartjs'             => array( 'chart.js/chart.umd.min.js', array() ),
             'chartjs-datalabels'  => array( 'chartjs-plugin-datalabels/chartjs-plugin-datalabels.min.js', array( self::handle( 'chartjs' ) ) ),
             'analytics'           => array( 'survey-analytics/survey.analytics.min.js', array( self::LICENSE_HANDLE, self::handle( 'chartjs' ), self::handle( 'chartjs-datalabels' ) ) ),
-            'tabulator'           => array( 'tabulator-tables/tabulator.min.js', array() ),
-            'analytics-tabulator' => array( 'survey-analytics/survey.analytics.tabulator.min.js', array( self::LICENSE_HANDLE, self::handle( 'tabulator' ) ) ),
         );
     }
 
@@ -43,8 +40,6 @@ class SurveyJS_Pro_Libs {
         return array(
             'creator'             => 'survey-creator-core/survey-creator-core.min.css',
             'analytics'           => 'survey-analytics/survey.analytics.min.css',
-            'tabulator'           => 'tabulator-tables/tabulator.min.css',
-            'analytics-tabulator' => 'survey-analytics/survey.analytics.tabulator.min.css',
         );
     }
 
@@ -53,7 +48,6 @@ class SurveyJS_Pro_Libs {
             'creator'             => array( 'scripts' => array( 'creator' ), 'styles' => array( 'creator' ) ),
             'pdf'                 => array( 'scripts' => array( 'pdf' ), 'styles' => array() ),
             'analytics'           => array( 'scripts' => array( 'analytics' ), 'styles' => array( 'analytics' ) ),
-            'analytics-tabulator' => array( 'scripts' => array( 'analytics-tabulator' ), 'styles' => array( 'tabulator', 'analytics-tabulator' ) ),
         );
     }
 

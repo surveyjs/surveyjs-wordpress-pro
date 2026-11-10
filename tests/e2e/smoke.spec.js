@@ -67,9 +67,7 @@ test("Pro libraries run on the Form Library shipped with SurveyJS Forms", async 
     PRO_LIBS + "survey-pdf/survey.pdf.min.js",
     PRO_LIBS + "chart.js/chart.umd.min.js",
     PRO_LIBS + "chartjs-plugin-datalabels/chartjs-plugin-datalabels.min.js",
-    PRO_LIBS + "survey-analytics/survey.analytics.min.js",
-    PRO_LIBS + "tabulator-tables/tabulator.min.js",
-    PRO_LIBS + "survey-analytics/survey.analytics.tabulator.min.js"
+    PRO_LIBS + "survey-analytics/survey.analytics.min.js"
   ]);
   const result = await page.evaluate(async () => {
     const json = { elements: [{ type: "radiogroup", name: "color", choices: ["red", "green"] }] };
@@ -81,11 +79,10 @@ test("Pro libraries run on the Form Library shipped with SurveyJS Forms", async 
     return {
       setLicenseKey: typeof Survey.setLicenseKey,
       pdf: pdf.slice(0, 5),
-      analytics: typeof SurveyAnalytics.VisualizationPanel,
-      tabulator: typeof SurveyAnalyticsTabulator.Tabulator
+      analytics: typeof SurveyAnalytics.VisualizationPanel
     };
   });
-  expect(result).toEqual({ setLicenseKey: "function", pdf: "%PDF-", analytics: "function", tabulator: "function" });
+  expect(result).toEqual({ setLicenseKey: "function", pdf: "%PDF-", analytics: "function" });
   await expect(page.locator(".svc-creator")).toBeVisible();
   expect(errors).toEqual([]);
 });

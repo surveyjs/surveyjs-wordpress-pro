@@ -10,13 +10,11 @@
     "chart.js": "4.6.1",
     "chartjs-plugin-datalabels": "2.2.0",
     "jspdf": "4.2.1",
-    "jspdf-autotable": "5.0.9",
     "survey-analytics": "3.2.2",
     "survey-core": "3.2.2",
     "survey-creator-core": "3.2.2",
     "survey-creator-js": "3.2.2",
     "survey-js-ui": "3.2.2",
-    "survey-pdf": "3.2.2",
-    "tabulator-tables": "6.7.1"
+    "survey-pdf": "3.2.2"
   }
 }
