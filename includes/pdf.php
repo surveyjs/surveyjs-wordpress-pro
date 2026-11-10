@@ -54,6 +54,7 @@ class SurveyJS_Pro_Pdf {
         return array(
             'proPdfFormat'      => 'auto',
             'proPdfFontSize'    => 14,
+            'proPdfLabelFontSize' => 14,
             'proPdfLayout'      => 'compact',
             'proPdfThemeColors' => false,
             'proPdfFillable'    => true,
@@ -76,6 +77,7 @@ class SurveyJS_Pro_Pdf {
         $layout = (string) $input['proPdfLayout'];
         $sanitized['proPdfLayout'] = isset( self::layouts()[ $layout ] ) ? $layout : self::pdf_defaults()['proPdfLayout'];
         $sanitized['proPdfFontSize'] = min( 24, max( 8, (int) $input['proPdfFontSize'] ) );
+        $sanitized['proPdfLabelFontSize'] = isset( $input['proPdfLabelFontSize'] ) ? min( 24, max( 8, (int) $input['proPdfLabelFontSize'] ) ) : $sanitized['proPdfFontSize'];
         $logo = absint( $input['proPdfLogo'] );
         $sanitized['proPdfLogo'] = $logo && wp_attachment_is_image( $logo ) ? $logo : 0;
         $sanitized['proPdfHeaderText'] = mb_substr( sanitize_text_field( $input['proPdfHeaderText'] ), 0, 100 );
@@ -125,7 +127,14 @@ class SurveyJS_Pro_Pdf {
                     <th scope="row"><label for="wp-sjs-pro-pdf-font-size"><?php esc_html_e( 'Font size', 'surveyjs-pro' ); ?></label></th>
                     <td>
                         <input type="number" id="wp-sjs-pro-pdf-font-size" class="small-text" min="8" max="24" step="1" data-setting="proPdfFontSize" /> <?php esc_html_e( 'pt', 'surveyjs-pro' ); ?>
-                        <p class="description"><?php esc_html_e( 'Size of question titles and answers. Headings and spacing scale with it.', 'surveyjs-pro' ); ?></p>
+                        <p class="description"><?php esc_html_e( 'Size of answers. Headings and spacing scale with it.', 'surveyjs-pro' ); ?></p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="wp-sjs-pro-pdf-label-font-size"><?php esc_html_e( 'Label font size', 'surveyjs-pro' ); ?></label></th>
+                    <td>
+                        <input type="number" id="wp-sjs-pro-pdf-label-font-size" class="small-text" min="8" max="24" step="1" data-setting="proPdfLabelFontSize" /> <?php esc_html_e( 'pt', 'surveyjs-pro' ); ?>
+                        <p class="description"><?php esc_html_e( 'Size of question titles. The same value as Font size keeps the default proportions.', 'surveyjs-pro' ); ?></p>
                     </td>
                 </tr>
                 <tr>

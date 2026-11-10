@@ -232,9 +232,11 @@
             conditionalMatrixColumns: true,
             conditionalMatrixRows: true
         };
+        const fontSize = clamp(settings.proPdfFontSize, 8, 24, 14);
+        const labelFontSize = clamp(settings.proPdfLabelFontSize, 8, 24, fontSize);
         const pdf = new SurveyPDF.SurveyPDF(json, {
             format: settings.proPdfFormat && settings.proPdfFormat !== "auto" ? settings.proPdfFormat : config.format || "a4",
-            fontSize: clamp(settings.proPdfFontSize, 8, 24, 14),
+            fontSize,
             margins: { left: MARGIN, right: MARGIN, top: logo || title ? BRANDED_TOP_MARGIN : MARGIN, bot: MARGIN },
             fontName: font,
             readonlyRenderAs: "text",
@@ -242,6 +244,14 @@
             // jsPDF drops the AcroForm fields of a compressed document, so a fillable form stays uncompressed.
             compress: readOnly
         });
+        if (labelFontSize !== fontSize) {
+            pdf.onGetQuestionStyle.add((_, options) => {
+                const title = options.style.title;
+                if (!title) return;
+                title.fontSize *= labelFontSize / fontSize;
+                if (title.lineHeight) title.lineHeight *= labelFontSize / fontSize;
+            });
+        }
         const rtl = isRightToLeft(pdf);
         pdf.options.isRTL = rtl;
         if (settings.proPdfLayout === "spacious" && window.DocLayout && window.DocLayout.Spacious) {
