@@ -101,7 +101,7 @@ html.wp-sjs-pro-dark .wp-sjs-pro-dashboard__panel a {
 }
 
 .wp-sjs-pro-dashboard__panel .widefat .num {
-    text-align: right;
+    text-align: end;
 }
 
 .wp-sjs-pro-dashboard__forms tfoot th,
@@ -115,7 +115,7 @@ html.wp-sjs-pro-dark .wp-sjs-pro-dashboard__panel a {
 
 .wp-sjs-pro-dashboard__badge {
     display: inline-block;
-    margin-left: 4px;
+    margin-inline-start: 4px;
     padding: 0 6px;
     border-radius: 9px;
     font-size: 11px;

@@ -47,7 +47,7 @@ On WordPress VIP `wpcom_vip_load_plugin()` does not fire activation hooks, so th
 
 | Package | Version | Files in `libs/` |
 |---|---|---|
-| survey-creator-core | 3.2.2 | `survey-creator-core.min.js`, `survey-creator-core.min.css`, `images/` |
+| survey-creator-core | 3.2.2 | `survey-creator-core.min.js`, `survey-creator-core.min.css`, `images/`, `i18n/*.min.js` (Creator UI translations, 36 languages; `index` and `english` are skipped) |
 | survey-creator-js | 3.2.2 | `survey-creator-js.min.js` |
 | survey-pdf | 3.2.2 | `survey.pdf.min.js`, `survey.pdf.fonts.min.js` (Segoe UI for non-Latin text), `spacious.min.js` (from `layouts/`, the Spacious layout preset, global `DocLayout.Spacious`) |
 | survey-analytics | 3.2.2 | `survey.analytics.min.js/.css` (Chart.js) |
@@ -120,6 +120,7 @@ Color mode — Settings → SurveyJS Forms Pro → "Color mode" (`surveyjs_pro_s
 Survey Creator V3 replaces the JSON editing in Base's form editor (Edit button on All Forms). It uses only Base hooks, Base needs no changes for it.
 
 - **Tabs.** `surveyjs_editor_tabs`: replaces `survey` (Config) with `creator`, labelled "Config" as in Base, as the first tab — people find the same tabs, only the content changes. `theme` (Adaptive mode, ready-made themes, AI theme prompt, theme JSON), `email`, `entries`, `spam` (Spam Protection) and `advanced` (Save & Resume, Markdown; Base keeps it the last tab, after PDF) stay. The panel (`surveyjs_render_editor`) is `.wp-sjs-pro-creator[data-panel="creator"]`; on that tab Base's preview is hidden and the panel takes the full width.
+- **Language.** Creator UI follows the admin language (`determine_locale()`): `SurveyJS_Pro_Creator::LOCALES` maps the WordPress language (or `zh_CN`/`zh_TW`-style locale) to a file in `libs/survey-creator-core/i18n/` and the Creator locale code; the file is enqueued as `surveyjs-pro-creator-i18n` and `creator.locale` is set. Languages without a file stay English. RTL comes from the admin page (`dir="rtl"` on `<html>`), Creator inherits it.
 - **Creator tabs:** Designer, Preview, Logic, JSON Editor, Translations. Creator's Themes tab is off: the theme is set in Base's Theme tab, whose preview shows the form on a real page of the site. No AI.
 - **Setting.** "Edit forms in Survey Creator" in Settings → SurveyJS Forms Pro (`surveyjs_pro_settings[creator]`, on by default) is the default value of `surveyjs_pro_creator_enabled`; off brings back Base's Config tab.
 - **Sync with Base.** Creator is built when its tab is first shown, from `surveyjsEditor.getSurvey()` / `getTheme()`. Creator autosave (`isAutoSave`, `autoSaveDelay = 0`) does not save anything: `saveSurveyFunc` / `saveThemeFunc` call `surveyjsEditor.setSurvey()` / `setTheme()` on every change, so Base's Save button, unsaved-changes prompt, Reply-To/File pickers and preview see Creator's changes. When the Creator tab is shown again, the survey and theme are reloaded into Creator if they changed in Base meanwhile (theme JSON in the Theme tab, "Add a Reply-To question" in Email). Text typed in Creator's JSON Editor tab is applied before Base's Save, before a Base tab switch and before the page unloads. When the theme is changed in Creator while Adaptive is on, Creator shows a notice that the site uses the Adaptive styles.
@@ -166,6 +167,7 @@ Everything below is in Base (`surveyjs-wordpress`, `src/trunk`). All hooks are g
 | `SurveyJS_SurveyJS::EDITOR_SCRIPT` | Handle of the form editor script (`editor/editor.js`, footer). Depend on it to use `window.surveyjsEditor`. |
 | `SurveyJS_SurveyJS::library_version()` | Form Library version Base ships, e.g. `3.2.2`. |
 | `SurveyJS_SettingsPage::PAGE` / `OPTION_GROUP` | `surveyjs-settings-page` / `surveyjs-settings-group` — Settings API page and option group of SurveyJS Forms > Settings. |
+| `SurveyJS_SurveyJS::survey_locale( $wp_locale = null )` | Form Library locale code for a WordPress locale (default `determine_locale()`), e.g. `he_IL` → `he`, `pt_BR` → `pt-br`, `nb_NO` → `no`; `''` for English or a language Base has no `libs/library/i18n` file for. Filter: `surveyjs_form_locale` `( string $code, string $wp_locale )`. |
 
 Admin page slugs: `surveyjs-main-menu` (Forms list), `surveyjs_editor` (`&id=<form>`), `surveyjs_results` (`&id=<form>[&view=<view>][&status=…][&entry=<id>]`), `surveyjs-settings`, `surveyjs-getting-started`, `surveyjs_import`, `surveyjs-templates` (Add New Form: templates; `&form=<id>` saves a form as a template).
 
@@ -322,7 +324,7 @@ Base hides the links when `SURVEYJS_PRO_VERSION` is defined, so Pro needs no cod
 
 ### Front-end form
 
-**`surveyjs_form_client_config`** (filter) — `( array $config, object $survey, array $settings )`. The config of a form on the site (`id`, `json`, `theme`, `themeMode`, URLs and nonces, …), printed as JSON next to the form and passed to the JS events below as `detail.config`. Add your own prefixed keys.
+**`surveyjs_form_client_config`** (filter) — `( array $config, object $survey, array $settings )`. The config of a form on the site (`id`, `json`, `theme`, `themeMode`, URLs and nonces, …), printed as JSON next to the form and passed to the JS events below as `detail.config`. Add your own prefixed keys. `locale` is the site language (`survey_locale()`): when the form JSON has no `locale`, `survey.js` sets it, so the Form Library buttons and messages are in the site language; the form preview does the same.
 
 **`surveyjs_enqueue_form_assets`** (action) — `( object $survey, array $settings )`. Fires after Base enqueued a form's scripts and styles, on `wp_enqueue_scripts` for forms in the post content and again when a shortcode or block renders (so possibly more than once per form, and after `wp_head`: enqueue scripts in the footer).
 

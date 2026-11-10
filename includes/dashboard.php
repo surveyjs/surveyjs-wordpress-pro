@@ -260,8 +260,9 @@ class SurveyJS_Pro_Dashboard {
             'month' === $period['unit'] ? _n( 'previous %s month', 'previous %s months', $period['count'], 'surveyjs-pro' ) : _n( 'previous %s day', 'previous %s days', $period['count'], 'surveyjs-pro' ),
             number_format_i18n( $period['count'] )
         );
+        // U+2066/U+2069 isolate the number as left-to-right, or RTL languages show "+12%" as "12%+".
         /* translators: 1: signed percentage change, e.g. "+12%", 2: the comparison period, e.g. "previous 30 days" */
-        return sprintf( __( '%1$s vs %2$s', 'surveyjs-pro' ), ( $change > 0 ? '+' : '' ) . number_format_i18n( $change ) . '%', $previous_label );
+        return sprintf( __( '%1$s vs %2$s', 'surveyjs-pro' ), "\u{2066}" . ( $change > 0 ? '+' : '' ) . number_format_i18n( $change ) . "%\u{2069}", $previous_label );
     }
 
     public static function render() {

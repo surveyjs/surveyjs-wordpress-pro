@@ -5,6 +5,7 @@
         return;
     }
     var charts = [];
+    var rtl = document.documentElement.dir === "rtl";
 
     function palette() {
         adminTheme.isDark();
@@ -20,6 +21,7 @@
     Chart.defaults.font.family = window.getComputedStyle(document.body).fontFamily;
     Chart.defaults.font.size = 12;
     Chart.defaults.color = colors.text;
+    Chart.defaults.plugins.tooltip.rtl = rtl;
 
     function bars(values) {
         return {
@@ -33,13 +35,13 @@
         };
     }
 
-    function countAxis() {
-        return {
+    function countAxis(extra) {
+        return Object.assign({
             beginAtZero: true,
             ticks: { precision: 0 },
             grid: { color: colors.grid },
             border: { display: false }
-        };
+        }, extra);
     }
 
     function categoryAxis(extra) {
@@ -88,8 +90,8 @@
                     }
                 },
                 scales: {
-                    x: categoryAxis({ ticks: { autoSkip: true, maxRotation: 0 } }),
-                    y: countAxis()
+                    x: categoryAxis({ reverse: rtl, ticks: { autoSkip: true, maxRotation: 0 } }),
+                    y: countAxis({ position: rtl ? "right" : "left" })
                 }
             }
         }));
@@ -109,8 +111,9 @@
                 interaction: { mode: "index", intersect: false, axis: "y" },
                 plugins: { legend: { display: false } },
                 scales: {
-                    x: countAxis(),
+                    x: countAxis({ reverse: rtl }),
                     y: categoryAxis({
+                        position: rtl ? "right" : "left",
                         ticks: {
                             callback: function (value) {
                                 var label = this.getLabelForValue(value);

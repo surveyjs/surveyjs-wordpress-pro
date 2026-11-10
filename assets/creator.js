@@ -139,6 +139,9 @@
             showPreviewTab: true,
             isAutoSave: true
         });
+        if (options.locale) {
+            instance.locale = options.locale;
+        }
         // "Saving" only hands each change to the form editor at once: its Save button stores the form, and its unsaved-changes prompt must see every change.
         instance.autoSaveDelay = 0;
         instance.JSON = editor.getSurvey() || {};

@@ -19,6 +19,9 @@ const FILES = {
   "chartjs-plugin-datalabels": ["dist/chartjs-plugin-datalabels.min.js", "LICENSE.md"]
 };
 
+const TRANSLATIONS = { "survey-creator-core": "i18n" };
+const SKIPPED_TRANSLATIONS = ["index.min.js", "english.min.js"];
+
 const SURVEYJS_PACKAGES = ["survey-core", "survey-js-ui", "survey-creator-core", "survey-creator-js", "survey-pdf", "survey-analytics"];
 
 function packageVersion(name) {
@@ -46,4 +49,11 @@ for (const [name, files] of Object.entries(FILES)) {
     fs.cpSync(path.join(modules, name, file), destination, { recursive: true });
   }
   console.log(`${name}@${packageVersion(name)}`);
+}
+for (const [name, dir] of Object.entries(TRANSLATIONS)) {
+  const source = path.join(modules, name, dir);
+  const files = fs.readdirSync(source).filter((file) => file.endsWith(".min.js") && !SKIPPED_TRANSLATIONS.includes(file));
+  fs.mkdirSync(path.join(target, name, dir), { recursive: true });
+  files.forEach((file) => fs.copyFileSync(path.join(source, file), path.join(target, name, dir, file)));
+  console.log(`${name}/${dir}: ${files.length} languages`);
 }
