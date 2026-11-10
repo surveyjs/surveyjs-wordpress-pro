@@ -350,6 +350,29 @@
         setTimeout(() => URL.revokeObjectURL(url), 60000);
     }
 
+    function errorMessage(result, fallback) {
+        return result && result.data && result.data.message ? result.data.message : fallback;
+    }
+
+    async function protect(blob) {
+        const response = await fetch(config.password.encryptUrl, {
+            method: "POST",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/pdf" },
+            body: blob
+        }).catch(() => {
+            throw new Error(i18n.requestError);
+        });
+        if (response.ok && (response.headers.get("Content-Type") || "").startsWith("application/pdf")) {
+            return new Blob([await response.arrayBuffer()], { type: "application/pdf" });
+        }
+        throw new Error(errorMessage(await response.json().catch(() => null), i18n.encryptError));
+    }
+
+    function protectedPdf(blob) {
+        return config.password && config.password.enabled ? protect(blob) : blob;
+    }
+
     async function run(task, setStatus, onError) {
         if (busy) return;
         busy = true;
@@ -440,8 +463,13 @@
             });
         }
 
+        const passwordInput = document.getElementById("wp-sjs-pro-pdf-password");
+
         blankButton.addEventListener("click", () => run(async () => {
-            download(await currentBlankPdf(), `${fileBase(api.config.name || config.formName)}.pdf`);
+            const encrypt = config.password && api.getSettings().proPdfPassword;
+            if (encrypt && passwordInput && passwordInput.dataset.typed) throw new Error(i18n.passwordUnsaved);
+            const blob = await currentBlankPdf();
+            download(encrypt ? await protect(blob) : blob, `${fileBase(api.config.name || config.formName)}.pdf`);
         }, setStatus));
 
         previewButton.addEventListener("click", () => {
@@ -457,6 +485,53 @@
         });
 
         initLivePreview(currentBlankPdf, setStatus);
+        if (config.password && passwordInput) initPassword(api, passwordInput, setStatus);
+    }
+
+    const PASSWORD_MASK = "********";
+
+    function initPassword(api, input, setStatus) {
+        let isSet = config.password.isSet;
+
+        function showSaved() {
+            input.value = isSet ? PASSWORD_MASK : "";
+            delete input.dataset.typed;
+        }
+
+        input.addEventListener("input", () => {
+            if (input.value) input.dataset.typed = "1";
+            else delete input.dataset.typed;
+        });
+        input.addEventListener("focus", () => {
+            if (!input.dataset.typed) input.select();
+        });
+        showSaved();
+
+        async function savePassword(enabled) {
+            const body = new URLSearchParams([["action", config.password.saveAction], ["form", config.formId], ["_ajax_nonce", config.nonce]]);
+            if (enabled) body.append("password", input.value);
+            else body.append("remove", "1");
+            try {
+                const response = await fetch(config.ajaxUrl, { method: "POST", credentials: "same-origin", body }).catch(() => {
+                    throw new Error(i18n.requestError);
+                });
+                const result = await response.json().catch(() => null);
+                if (!response.ok || !result || !result.success) throw new Error(errorMessage(result, i18n.requestError));
+                isSet = result.data.set;
+                showSaved();
+                setStatus(isSet ? i18n.passwordSaved : i18n.passwordRemoved);
+            } catch (error) {
+                setStatus(format(i18n.passwordSaveError, error.message), true);
+            }
+        }
+
+        document.addEventListener("surveyjs:editor-saved", (event) => {
+            const enabled = Boolean(event.detail.settings.proPdfPassword);
+            if (enabled ? input.dataset.typed : isSet) savePassword(enabled);
+            else if (enabled && !isSet) setStatus(i18n.passwordMissing, true);
+            else showSaved();
+        });
+        if (api.getSettings().proPdfPassword && !isSet) setStatus(i18n.passwordMissing, true);
     }
 
     function initLivePreview(buildPdf, setStatus) {
@@ -561,7 +636,7 @@
                 const files = [];
                 for (const [index, entry] of entries.entries()) {
                     if (entries.length > 1) progress(format(i18n.progress, index + 1, entries.length));
-                    files.push({ name: `${baseName}-entry-${entry.id}.pdf`, blob: await createPdf(source, config.settings, entry) });
+                    files.push({ name: `${baseName}-entry-${entry.id}.pdf`, blob: await protectedPdf(await createPdf(source, config.settings, entry)) });
                 }
                 if (files.length === 1) {
                     download(files[0].blob, files[0].name);
@@ -581,7 +656,7 @@
             if (event.target.closest(".wp-sjs-pro-pdf-blank")) {
                 event.preventDefault();
                 run(async () => {
-                    download(await createPdf(source, config.settings), `${baseName}.pdf`);
+                    download(await protectedPdf(await createPdf(source, config.settings)), `${baseName}.pdf`);
                 }, setStatus);
             }
         });

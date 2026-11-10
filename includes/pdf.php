@@ -111,7 +111,7 @@ class SurveyJS_Pro_Pdf {
         echo '</select>';
     }
 
-    public static function render_editor_panel() {
+    public static function render_editor_panel( $survey ) {
         ?>
         <div class="wp-sjs-editor__settings wp-sjs-pro-pdf" data-panel="<?php echo esc_attr( self::TAB ); ?>" hidden>
             <div class="wp-sjs-pro-pdf__settings">
@@ -198,7 +198,7 @@ class SurveyJS_Pro_Pdf {
                         </fieldset>
                     </td>
                 </tr>
-                <?php do_action( 'surveyjs_pro_pdf_editor_rows' ); ?>
+                <?php do_action( 'surveyjs_pro_pdf_editor_rows', $survey ); ?>
                 <tr>
                     <th scope="row"><?php esc_html_e( 'Export', 'surveyjs-pro' ); ?></th>
                     <td>
@@ -277,10 +277,11 @@ class SurveyJS_Pro_Pdf {
             $config['settings'] = self::settings( $survey );
             $config['autoExport'] = array_values( array_filter( array_map( 'absint', explode( ',', sanitize_text_field( wp_unslash( $_GET['pro_pdf'] ?? '' ) ) ) ) ) );
         }
+        $config = SurveyJS_Pro_Pdf_Password::client_config( $config, $survey );
         wp_add_inline_script( self::SCRIPT, 'window.surveyjsProPdf = ' . wp_json_encode( $config, JSON_HEX_TAG | JSON_HEX_AMP ) . ';', 'before' );
     }
 
-    private static function nonce_action( $form_id ) {
+    public static function nonce_action( $form_id ) {
         return 'surveyjs-pro-pdf_' . (int) $form_id;
     }
 

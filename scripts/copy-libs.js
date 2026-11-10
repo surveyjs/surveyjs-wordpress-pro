@@ -42,8 +42,8 @@ if (mismatched.length) {
   process.exit(1);
 }
 
-fs.rmSync(target, { recursive: true, force: true });
 for (const [name, files] of Object.entries(FILES)) {
+  fs.rmSync(path.join(target, name), { recursive: true, force: true });
   for (const file of files) {
     const destination = path.join(target, name, path.basename(file));
     fs.cpSync(path.join(modules, name, file), destination, { recursive: true });

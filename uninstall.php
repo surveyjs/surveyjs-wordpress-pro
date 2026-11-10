@@ -6,6 +6,7 @@ function surveyjs_pro_uninstall_site() {
     delete_option( 'surveyjs_pro_settings' );
     delete_option( 'surveyjs_pro_db_version' );
     delete_option( 'surveyjs_pro_upgrade_lock' );
+    delete_post_meta_by_key( '_surveyjs_pro_pdf_password' );
 }
 
 if ( is_multisite() ) {

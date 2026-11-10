@@ -202,6 +202,9 @@ class SurveyJS_Pro_Pdf_Respondent {
     public static function notification_attachments( $attachments, $recipient, $survey, $settings, $data, $entry_id ) {
         $key = 'owner' === $recipient ? 'proPdfAttachNotification' : 'proPdfAttachAutoReply';
         $path = empty( $settings[ $key ] ) ? false : self::uploaded_pdf();
+        if ( $path && 'owner' === $recipient && SurveyJS_Pro_Pdf_Password::enabled( $settings ) ) {
+            $path = SurveyJS_Pro_Pdf_Password::encrypted_copy( $survey, $path );
+        }
         if ( ! $path ) {
             return $attachments;
         }
@@ -237,12 +240,17 @@ class SurveyJS_Pro_Pdf_Respondent {
         if ( $size <= 0 || $size > self::max_attachment_size() || '%PDF-' !== $signature ) {
             return false;
         }
-        $path = trailingslashit( get_temp_dir() ) . 'surveyjs-pro-' . wp_generate_password( 24, false ) . '.pdf';
+        $path = self::temp_pdf_path();
         if ( ! move_uploaded_file( $file['tmp_name'], $path ) ) {
             return false;
         }
-        wp_schedule_single_event( time() + DAY_IN_SECONDS, self::DELETE_HOOK, array( wp_basename( $path ) ) );
         self::$attachment = $path;
+        return $path;
+    }
+
+    public static function temp_pdf_path() {
+        $path = trailingslashit( get_temp_dir() ) . 'surveyjs-pro-' . wp_generate_password( 24, false ) . '.pdf';
+        wp_schedule_single_event( time() + DAY_IN_SECONDS, self::DELETE_HOOK, array( wp_basename( $path ) ) );
         return $path;
     }
 
