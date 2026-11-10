@@ -163,6 +163,7 @@ class SurveyJS_Pro_Pdf_Respondent {
                 'page'     => 'front',
                 'format'   => SurveyJS_Pro_Pdf::page_format(),
                 'fontsUrl' => SurveyJS_Pro_Libs::script_url( 'pdf-fonts' ),
+                'hebrewFont' => SurveyJS_Pro_Pdf::hebrew_font(),
                 'i18n'     => array(
                     /* translators: 1: entry ID, 2: entry date */
                     'entryHeader' => __( 'Entry #%1$s, %2$s', 'surveyjs-pro' ),

@@ -4,6 +4,17 @@
     const config = window.surveyjsProPdf;
     if (!config || !window.SurveyPDF) return;
 
+    // survey-pdf 3.2.2 RTL workarounds: jsPDF mirrors brackets only with isSymmetricSwapping, which survey-pdf never passes;
+    // jsPDF's bidi moves the trailing number of a purely LTR line to its start ("2 Page 1 of"), so such lines stay LTR;
+    // survey-pdf reverses fillable field values by characters, while PDF viewers apply bidi to them themselves.
+    window.jspdf.jsPDF.API.events.push(["preProcessText", (payload) => {
+        const options = payload.options;
+        if (!options || !options.isOutputRtl) return;
+        if (/[֐-ࣿיִ-﷿ﹰ-﻿]/u.test(String(payload.text))) options.isSymmetricSwapping = true;
+        else options.isOutputRtl = false;
+    }]);
+    SurveyPDF.PdfBrick.prototype.getCorrectedText = (value) => value;
+
     const i18n = config.i18n;
     const MM_TO_PT = 72 / 25.4;
     const MARGIN = 10;
@@ -16,7 +27,11 @@
     const WATERMARK_PX_PER_PT = 1.5;
     const logoCache = new Map();
     const watermarkCache = new Map();
+    const HEBREW_FONT = "IBMPlexSansHebrew";
+    const HEBREW_LETTERS = /[\u0590-\u05FF\uFB1D-\uFB4F]/u;
+    const RTL_LETTERS = /[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/gu;
     let fontsPromise = null;
+    let hebrewFontPromise = null;
     let busy = false;
 
     function format(template, ...values) {
@@ -33,20 +48,70 @@
         return Number.isNaN(number) ? fallback : Math.min(max, Math.max(min, number));
     }
 
-    function loadFonts() {
-        if (SurveyPDF.DocOptions.SEGOE_NORMAL) return Promise.resolve();
-        fontsPromise ||= new Promise((resolve, reject) => {
+    let amdHidden = 0;
+    let amd = null;
+
+    // Monaco's AMD loader on the editor page makes UMD scripts register as AMD modules instead of globals,
+    // so `define.amd` is hidden while a library loads; Monaco's own `define` calls don't read it.
+    function loadScript(url, errorMessage) {
+        return new Promise((resolve, reject) => {
             const script = document.createElement("script");
-            script.src = config.fontsUrl;
-            script.onload = resolve;
+            if (!amdHidden++ && window.define && window.define.amd) {
+                amd = window.define.amd;
+                window.define.amd = undefined;
+            }
+            const done = () => {
+                if (!--amdHidden && amd) {
+                    window.define.amd = amd;
+                    amd = null;
+                }
+            };
+            script.src = url;
+            script.onload = () => {
+                done();
+                resolve();
+            };
             script.onerror = () => {
-                fontsPromise = null;
+                done();
                 script.remove();
-                reject(new Error(i18n.fontError));
+                reject(new Error(errorMessage));
             };
             document.head.appendChild(script);
         });
+    }
+
+    function loadFonts() {
+        if (SurveyPDF.DocOptions.SEGOE_NORMAL) return Promise.resolve();
+        fontsPromise ||= loadScript(config.fontsUrl, i18n.fontError).catch((error) => {
+            fontsPromise = null;
+            throw error;
+        });
         return fontsPromise;
+    }
+
+    function loadHebrewFont() {
+        hebrewFontPromise ||= Promise.all(["normal", "bold"].map(async (style) => {
+            const response = await fetch(config.hebrewFont[style]);
+            if (!response.ok) throw new Error(response.statusText);
+            const bytes = new Uint8Array(await response.arrayBuffer());
+            let binary = "";
+            for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+            SurveyPDF.DocController.addFont(HEBREW_FONT, btoa(binary), style);
+        })).catch(() => {
+            hebrewFontPromise = null;
+            throw new Error(i18n.fontError);
+        });
+        return hebrewFontPromise;
+    }
+
+    function isRightToLeft(survey) {
+        const texts = [survey.title, survey.description];
+        survey.pages.forEach((page) => texts.push(page.title, page.description));
+        survey.getAllQuestions().forEach((question) => texts.push(question.title, question.description));
+        const text = texts.filter((value) => typeof value === "string").join(" ");
+        const rtl = (text.match(RTL_LETTERS) || []).length;
+        const letters = (text.match(/\p{L}/gu) || []).length;
+        return rtl > letters - rtl;
     }
 
     // The site renders [text](url) in form texts as links; the PDF has no Markdown renderer, so keep the text only.
@@ -123,16 +188,18 @@
         });
     }
 
-    function addPageHeader(pdf, logo, title) {
+    function addPageHeader(pdf, logo, title, rtl) {
         const margin = MARGIN * MM_TO_PT;
+        const align = rtl ? "right" : "left";
         pdf.onRenderHeader.add(async (_, canvas) => {
-            let left = margin;
+            let offset = margin;
             if (logo) {
-                await canvas.drawImage({ base64: logo.base64, width: logo.width, height: logo.height, horizontalAlign: "left", margins: { left } });
-                left += logo.width + LOGO_GAP * MM_TO_PT;
+                await canvas.drawImage({ base64: logo.base64, width: logo.width, height: logo.height, horizontalAlign: align, margins: { [align]: offset } });
+                offset += logo.width + LOGO_GAP * MM_TO_PT;
             }
             if (title) {
-                canvas.drawText({ text: title, fontSize: 12, isBold: true, horizontalAlign: "left", margins: { left, right: margin } });
+                const margins = rtl ? { left: margin, right: offset } : { left: offset, right: margin };
+                canvas.drawText({ text: title, fontSize: 12, isBold: true, horizontalAlign: align, margins });
             }
         });
     }
@@ -150,8 +217,10 @@
         const header = entry && settings.proPdfEntryHeader ? format(i18n.entryHeader, entry.id, entry.date) : "";
         const title = String(settings.proPdfHeaderText || "").trim();
         const watermark = String(settings.proPdfWatermark || "").trim();
-        const font = needsUnicodeFont(json, entry ? entry.data : null, header, title) ? "segoe" : "helvetica";
+        const texts = [json, entry ? entry.data : null, header, title];
+        const font = HEBREW_LETTERS.test(JSON.stringify(texts)) ? HEBREW_FONT : needsUnicodeFont(...texts) ? "segoe" : "helvetica";
         if (font === "segoe") await loadFonts();
+        if (font === HEBREW_FONT) await loadHebrewFont();
         const logo = source.logoUrl ? await loadLogo(source.logoUrl) : null;
 
         const readOnly = Boolean(entry) || !settings.proPdfFillable;
@@ -173,6 +242,8 @@
             // jsPDF drops the AcroForm fields of a compressed document, so a fillable form stays uncompressed.
             compress: readOnly
         });
+        const rtl = isRightToLeft(pdf);
+        pdf.options.isRTL = rtl;
         if (settings.proPdfLayout === "spacious" && window.DocLayout && window.DocLayout.Spacious) {
             pdf.applyLayout(layoutWithoutPagePadding(window.DocLayout.Spacious));
         }
@@ -186,16 +257,18 @@
         pdf.readOnly = readOnly;
 
         const textMargins = { left: MARGIN * MM_TO_PT, right: MARGIN * MM_TO_PT };
-        if (logo || title) addPageHeader(pdf, logo, title);
+        const start = rtl ? "right" : "left";
+        const end = rtl ? "left" : "right";
+        if (logo || title) addPageHeader(pdf, logo, title, rtl);
         if (header) {
             pdf.onRenderFooter.add((_, canvas) => {
-                canvas.drawText({ text: header, fontSize: 9, horizontalAlign: "left", margins: textMargins });
+                canvas.drawText({ text: header, fontSize: 9, horizontalAlign: start, margins: textMargins });
             });
         }
         if (watermark) addWatermark(pdf, watermark);
         if (settings.proPdfPageNumbers) {
             pdf.onRenderFooter.add((_, canvas) => {
-                canvas.drawText({ text: format(i18n.page, canvas.pageNumber, canvas.pageCount), fontSize: 9, horizontalAlign: "right", margins: textMargins });
+                canvas.drawText({ text: format(i18n.page, canvas.pageNumber, canvas.pageCount), fontSize: 9, horizontalAlign: end, margins: textMargins });
             });
         }
         return pdf.raw("blob");

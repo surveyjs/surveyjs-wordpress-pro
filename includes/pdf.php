@@ -212,6 +212,13 @@ class SurveyJS_Pro_Pdf {
         <?php
     }
 
+    public static function hebrew_font() {
+        return array(
+            'normal' => plugins_url( 'assets/fonts/IBMPlexSansHebrew-Regular.ttf', SURVEYJS_PRO_FILE ),
+            'bold'   => plugins_url( 'assets/fonts/IBMPlexSansHebrew-Bold.ttf', SURVEYJS_PRO_FILE ),
+        );
+    }
+
     public static function enqueue( $page ) {
         $survey = SurveyJS_Forms::get( absint( $_GET['id'] ?? 0 ) );
         if ( ! $survey || ! SurveyJS_Pro_Libs::enqueue( 'pdf' ) ) {
@@ -232,6 +239,7 @@ class SurveyJS_Pro_Pdf {
             'action'   => self::AJAX_ACTION,
             'nonce'    => wp_create_nonce( self::nonce_action( $survey->id ) ),
             'fontsUrl' => SurveyJS_Pro_Libs::script_url( 'pdf-fonts' ),
+            'hebrewFont' => self::hebrew_font(),
             'format'   => self::page_format(),
             'logo'     => self::logo( $survey ),
             'i18n'     => array(
