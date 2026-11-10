@@ -40,6 +40,7 @@ test.describe("extension contract of SurveyJS Forms", () => {
   test("editor tab, panel, per-form setting and JS API", async ({ page }) => {
     await page.goto(LIST_URL);
     await page.locator("#wpbody-content").getByRole("link", { name: "Add New Form" }).click();
+    await page.getByRole("button", { name: "Create blank form" }).click();
     await expect(page.locator(".svc-creator")).toBeVisible();
     formId = Number(new URL(page.url()).searchParams.get("id"));
 

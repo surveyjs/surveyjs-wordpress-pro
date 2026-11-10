@@ -167,7 +167,7 @@ Everything below is in Base (`surveyjs-wordpress`, `src/trunk`). All hooks are g
 | `SurveyJS_SurveyJS::library_version()` | Form Library version Base ships, e.g. `3.2.2`. |
 | `SurveyJS_SettingsPage::PAGE` / `OPTION_GROUP` | `surveyjs-settings-page` / `surveyjs-settings-group` — Settings API page and option group of SurveyJS Forms > Settings. |
 
-Admin page slugs: `surveyjs-main-menu` (Forms list), `surveyjs_editor` (`&id=<form>`), `surveyjs_results` (`&id=<form>[&view=<view>][&status=…][&entry=<id>]`), `surveyjs-settings`, `surveyjs-getting-started`, `surveyjs_import`.
+Admin page slugs: `surveyjs-main-menu` (Forms list), `surveyjs_editor` (`&id=<form>`), `surveyjs_results` (`&id=<form>[&view=<view>][&status=…][&entry=<id>]`), `surveyjs-settings`, `surveyjs-getting-started`, `surveyjs_import`, `surveyjs-templates` (Add New Form: templates; `&form=<id>` saves a form as a template).
 
 ### Admin menu
 

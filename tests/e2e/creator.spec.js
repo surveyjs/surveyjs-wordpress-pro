@@ -33,6 +33,8 @@ test.describe("Survey Creator in the form editor", () => {
   test("replaces the JSON editor in the Config tab and adds GDPR from the toolbox", async ({ page }) => {
     await page.goto(LIST_URL);
     await page.locator("#wpbody-content").getByRole("link", { name: "Add New Form" }).click();
+    await page.getByRole("button", { name: "Create blank form" }).click();
+    await expect(page).toHaveURL(/page=surveyjs_editor/);
     formId = Number(new URL(page.url()).searchParams.get("id"));
 
     const tabs = page.locator(".wp-sjs-editor__tabs");
