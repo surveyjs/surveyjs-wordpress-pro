@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 define( 'SURVEYJS_PRO_VERSION', '0.1.0' );
 define( 'SURVEYJS_PRO_DB_VERSION', '1' );
 define( 'SURVEYJS_PRO_MIN_BASE_VERSION', '2.5.6' );
-define( 'SURVEYJS_PRO_LIBRARY_VERSION', '3.2.2' );
+define( 'SURVEYJS_PRO_LIBRARY_VERSION', '3.2.4' );
 define( 'SURVEYJS_PRO_FILE', __FILE__ );
 
 require_once __DIR__ . '/includes/plugin.php';

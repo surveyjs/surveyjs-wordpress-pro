@@ -48,8 +48,8 @@ On WordPress VIP `wpcom_vip_load_plugin()` does not fire activation hooks, so th
 
 | Package | Version | Files in `libs/` |
 |---|---|---|
-| survey-creator-core | 3.2.2 | `survey-creator-core.min.js`, `survey-creator-core.min.css`, `images/`, `i18n/*.min.js` (Creator UI translations, 36 languages; `index` and `english` are skipped) |
-| survey-creator-js | 3.2.2 | `survey-creator-js.min.js` |
+| survey-creator-core | 3.2.4 | `survey-creator-core.min.js`, `survey-creator-core.min.css`, `images/`, `i18n/*.min.js` (Creator UI translations, 36 languages; `index` and `english` are skipped) |
+| survey-creator-js | 3.2.4 | `survey-creator-js.min.js` |
 | survey-pdf | 3.2.2 | `survey.pdf.min.js`, `survey.pdf.fonts.min.js` (Segoe UI for non-Latin text), `spacious.min.js` (from `layouts/`, the Spacious layout preset, global `DocLayout.Spacious`) |
 | survey-analytics | 3.2.2 | `survey.analytics.min.js/.css` (Chart.js) |
 | jspdf | 4.2.1 | `jspdf.umd.min.js` (needed by survey-pdf) |
@@ -58,7 +58,7 @@ On WordPress VIP `wpcom_vip_load_plugin()` does not fire activation hooks, so th
 
 **PHP library.** `libs/tc-lib-pdf-encrypt/` is [tecnickcom/tc-lib-pdf-encrypt](https://github.com/tecnickcom/tc-lib-pdf-encrypt) **2.12.2** (LGPL-3.0-or-later, no package dependencies; PHP 8.2+ with openssl, ctype, hash, pcre): its `src/` and `LICENSE`, unmodified, loaded by an autoloader in `SurveyJS_Pro_Pdf_Encryptor` (no Composer at runtime). `copy-libs` leaves it alone. To update: run `composer require tecnickcom/tc-lib-pdf-encrypt:<version>` in an empty folder, replace `libs/tc-lib-pdf-encrypt/src/` and `LICENSE` with those from `vendor/tecnickcom/tc-lib-pdf-encrypt/`, check that its `composer.json` still requires no other packages, update the version here and run `tests/e2e/pdf-password.spec.js`.
 
-**survey-core and survey-js-ui are not copied.** They come from Base (`src/trunk/libs/library/`, v3.2.2), so a page never loads two copies of the Form Library (Base's editor and results pages already load it). They are still in `package.json` to pin the peer version. `SurveyJS_Pro_Libs::compatible()` compares `SurveyJS_SurveyJS::library_version()` (read from Base's `survey.core.min.js` header) with `SURVEYJS_PRO_LIBRARY_VERSION`; on a mismatch Pro's libraries are not registered and an admin notice explains why. When Base updates the Form Library, update `package.json`, `SURVEYJS_PRO_LIBRARY_VERSION`, run `npm install && npm run copy-libs`, and release both plugins together.
+**survey-core and survey-js-ui are not copied.** They come from Base (`src/trunk/libs/library/`, v3.2.4), so a page never loads two copies of the Form Library (Base's editor and results pages already load it). They are still in `package.json` to pin the peer version. `SurveyJS_Pro_Libs::compatible()` compares `SurveyJS_SurveyJS::library_version()` (read from Base's `survey.core.min.js` header) with `SURVEYJS_PRO_LIBRARY_VERSION`; on a mismatch Pro's libraries are not registered and an admin notice explains why. When Base updates the Form Library, update `package.json`, `SURVEYJS_PRO_LIBRARY_VERSION`, run `npm install && npm run copy-libs`, and release both plugins together.
 
 To add a file (e.g. a Creator locale, PDF fonts, plotly/apexcharts builds), add it to `FILES` in `scripts/copy-libs.js`, rerun, and register a handle in `SurveyJS_Pro_Libs`. Only these packages and their direct runtime dependencies may be read from `node_modules`.
 
@@ -179,7 +179,7 @@ Everything below is in Base (`surveyjs-wordpress`, `src/trunk`). All hooks are g
 | `SurveyJS_SurveyJS::CAPABILITY` | `manage_options` — capability Base uses for all its pages. |
 | `SurveyJS_SurveyJS::CORE_SCRIPT` / `UI_SCRIPT` / `CORE_STYLE` | Handles of Base's survey-core JS, survey-js-ui JS and survey-core CSS. Registered on `init` on every request (front end and admin); Base's editor and results pages enqueue them. |
 | `SurveyJS_SurveyJS::EDITOR_SCRIPT` | Handle of the form editor script (`editor/editor.js`, footer). Depend on it to use `window.surveyjsEditor`. |
-| `SurveyJS_SurveyJS::library_version()` | Form Library version Base ships, e.g. `3.2.2`. |
+| `SurveyJS_SurveyJS::library_version()` | Form Library version Base ships, e.g. `3.2.4`. |
 | `SurveyJS_SettingsPage::PAGE` / `OPTION_GROUP` | `surveyjs-settings-page` / `surveyjs-settings-group` — Settings API page and option group of SurveyJS Forms > Settings. |
 | `SurveyJS_SurveyJS::survey_locale( $wp_locale = null )` | Form Library locale code for a WordPress locale (default `determine_locale()`), e.g. `he_IL` → `he`, `pt_BR` → `pt-br`, `nb_NO` → `no`; `''` for English or a language Base has no `libs/library/i18n` file for. Filter: `surveyjs_form_locale` `( string $code, string $wp_locale )`. |
 

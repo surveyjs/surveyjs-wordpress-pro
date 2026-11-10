@@ -12,11 +12,15 @@
     const FULLSCREEN_KEY = "surveyjs-pro-editor-fullscreen";
     const SITE_PREVIEW_TABS = ["preview"];
     const SITE_PREVIEW_CLASS = "wp-sjs-pro-site-preview";
+    // Creator picks its JSON tab (Monaco or a plain text area) when it is created, so it waits for Base's Monaco.
+    const MONACO_TIMEOUT = 15000;
 
     const columns = rootElement.querySelector(".wp-sjs-editor__columns");
     const sitePreview = rootElement.querySelector(".wp-sjs-editor__preview");
 
     let creator = null;
+    let monacoWait = null;
+    let monacoSettled = false;
     let sitePreviewFrame = 0;
     let sitePreviewCanvas = null;
     let fullPreviewOpen = Boolean(editor.isFullPreviewOpen && editor.isFullPreviewOpen());
@@ -167,6 +171,7 @@
         const adminTheme = window.surveyjsProAdminTheme;
         if (!adminTheme) return;
         instance.preferredColorPalette = adminTheme.isDark() ? "dark" : "light";
+        if (window.monaco) window.monaco.editor.setTheme(adminTheme.isDark() ? "vs-dark" : "vs");
         instance.applyCreatorTheme(adminTheme.surveyjsTheme());
     }
 
@@ -271,6 +276,15 @@
         if (creator) {
             pullFromEditor();
             scheduleSitePreview();
+            return;
+        }
+        if (!window.monaco && editor.whenMonaco && !monacoSettled) {
+            if (!monacoWait) {
+                monacoWait = Promise.race([editor.whenMonaco(), new Promise((resolve) => setTimeout(resolve, MONACO_TIMEOUT))]).then(() => {
+                    monacoSettled = true;
+                    if (editor.getActiveTab() === options.tab) showCreator();
+                });
+            }
             return;
         }
         host.replaceChildren();
