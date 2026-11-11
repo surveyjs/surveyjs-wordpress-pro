@@ -104,8 +104,12 @@ class SurveyJS_Pro_Pdf_Password {
         } catch ( Throwable $error ) {
             return false;
         }
+        $filesystem = SurveyJS_Pro_Pdf_Respondent::temp_filesystem();
+        if ( ! $filesystem ) {
+            return false;
+        }
         $copy = SurveyJS_Pro_Pdf_Respondent::temp_pdf_path();
-        return false === file_put_contents( $copy, $pdf ) ? false : $copy; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+        return $filesystem->put_contents( $copy, $pdf, FS_CHMOD_FILE ) ? $copy : false;
     }
 
     public static function client_config( $config, $survey ) {
@@ -160,7 +164,6 @@ class SurveyJS_Pro_Pdf_Password {
     }
 
     private static function form_for_request( $form_id ) {
-        check_ajax_referer( SurveyJS_Pro_Pdf::nonce_action( $form_id ) );
         if ( ! current_user_can( SurveyJS_SurveyJS::CAPABILITY ) ) {
             wp_send_json_error( null, 403 );
         }
@@ -176,7 +179,9 @@ class SurveyJS_Pro_Pdf_Password {
     }
 
     public static function ajax_save() {
-        $survey = self::form_for_request( absint( $_POST['form'] ?? 0 ) );
+        $form_id = absint( $_POST['form'] ?? 0 );
+        check_ajax_referer( SurveyJS_Pro_Pdf::nonce_action( $form_id ) );
+        $survey = self::form_for_request( $form_id );
         if ( ! empty( $_POST['remove'] ) ) {
             delete_post_meta( $survey->id, self::META );
             wp_send_json_success( array( 'set' => false ) );
@@ -196,7 +201,9 @@ class SurveyJS_Pro_Pdf_Password {
     }
 
     public static function ajax_encrypt() {
-        $survey = self::form_for_request( absint( $_GET['form'] ?? 0 ) );
+        $form_id = absint( $_GET['form'] ?? 0 );
+        check_ajax_referer( SurveyJS_Pro_Pdf::nonce_action( $form_id ) );
+        $survey = self::form_for_request( $form_id );
         if ( ! self::available() ) {
             self::fail( __( 'password protection needs PHP 8.2 or later with the OpenSSL and ctype extensions.', 'surveyjs-pro' ), 500 );
         }
@@ -209,7 +216,7 @@ class SurveyJS_Pro_Pdf_Password {
             __( 'the PDF is larger than %s.', 'surveyjs-pro' ),
             size_format( $max )
         );
-        if ( (int) ( $_SERVER['CONTENT_LENGTH'] ?? 0 ) > $max ) {
+        if ( absint( wp_unslash( $_SERVER['CONTENT_LENGTH'] ?? 0 ) ) > $max ) {
             self::fail( $too_large, 413 );
         }
         $pdf = (string) file_get_contents( 'php://input', false, null, 0, $max + 1 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents

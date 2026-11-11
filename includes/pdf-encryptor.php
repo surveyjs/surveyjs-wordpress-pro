@@ -57,7 +57,7 @@ class SurveyJS_Pro_Pdf_Encryptor {
         $trailer = $this->read_xref();
         foreach ( array( 'Encrypt', 'Prev', 'XRefStm' ) as $key ) {
             if ( null !== self::get( $trailer, $key ) ) {
-                throw self::error( "The trailer has /$key." );
+                throw self::error( sprintf( 'The trailer has /%s.', esc_html( $key ) ) );
             }
         }
         $root = self::get( $trailer, 'Root' );
@@ -224,7 +224,7 @@ class SurveyJS_Pro_Pdf_Encryptor {
                 }
                 $this->pos += strlen( $entry[0] );
                 if ( isset( $this->offsets[ $num ] ) || isset( $this->free[ $num ] ) ) {
-                    throw self::error( "Object $num is listed twice." );
+                    throw self::error( sprintf( 'Object %d is listed twice.', (int) $num ) );
                 }
                 if ( 'n' === $entry[3] ) {
                     $this->offsets[ $num ] = array( (int) $entry[1], (int) $entry[2] );
@@ -246,7 +246,7 @@ class SurveyJS_Pro_Pdf_Encryptor {
 
     private function read_header( $num, $gen, $offset ) {
         if ( $offset >= strlen( $this->pdf ) || ! preg_match( '/\G(\d+)\s+(\d+)\s+obj/', $this->pdf, $header, 0, $offset ) || (int) $header[1] !== $num || (int) $header[2] !== $gen ) {
-            throw self::error( "Object $num is not at its xref offset." );
+            throw self::error( sprintf( 'Object %d is not at its xref offset.', (int) $num ) );
         }
         $this->pos = $offset + strlen( $header[0] );
     }
@@ -259,7 +259,7 @@ class SurveyJS_Pro_Pdf_Encryptor {
             return array( $value, null );
         }
         if ( 'stream' !== $keyword || 'dict' !== $value['t'] ) {
-            throw self::error( "Object $num has no endobj." );
+            throw self::error( sprintf( 'Object %d has no endobj.', (int) $num ) );
         }
         if ( in_array( self::name_of( self::get( $value, 'Type' ) ), array( 'XRef', 'ObjStm' ), true ) ) {
             throw self::error( 'Object and cross-reference streams are not supported.' );
@@ -269,16 +269,16 @@ class SurveyJS_Pro_Pdf_Encryptor {
         } elseif ( "\n" === substr( $this->pdf, $this->pos, 1 ) ) {
             $this->pos++;
         } else {
-            throw self::error( "Object $num has no end of line after stream." );
+            throw self::error( sprintf( 'Object %d has no end of line after stream.', (int) $num ) );
         }
         $length = $this->stream_length( self::get( $value, 'Length' ) );
         if ( $this->pos + $length > strlen( $this->pdf ) ) {
-            throw self::error( "The stream of object $num is cut off." );
+            throw self::error( sprintf( 'The stream of object %d is cut off.', (int) $num ) );
         }
         $data = substr( $this->pdf, $this->pos, $length );
         $this->pos += $length;
         if ( 'endstream' !== $this->keyword() || 'endobj' !== $this->keyword() ) {
-            throw self::error( "The /Length of object $num does not match its stream." );
+            throw self::error( sprintf( 'The /Length of object %d does not match its stream.', (int) $num ) );
         }
         return array( $value, $data );
     }
@@ -348,10 +348,10 @@ class SurveyJS_Pro_Pdf_Encryptor {
         }
         $token = $this->regular();
         if ( '' === $token ) {
-            throw self::error( '' === $char ? 'Unexpected end of file.' : "Unexpected \"$char\" at byte {$this->pos}." );
+            throw self::error( '' === $char ? 'Unexpected end of file.' : sprintf( 'Unexpected "%s" at byte %d.', esc_html( $char ), (int) $this->pos ) );
         }
         if ( in_array( $token, self::RESERVED, true ) ) {
-            throw self::error( "Unexpected \"$token\" at byte {$this->pos}." );
+            throw self::error( sprintf( 'Unexpected "%s" at byte %d.', esc_html( $token ), (int) $this->pos ) );
         }
         if ( ctype_digit( $token ) ) {
             $pos = $this->pos;
@@ -374,7 +374,7 @@ class SurveyJS_Pro_Pdf_Encryptor {
                 return array( 't' => 'dict', 'v' => $entries );
             }
             if ( '/' !== substr( $this->pdf, $this->pos, 1 ) ) {
-                throw self::error( "Dictionary key expected at byte {$this->pos}." );
+                throw self::error( sprintf( 'Dictionary key expected at byte %d.', (int) $this->pos ) );
             }
             $key = $this->parse_name();
             $entries[] = array( $key, $this->parse_value( $depth + 1 ) );
@@ -410,7 +410,7 @@ class SurveyJS_Pro_Pdf_Encryptor {
         }
         $hex = str_replace( str_split( self::WHITESPACE ), '', substr( $this->pdf, $this->pos + 1, $end - $this->pos - 1 ) );
         if ( '' !== $hex && ! ctype_xdigit( $hex ) ) {
-            throw self::error( "Invalid hex string at byte {$this->pos}." );
+            throw self::error( sprintf( 'Invalid hex string at byte %d.', (int) $this->pos ) );
         }
         $this->pos = $end + 1;
         return array( 't' => 'str', 'v' => (string) hex2bin( strlen( $hex ) % 2 ? $hex . '0' : $hex ) );
@@ -446,7 +446,7 @@ class SurveyJS_Pro_Pdf_Encryptor {
                 $value .= $this->parse_escape();
             }
         }
-        throw self::error( "Unterminated string at byte $start." );
+        throw self::error( sprintf( 'Unterminated string at byte %d.', (int) $start ) );
     }
 
     private function parse_escape() {

@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 add_filter( 'surveyjs_editor_tabs', function ( $tabs ) {
     $tabs['contract'] = 'Contract Tab';
     return $tabs;

@@ -148,22 +148,15 @@ class SurveyJS_Pro_Dashboard {
         );
     }
 
-    private static function in_placeholders( $values, $placeholder ) {
-        return implode( ',', array_fill( 0, count( $values ), $placeholder ) );
-    }
-
     private static function form_counts( $form_ids, $period ) {
         global $wpdb;
         if ( ! $form_ids ) {
             return array();
         }
-        $table = SurveyJS_Entries::table();
-        $forms_in = self::in_placeholders( $form_ids, '%d' );
-        $status_in = self::in_placeholders( self::SUBMITTED, '%s' );
         return $wpdb->get_results( $wpdb->prepare(
-            "SELECT form_id, status, COUNT(*) AS total, SUM( created_at >= %s ) AS recent, SUM( created_at >= %s AND created_at < %s ) AS previous, MAX( created_at ) AS last_entry
-            FROM $table WHERE form_id IN ( $forms_in ) AND status IN ( $status_in ) GROUP BY form_id, status",
-            array_merge( array( $period['start'], $period['previous_start'], $period['start'] ), $form_ids, self::SUBMITTED )
+            'SELECT form_id, status, COUNT(*) AS total, SUM( created_at >= %s ) AS recent, SUM( created_at >= %s AND created_at < %s ) AS previous, MAX( created_at ) AS last_entry
+            FROM %i WHERE form_id IN ( ' . implode( ',', array_fill( 0, count( $form_ids ), '%d' ) ) . ' ) AND status IN ( ' . implode( ',', array_fill( 0, count( self::SUBMITTED ), '%s' ) ) . ' ) GROUP BY form_id, status',
+            array_merge( array( $period['start'], $period['previous_start'], $period['start'], SurveyJS_Entries::table() ), $form_ids, self::SUBMITTED )
         ) );
     }
 
@@ -171,14 +164,11 @@ class SurveyJS_Pro_Dashboard {
         global $wpdb;
         $values = array_fill_keys( array_keys( $period['buckets'] ), 0 );
         if ( $form_ids ) {
-            $table = SurveyJS_Entries::table();
-            $forms_in = self::in_placeholders( $form_ids, '%d' );
-            $status_in = self::in_placeholders( self::SUBMITTED, '%s' );
             // Grouped by the site's current UTC offset: MySQL time zone tables are often missing, so CONVERT_TZ() can't be relied on.
             $rows = $wpdb->get_results( $wpdb->prepare(
-                "SELECT DATE_FORMAT( DATE_ADD( created_at, INTERVAL %d SECOND ), %s ) AS bucket, COUNT(*) AS total
-                FROM $table WHERE form_id IN ( $forms_in ) AND status IN ( $status_in ) AND created_at >= %s GROUP BY bucket",
-                array_merge( array( $period['offset'], 'month' === $period['unit'] ? '%Y-%m' : '%Y-%m-%d' ), $form_ids, self::SUBMITTED, array( $period['start'] ) )
+                'SELECT DATE_FORMAT( DATE_ADD( created_at, INTERVAL %d SECOND ), %s ) AS bucket, COUNT(*) AS total
+                FROM %i WHERE form_id IN ( ' . implode( ',', array_fill( 0, count( $form_ids ), '%d' ) ) . ' ) AND status IN ( ' . implode( ',', array_fill( 0, count( self::SUBMITTED ), '%s' ) ) . ' ) AND created_at >= %s GROUP BY bucket',
+                array_merge( array( $period['offset'], 'month' === $period['unit'] ? '%Y-%m' : '%Y-%m-%d', SurveyJS_Entries::table() ), $form_ids, self::SUBMITTED, array( $period['start'] ) )
             ) );
             foreach ( $rows as $row ) {
                 if ( isset( $values[ $row->bucket ] ) ) {
@@ -197,7 +187,7 @@ class SurveyJS_Pro_Dashboard {
         $subqueries = array();
         foreach ( $form_ids as $form_id ) {
             foreach ( self::SUBMITTED as $status ) {
-                $subqueries[] = $wpdb->prepare( "( SELECT id, form_id, status, user_id, created_at FROM $table WHERE form_id = %d AND status = %s ORDER BY created_at DESC, id DESC LIMIT %d )", $form_id, $status, self::LATEST );
+                $subqueries[] = $wpdb->prepare( '( SELECT id, form_id, status, user_id, created_at FROM %i WHERE form_id = %d AND status = %s ORDER BY created_at DESC, id DESC LIMIT %d )', $table, $form_id, $status, self::LATEST );
             }
         }
         $entries = array();

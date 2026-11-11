@@ -240,12 +240,25 @@ class SurveyJS_Pro_Pdf_Respondent {
         if ( $size <= 0 || $size > self::max_attachment_size() || '%PDF-' !== $signature ) {
             return false;
         }
+        $filesystem = self::temp_filesystem();
+        if ( ! $filesystem ) {
+            return false;
+        }
         $path = self::temp_pdf_path();
-        if ( ! move_uploaded_file( $file['tmp_name'], $path ) ) {
+        if ( ! $filesystem->move( $file['tmp_name'], $path ) ) {
             return false;
         }
         self::$attachment = $path;
         return $path;
+    }
+
+    // Temp files are not WordPress files, so the method is chosen for get_temp_dir() and only needs it to be writable.
+    public static function temp_filesystem() {
+        global $wp_filesystem;
+        if ( ! function_exists( 'WP_Filesystem' ) ) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
+        return WP_Filesystem( false, get_temp_dir(), true ) ? $wp_filesystem : null;
     }
 
     public static function temp_pdf_path() {

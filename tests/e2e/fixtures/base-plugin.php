@@ -1,5 +1,6 @@
 <?php
-require '/var/www/html/wp-load.php';
+require '/var/www/html/wp-load.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.NotAbsolutePath -- absolute path of WordPress in the demo container; the script is piped to php over stdin, so it has no __DIR__.
+if ( ! defined( 'ABSPATH' ) ) exit;
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
 $base = 'surveyjs/surveyjs.php';
