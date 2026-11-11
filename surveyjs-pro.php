@@ -32,6 +32,7 @@ require_once __DIR__ . '/includes/analytics.php';
 require_once __DIR__ . '/includes/dashboard.php';
 require_once __DIR__ . '/includes/pdf.php';
 require_once __DIR__ . '/includes/pdf-respondent.php';
+require_once __DIR__ . '/includes/pdf-aes256.php';
 require_once __DIR__ . '/includes/pdf-encryptor.php';
 require_once __DIR__ . '/includes/pdf-password.php';
 

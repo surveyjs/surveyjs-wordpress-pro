@@ -1,7 +1,7 @@
 === SurveyJS Forms Pro ===
 Contributors: DevSoft Baltic
 Tags: form builder, survey, pdf, analytics
-Requires at least: 6.4
+Requires at least: 6.5
 Tested up to: 7.1
 Stable tag: 3.2.4
 Requires PHP: 8.2

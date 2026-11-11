@@ -4,8 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 // Made for the plain structure jsPDF writes; anything else throws instead of being rewritten into a damaged file.
 class SurveyJS_Pro_Pdf_Encryptor {
 
-    const LIBRARY_NAMESPACE = 'Com\\Tecnick\\Pdf\\Encrypt\\';
-    const MODE_AES_256_R6 = 4;
     const WHITESPACE = "\0\t\n\f\r ";
     const DELIMITERS = '()<>[]{}/%';
     const RESERVED = array( 'obj', 'endobj', 'stream', 'endstream', 'R', 'xref', 'trailer', 'startxref' );
@@ -21,25 +19,7 @@ class SurveyJS_Pro_Pdf_Encryptor {
     private $encrypt;
 
     public static function encrypt( $pdf, $password ) {
-        self::register_autoload();
         return ( new self( (string) $pdf ) )->run( (string) $password );
-    }
-
-    private static function register_autoload() {
-        static $registered = false;
-        if ( $registered ) {
-            return;
-        }
-        $registered = true;
-        spl_autoload_register( function ( $class ) {
-            if ( ! str_starts_with( $class, self::LIBRARY_NAMESPACE ) ) {
-                return;
-            }
-            $file = dirname( __DIR__ ) . '/libs/tc-lib-pdf-encrypt/src/' . str_replace( '\\', '/', substr( $class, strlen( self::LIBRARY_NAMESPACE ) ) ) . '.php';
-            if ( is_file( $file ) ) {
-                require $file;
-            }
-        } );
     }
 
     private function __construct( $pdf ) {
@@ -66,8 +46,7 @@ class SurveyJS_Pro_Pdf_Encryptor {
             throw self::error( 'The trailer has no valid /Root or /Info.' );
         }
         $id = $this->file_id( self::get( $trailer, 'ID' ) );
-        $class = self::LIBRARY_NAMESPACE . 'Encrypt';
-        $this->encrypt = new $class( true, bin2hex( $id[0] ), self::MODE_AES_256_R6, array(), $password, bin2hex( random_bytes( 32 ) ) );
+        $this->encrypt = new SurveyJS_Pro_Pdf_Aes256( $password, bin2hex( random_bytes( 32 ) ) );
 
         ksort( $this->offsets );
         $size = max( (int) self::number( self::get( $trailer, 'Size' ) ), array_key_last( $this->offsets ) + 1 );
@@ -87,24 +66,22 @@ class SurveyJS_Pro_Pdf_Encryptor {
             $positions[ $num ] = strlen( $out );
             $out .= "$num $gen obj\n";
             if ( null === $stream ) {
-                $out .= $this->serialize( $value, $num, $gen ) . "\nendobj\n";
+                $out .= $this->serialize( $value ) . "\nendobj\n";
                 continue;
             }
-            $data = $this->encrypt->encryptString( $stream, $num, $gen );
+            $data = $this->encrypt->encrypt( $stream );
             $value = self::with( $value, 'Length', array( 't' => 'raw', 'v' => (string) strlen( $data ) ) );
-            $out .= $this->serialize( $value, $num, $gen ) . "\nstream\n" . $data . "\nendstream\nendobj\n";
+            $out .= $this->serialize( $value ) . "\nstream\n" . $data . "\nendstream\nendobj\n";
         }
 
-        $pon = $size - 1;
-        $encryption = $this->encrypt->getPdfEncryptionObj( $pon );
-        $positions[ $pon ] = strlen( $out );
-        $out .= $encryption;
-        $size = $pon + 1;
+        $encryption = $size++;
+        $positions[ $encryption ] = strlen( $out );
+        $out .= "$encryption 0 obj\n" . $this->encrypt->dictionary() . "\nendobj\n";
 
         $xref = strlen( $out );
         $out .= $this->xref_table( $positions, $size );
         $out .= "trailer\n<< /Size $size /Root {$root['n']} {$root['g']} R" . ( $info ? " /Info {$info['n']} {$info['g']} R" : '' );
-        $out .= " /Encrypt $pon 0 R /ID [<" . bin2hex( $id[0] ) . '> <' . bin2hex( $id[1] ) . "> ] >>\nstartxref\n$xref\n%%EOF\n";
+        $out .= " /Encrypt $encryption 0 R /ID [<" . bin2hex( $id[0] ) . '> <' . bin2hex( $id[1] ) . "> ] >>\nstartxref\n$xref\n%%EOF\n";
         return $out;
     }
 
@@ -471,22 +448,22 @@ class SurveyJS_Pro_Pdf_Encryptor {
         return $char;
     }
 
-    private function serialize( $node, $num, $gen ) {
+    private function serialize( $node ) {
         switch ( $node['t'] ) {
             case 'dict':
                 $entries = array();
                 foreach ( $node['v'] as $entry ) {
-                    $entries[] = $entry[0]['raw'] . ' ' . $this->serialize( $entry[1], $num, $gen );
+                    $entries[] = $entry[0]['raw'] . ' ' . $this->serialize( $entry[1] );
                 }
                 return '<<' . implode( ' ', $entries ) . '>>';
             case 'arr':
                 $items = array();
                 foreach ( $node['v'] as $item ) {
-                    $items[] = $this->serialize( $item, $num, $gen );
+                    $items[] = $this->serialize( $item );
                 }
                 return '[' . implode( ' ', $items ) . ']';
             case 'str':
-                return '<' . bin2hex( $this->encrypt->encryptString( $node['v'], $num, $gen ) ) . '>';
+                return '<' . bin2hex( $this->encrypt->encrypt( $node['v'] ) ) . '>';
             case 'name':
                 return $node['raw'];
             case 'ref':
