@@ -58,6 +58,7 @@ class SurveyJS_Pro_Updater {
                 'description' => '<p>' . esc_html__( 'Adds Survey Creator, PDF export and analytics to SurveyJS Forms.', 'surveyjs-pro' ) . '</p>'
                     . '<p>' . esc_html__( 'SurveyJS Forms Pro is released together with SurveyJS Forms and always has the same version.', 'surveyjs-pro' ) . '</p>'
                     . '<p><a href="' . $page . '" target="_blank" rel="noopener">' . esc_html__( 'SurveyJS Forms Pro on surveyjs.io', 'surveyjs-pro' ) . '</a></p>',
+                'changelog'   => '<p><a href="' . esc_url( self::download_page_url() . '#changelog' ) . '" target="_blank" rel="noopener">' . esc_html__( 'See the changelog on surveyjs.io', 'surveyjs-pro' ) . '</a></p>',
             ),
         );
     }
