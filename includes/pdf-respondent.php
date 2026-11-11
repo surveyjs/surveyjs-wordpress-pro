@@ -15,9 +15,6 @@ class SurveyJS_Pro_Pdf_Respondent {
 
     public static function init() {
         add_action( self::DELETE_HOOK, array( __CLASS__, 'delete_pdf' ) );
-        if ( ! SurveyJS_Pro_Libs::compatible() ) {
-            return;
-        }
         add_filter( 'surveyjs_form_settings_defaults', array( __CLASS__, 'defaults' ) );
         add_filter( 'surveyjs_form_settings_sanitize', array( __CLASS__, 'sanitize' ), 10, 2 );
         add_action( 'surveyjs_pro_pdf_editor_rows', array( __CLASS__, 'render_editor_rows' ) );

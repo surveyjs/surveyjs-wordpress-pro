@@ -18,9 +18,6 @@ class SurveyJS_Pro_Analytics {
     }
 
     public static function views( $views ) {
-        if ( ! SurveyJS_Pro_Libs::compatible() ) {
-            return $views;
-        }
         return $views + array(
             self::VIEW_CHARTS => __( 'Charts', 'surveyjs-pro' ),
         );

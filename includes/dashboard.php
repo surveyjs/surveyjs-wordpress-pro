@@ -263,7 +263,6 @@ class SurveyJS_Pro_Dashboard {
         $period = $data['period'];
         $totals = $data['totals'];
         $forms_url = self::base_url( SurveyJS_SurveyJS::MENU_SLUG );
-        $charts = SurveyJS_Pro_Libs::compatible();
         $active_forms = $data['active'];
         ?>
         <div class="wrap wp-sjs-pro-dashboard">
@@ -318,27 +317,25 @@ class SurveyJS_Pro_Dashboard {
                 </div>
             </div>
 
-            <?php if ( $charts ) : ?>
-                <div class="wp-sjs-pro-dashboard__charts">
-                    <section class="wp-sjs-pro-dashboard__panel">
-                        <h2><?php esc_html_e( 'Entries over time', 'surveyjs-pro' ); ?></h2>
-                        <div class="wp-sjs-pro-dashboard__chart">
-                            <canvas id="wp-sjs-pro-dashboard-timeline" role="img" aria-label="<?php echo esc_attr( sprintf( /* translators: 1: number of entries, 2: period, e.g. "Last 30 days" */ __( '%1$s entries, %2$s', 'surveyjs-pro' ), number_format_i18n( $totals['recent'] ), $period['label'] ) ); ?>"></canvas>
+            <div class="wp-sjs-pro-dashboard__charts">
+                <section class="wp-sjs-pro-dashboard__panel">
+                    <h2><?php esc_html_e( 'Entries over time', 'surveyjs-pro' ); ?></h2>
+                    <div class="wp-sjs-pro-dashboard__chart">
+                        <canvas id="wp-sjs-pro-dashboard-timeline" role="img" aria-label="<?php echo esc_attr( sprintf( /* translators: 1: number of entries, 2: period, e.g. "Last 30 days" */ __( '%1$s entries, %2$s', 'surveyjs-pro' ), number_format_i18n( $totals['recent'] ), $period['label'] ) ); ?>"></canvas>
+                    </div>
+                </section>
+                <section class="wp-sjs-pro-dashboard__panel">
+                    <h2><?php esc_html_e( 'Entries by form', 'surveyjs-pro' ); ?></h2>
+                    <?php if ( $totals['recent'] > 0 ) : ?>
+                        <?php $bars = min( self::CHART_FORMS + 1, count( array_filter( wp_list_pluck( $data['forms'], 'recent' ) ) ) ); ?>
+                        <div class="wp-sjs-pro-dashboard__chart" style="height: <?php echo esc_attr( max( 160, 40 + 32 * $bars ) ); ?>px">
+                            <canvas id="wp-sjs-pro-dashboard-forms" role="img" aria-label="<?php esc_attr_e( 'Entries by form; the same numbers are in the Forms table below.', 'surveyjs-pro' ); ?>"></canvas>
                         </div>
-                    </section>
-                    <section class="wp-sjs-pro-dashboard__panel">
-                        <h2><?php esc_html_e( 'Entries by form', 'surveyjs-pro' ); ?></h2>
-                        <?php if ( $totals['recent'] > 0 ) : ?>
-                            <?php $bars = min( self::CHART_FORMS + 1, count( array_filter( wp_list_pluck( $data['forms'], 'recent' ) ) ) ); ?>
-                            <div class="wp-sjs-pro-dashboard__chart" style="height: <?php echo esc_attr( max( 160, 40 + 32 * $bars ) ); ?>px">
-                                <canvas id="wp-sjs-pro-dashboard-forms" role="img" aria-label="<?php esc_attr_e( 'Entries by form; the same numbers are in the Forms table below.', 'surveyjs-pro' ); ?>"></canvas>
-                            </div>
-                        <?php else : ?>
-                            <p class="description"><?php esc_html_e( 'No entries in this period.', 'surveyjs-pro' ); ?></p>
-                        <?php endif; ?>
-                    </section>
-                </div>
-            <?php endif; ?>
+                    <?php else : ?>
+                        <p class="description"><?php esc_html_e( 'No entries in this period.', 'surveyjs-pro' ); ?></p>
+                    <?php endif; ?>
+                </section>
+            </div>
 
             <div class="wp-sjs-pro-dashboard__tables">
                 <section class="wp-sjs-pro-dashboard__panel">

@@ -10,10 +10,11 @@ Plugin files are at the repository root, so `git archive` gives the plugin zip a
 
 | Path | What |
 |---|---|
-| `surveyjs-pro.php` | Plugin header (`Requires Plugins: surveyjs`), constants, `require`s, boot on `plugins_loaded`. |
+| `surveyjs-pro.php` | Plugin header (`Requires Plugins: surveyjs`, `Update URI`), constants, `require`s, boot on `plugins_loaded`. |
 | `includes/plugin.php` | `SurveyJS_Pro`: Base version guard and its admin notice, boots the rest, fires `surveyjs_pro_loaded`. |
 | `includes/install.php` | `SurveyJS_Pro_Install`: migrations on `init` by a stored version number. |
 | `includes/settings.php` | `SurveyJS_Pro_Settings`: the Pro section on Base's Settings page (license key). |
+| `includes/updater.php` | `SurveyJS_Pro_Updater`: Pro follows Base updates and shows the version notice (see "Updates"). |
 | `includes/libs.php` | `SurveyJS_Pro_Libs`: registers/enqueues the SurveyJS libraries and applies the license key. |
 | `includes/admin-theme.php`, `assets/admin-theme.{css,js}` | `SurveyJS_Pro_Admin_Theme`: one palette and light/dark mode for Creator, Charts and Dashboard (see "Admin colors"). |
 | `includes/creator.php`, `assets/creator.js`, `assets/creator.css` | `SurveyJS_Pro_Creator`: Survey Creator in the form editor (see "Creator"). |
@@ -28,11 +29,11 @@ Plugin files are at the repository root, so `git archive` gives the plugin zip a
 
 Constants: `SURVEYJS_PRO_VERSION`, `SURVEYJS_PRO_DB_VERSION`, `SURVEYJS_PRO_MIN_BASE_VERSION`, `SURVEYJS_PRO_LIBRARY_VERSION`, `SURVEYJS_PRO_FILE`.
 
-Options (all deleted by `uninstall.php`): `surveyjs_pro_settings` (array), `surveyjs_pro_db_version`, `surveyjs_pro_upgrade_lock`. Form post meta: `_surveyjs_pro_pdf_password` (deleted with the form and by `uninstall.php`). Base's uninstall with "Delete all … data" keeps every `surveyjs_pro_*` option and transient, so Pro options and transients must use that prefix.
+Options (all deleted by `uninstall.php`): `surveyjs_pro_settings` (array), `surveyjs_pro_db_version`, `surveyjs_pro_upgrade_lock`; site option `surveyjs_pro_update_error`. Form post meta: `_surveyjs_pro_pdf_password` (deleted with the form and by `uninstall.php`). Base's uninstall with "Delete all … data" keeps every `surveyjs_pro_*` option and transient, so Pro options and transients must use that prefix.
 
 ### Loading order and the Base guard
 
-WordPress loads `surveyjs-pro/` before `surveyjs/` (alphabetical), so nothing in Pro may touch Base at file load. `SurveyJS_Pro::boot()` runs on `plugins_loaded`: if `SURVEYJS_VERSION` is missing or lower than `SURVEYJS_PRO_MIN_BASE_VERSION`, it only adds an admin notice (`.surveyjs-pro-base-notice`) and returns. Otherwise it starts install/settings/libs and fires `surveyjs_pro_loaded`.
+WordPress loads `surveyjs-pro/` before `surveyjs/` (alphabetical), so nothing in Pro may touch Base at file load. `SurveyJS_Pro::boot()` runs on `plugins_loaded`: if `SURVEYJS_VERSION` is missing or lower than `SURVEYJS_PRO_MIN_BASE_VERSION`, it only adds an admin notice (`.surveyjs-pro-base-notice`) and returns. Otherwise it starts install/settings and fires `surveyjs_pro_loaded`.
 
 **Add a feature:** put it in its own file `includes/<feature>.php` with a class whose `init()` adds the hooks, end the file with `add_action( 'surveyjs_pro_loaded', array( 'SurveyJS_Pro_<Feature>', 'init' ) );`, and add one `require_once` line in `surveyjs-pro.php`. Then the feature runs only when Base is compatible, and parallel features touch only their own files.
 
@@ -58,7 +59,7 @@ On WordPress VIP `wpcom_vip_load_plugin()` does not fire activation hooks, so th
 
 **PHP library.** `libs/tc-lib-pdf-encrypt/` is [tecnickcom/tc-lib-pdf-encrypt](https://github.com/tecnickcom/tc-lib-pdf-encrypt) **2.12.2** (LGPL-3.0-or-later, no package dependencies; PHP 8.2+ with openssl, ctype, hash, pcre): its `src/` and `LICENSE`, unmodified, loaded by an autoloader in `SurveyJS_Pro_Pdf_Encryptor` (no Composer at runtime). `copy-libs` leaves it alone. To update: run `composer require tecnickcom/tc-lib-pdf-encrypt:<version>` in an empty folder, replace `libs/tc-lib-pdf-encrypt/src/` and `LICENSE` with those from `vendor/tecnickcom/tc-lib-pdf-encrypt/`, check that its `composer.json` still requires no other packages, update the version here and run `tests/e2e/pdf-password.spec.js`.
 
-**survey-core and survey-js-ui are not copied.** They come from Base (`src/trunk/libs/library/`, v3.2.4), so a page never loads two copies of the Form Library (Base's editor and results pages already load it). They are still in `package.json` to pin the peer version. `SurveyJS_Pro_Libs::compatible()` compares `SurveyJS_SurveyJS::library_version()` (read from Base's `survey.core.min.js` header) with `SURVEYJS_PRO_LIBRARY_VERSION`; on a mismatch Pro's libraries are not registered and an admin notice explains why. When Base updates the Form Library, update `package.json`, `SURVEYJS_PRO_LIBRARY_VERSION`, run `npm install && npm run copy-libs`, and release both plugins together.
+**survey-core and survey-js-ui are not copied.** They come from Base (`src/trunk/libs/library/`, v3.2.4), so a page never loads two copies of the Form Library (Base's editor and results pages already load it). They are still in `package.json` to pin the peer version. Base and Pro are released with the same version, equal to the SurveyJS library version; when they differ, everything keeps working and the version notice offers to update the older plugin (see "Updates"). When Base updates the Form Library, update `package.json`, `SURVEYJS_PRO_LIBRARY_VERSION`, run `npm install && npm run copy-libs`, and release both plugins together.
 
 To add a file (e.g. a Creator locale, PDF fonts, plotly/apexcharts builds), add it to `FILES` in `scripts/copy-libs.js`, rerun, and register a handle in `SurveyJS_Pro_Libs`. Only these packages and their direct runtime dependencies may be read from `node_modules`.
 
@@ -70,7 +71,7 @@ SurveyJS_Pro_Libs::enqueue( 'pdf' );                 // jspdf + survey-pdf
 SurveyJS_Pro_Libs::enqueue( 'analytics' );           // chart.js + datalabels + survey.analytics and CSS
 ```
 
-`enqueue()` returns `false` when the libraries are unavailable (version mismatch). `script_url( $name )` returns the versioned URL of a script handle's file (for loading it on demand, e.g. `pdf-fonts`, 1.8 MB), or `''`. Call it from `admin_enqueue_scripts` or `surveyjs_admin_enqueue_scripts`. To make your own script depend on a library, call `SurveyJS_Pro_Libs::register()` (or `enqueue()`) first and use `SurveyJS_Pro_Libs::handle( $name )` as the dependency. Handles (`surveyjs-pro-<name>`): `creator-core`, `creator`, `jspdf`, `pdf`, `pdf-fonts`, `pdf-spacious`, `chartjs`, `chartjs-datalabels`, `analytics`; styles `creator`, `analytics`.
+`enqueue()` returns `false` for an unknown bundle. `script_url( $name )` returns the versioned URL of a script handle's file (for loading it on demand, e.g. `pdf-fonts`, 1.8 MB), or `''`. Call it from `admin_enqueue_scripts` or `surveyjs_admin_enqueue_scripts`. To make your own script depend on a library, call `SurveyJS_Pro_Libs::register()` (or `enqueue()`) first and use `SurveyJS_Pro_Libs::handle( $name )` as the dependency. Handles (`surveyjs-pro-<name>`): `creator-core`, `creator`, `jspdf`, `pdf`, `pdf-fonts`, `pdf-spacious`, `chartjs`, `chartjs-datalabels`, `analytics`; styles `creator`, `analytics`.
 
 **License key.** All library handles depend on `surveyjs-pro-license`, a script without a file that runs `Survey.setLicenseKey(<key>)` right after survey-core when the key is set. One key covers Creator, PDF and Dashboard. Don't call `setLicenseKey` yourself.
 
@@ -84,7 +85,7 @@ add_action( 'surveyjs_admin_enqueue_scripts', function ( $page ) {
 
 ### Analytics
 
-`SurveyJS_Pro_Analytics` adds the Charts view to the results page through `surveyjs_results_views` (only when the libraries are compatible) and renders them on `surveyjs_render_results_view`; no Base changes:
+`SurveyJS_Pro_Analytics` adds the Charts view to the results page through `surveyjs_results_views` and renders them on `surveyjs_render_results_view`; no Base changes:
 | View | URL | What |
 |---|---|---|
 | `chart` | `admin.php?page=surveyjs_results&id=<form>&view=chart` | Charts: SurveyJS Dashboard charts (`SurveyAnalytics.Dashboard`, Chart.js + datalabels) with a date range filter on the entry date. |
@@ -100,7 +101,7 @@ Filters:
 
 `SurveyJS_Pro_Dashboard` adds SurveyJS Forms > Dashboard (`admin.php?page=surveyjs-pro-dashboard[&range=7d|30d|90d|12m]`, default `30d`) through `surveyjs_admin_menu`, right after Getting Started in the submenu. Across all published forms it shows: entries in the period (with the change vs the previous period of the same length), all entries, unread, number of forms; a bar chart of entries per day (per month for `12m`) and a horizontal bar chart of entries per form in the period (top 10 + "Other", a bar opens the form's results); the 10 latest entries (link opens the entry on the results page via `&entry=<id>`); a table of forms that have entries (period, all, unread, last entry) with totals.
 
-Counts are submitted entries only (`unread`, `read`); partial and spam are left out. Every query is an aggregate or `LIMIT` over Base's `form_status_date` index, so no entry JSON is loaded: per-form counts are one `GROUP BY form_id, status`; the chart is one `GROUP BY` day/month over the period, shifted by the site's current UTC offset (`CONVERT_TZ()` needs MySQL time zone tables, often missing); latest entries are a `UNION ALL` of per-form/status `ORDER BY created_at DESC LIMIT 10` subqueries (in chunks of 100), each read in index order. Charts use Chart.js from `libs/` (handle `surveyjs-pro-chartjs`); when the libraries are off (version mismatch), the page shows the numbers and tables without charts.
+Counts are submitted entries only (`unread`, `read`); partial and spam are left out. Every query is an aggregate or `LIMIT` over Base's `form_status_date` index, so no entry JSON is loaded: per-form counts are one `GROUP BY form_id, status`; the chart is one `GROUP BY` day/month over the period, shifted by the site's current UTC offset (`CONVERT_TZ()` needs MySQL time zone tables, often missing); latest entries are a `UNION ALL` of per-form/status `ORDER BY created_at DESC LIMIT 10` subqueries (in chunks of 100), each read in index order. Charts use Chart.js from `libs/` (handle `surveyjs-pro-chartjs`).
 
 ### Admin colors
 
@@ -117,6 +118,16 @@ Color mode — Settings → SurveyJS Forms Pro → "Color mode" (`surveyjs_pro_s
 ### Settings
 
 `SurveyJS_Pro_Settings` registers the option `surveyjs_pro_settings` in Base's option group, so it is saved by Base's Settings form (SurveyJS Forms > Settings, section "SurveyJS Forms Pro"). API: `SurveyJS_Pro_Settings::all()`, `license_key()`, `update( array $values )`, `defaults()`. To add a global Pro setting: add its key to `defaults()`, sanitize it in `sanitize()`, and add a field in `register()` (or your own section on `surveyjs_register_settings`).
+
+### Updates
+
+Base (wordpress.org) and Pro (surveyjs.io) are released together, with the same version as the SurveyJS library. Release order: first upload the Pro zip to `surveyjs_site_url( '/Content/Downloads/wordpress/surveyjs-pro.zip' )` (fixed URL, always the latest Pro, one top folder `surveyjs-pro/`), then release Base on wordpress.org. There is no info API: Pro always installs the latest zip ("we guarantee no breaking changes").
+
+- **Pro follows Base.** `upgrader_process_complete` with `type` `plugin`, `action` `update` and `surveyjs/surveyjs.php` in `plugin`/`plugins` (single, bulk, Ajax and core background auto-updates) adds `SurveyJS_Pro_Updater::follow_base()` to `shutdown` of the same request: core's upgrader still has its filters for Base attached during `upgrader_process_complete`, and a failed auto-update is rolled back only after it. `follow_base()` calls `update()` only when the Base version on disk differs from the loaded `SURVEYJS_VERSION` (so not after a failed or rolled-back update). `update()` downloads the zip with `wp_safe_remote_get()` (user agent `SurveyJS-Forms-Pro/<version>`, no site URL) and installs it over itself with `Plugin_Upgrader::install( $file, overwrite_package )` and `Automatic_Upgrader_Skin` (no output; same filesystem credentials as the Base update: `FS_METHOD`/`FTP_*` constants or the credentials posted with it). The plugin is not deactivated, so it stays active. A failure never affects the Base update: its message is stored in the site option `surveyjs_pro_update_error` and shown in the version notice; a success deletes it.
+- **Version notice** (`.surveyjs-pro-version-notice`, all admin pages, users with `update_plugins`; with `DISALLOW_FILE_MODS` users with `activate_plugins`, text only). Shown when `SURVEYJS_VERSION` differs from `SURVEYJS_PRO_VERSION`; one button, for the older plugin only. Base older (the normal case): title "Please update SurveyJS Forms", button "Update SurveyJS Forms" (core's `update.php?action=upgrade-plugin` link when core knows a Base update, otherwise `plugins.php`). Pro older (the follow step failed, or an old Pro zip was installed): title and button "Update SurveyJS Forms Pro" (`admin-post.php?action=surveyjs_pro_update`, nonce, runs the same `update()`). Nothing is turned off on a mismatch. A Base older than `SURVEYJS_PRO_MIN_BASE_VERSION` (no Pro contract yet) gets the same notice; Pro itself does not boot then.
+- **Off:** constant `SURVEYJS_PRO_DISABLE_UPDATES`, filter `surveyjs_pro_self_update` (`bool`), automatically on VIP (`WPCOM_IS_VIP_ENV`, `VIP_GO_APP_ENVIRONMENT`) and when `wp_is_file_mod_allowed( 'surveyjs_pro_self_update' )` is false. Then Pro never downloads and the notice has no Pro button.
+- **`Update URI: https://surveyjs.io/wordpress-pro`** keeps wordpress.org from offering a foreign `surveyjs-pro` from its directory as an update. Pro hooks nothing for it, so core shows no Pro updates in Plugins.
+- **Multisite:** network-activate Pro; core updates plugins in Network Admin and runs auto-updates on the main site, and Pro must be loaded there.
 
 ### Creator
 
@@ -136,7 +147,7 @@ Survey Creator V3 replaces the JSON editing in Base's form editor (Edit button o
 
 ### PDF export
 
-`SurveyJS_Pro_Pdf` (`includes/pdf.php`) uses only the Base hooks below; Base has no PDF code. Everything is off when `SurveyJS_Pro_Libs::compatible()` is false.
+`SurveyJS_Pro_Pdf` (`includes/pdf.php`) uses only the Base hooks below; Base has no PDF code.
 
 - **Editor:** tab `pdf` (`surveyjs_editor_tabs` + `surveyjs_render_editor`) with per-form settings; buttons "Preview PDF" and "Download blank form" use the unsaved JSON, theme and settings from `window.surveyjsEditor`. A live preview of the blank form (`<iframe>` with a blob URL, the browser's PDF viewer, `assets/pdf.css`) sits right of the settings, below them under 1280 px; it is rebuilt 500 ms after an input/change on the tab and when the tab opens (`surveyjs:editor-tab`), only while the tab is visible; stale results are dropped and errors go to the status line, keeping the last preview. PDFs on the editor page render one at a time.
 - **Per-form settings** (`surveyjs_form_settings_defaults` / `_sanitize`): `proPdfFormat` (`auto` default, `a4`, `letter`, `legal`, `a3`, `a5`), `proPdfFontSize` (8–24, default 14), `proPdfLabelFontSize` (8–24, default 14; question titles are scaled by `proPdfLabelFontSize / proPdfFontSize` in `onGetQuestionStyle`, so equal values keep survey-pdf's proportions), `proPdfLayout` (`compact`/`spacious`), `proPdfThemeColors` (apply the form's SurveyJS theme when Adaptive is off and the theme is not dark), `proPdfFillable` (blank form as AcroForm), `proPdfEntryHeader` (entry ID and date in the top margin), `proPdfPageNumbers`, `proPdfLogo` (Media Library attachment ID, `0` = none; the editor and results page get its `large` URL as `logo.url`), `proPdfHeaderText` (up to 100 characters), `proPdfWatermark` (up to 40 characters, empty = none), `proPdfHideEmpty` (entry PDFs leave out unanswered questions).
@@ -146,7 +157,7 @@ Survey Creator V3 replaces the JSON editing in Base's form editor (Edit button o
 
 ### PDF for respondents and emails
 
-`SurveyJS_Pro_Pdf_Respondent` (`includes/pdf-respondent.php`, `assets/pdf-respondent.js`) adds the "After submit" row to the PDF tab through Pro's action `surveyjs_pro_pdf_editor_rows` (argument: the form `$survey`; fires inside the tab's `<table class="form-table">`, before the Export row), the "PDF Attachment" rows and the "PDF Link in Emails" group to the Email tab through Base's `surveyjs_editor_email_rows`, and works only through the Base hooks below. Off when `SurveyJS_Pro_Libs::compatible()` is false. All PDFs are made in the browser by `createPdf` of `assets/pdf.js`, which exposes `window.SurveyJSProPdf = { createPdf, download, fileBase }`; its `config.page` is `front` there, so it runs neither the editor nor the results code.
+`SurveyJS_Pro_Pdf_Respondent` (`includes/pdf-respondent.php`, `assets/pdf-respondent.js`) adds the "After submit" row to the PDF tab through Pro's action `surveyjs_pro_pdf_editor_rows` (argument: the form `$survey`; fires inside the tab's `<table class="form-table">`, before the Export row), the "PDF Attachment" rows and the "PDF Link in Emails" group to the Email tab through Base's `surveyjs_editor_email_rows`, and works only through the Base hooks below. All PDFs are made in the browser by `createPdf` of `assets/pdf.js`, which exposes `window.SurveyJSProPdf = { createPdf, download, fileBase }`; its `config.page` is `front` there, so it runs neither the editor nor the results code.
 
 - **Per-form settings** (all off by default): `proPdfDownload`, `proPdfAttachNotification`, `proPdfAttachAutoReply`, `proPdfEmailLink`, `proPdfLinkDays` (0–365, default 30, 0 = no expiry).
 - **Front end.** For a form with `proPdfDownload` or an attachment option on (and that email on), `surveyjs_enqueue_form_assets` enqueues `pdf-respondent.js` (footer, a few KB, depends on the license handle) and `surveyjs_form_client_config` adds `proPdf` (`download`, `attach`, `settings`) to the form config. jsPDF, survey-pdf, the Spacious preset and `pdf.js` (~1 MB) are loaded on demand, in that order, by URL from `SurveyJS_Pro_Libs::script_url()`; `pdf-fonts` only when the PDF needs it.
@@ -156,7 +167,7 @@ Survey Creator V3 replaces the JSON editing in Base's form editor (Edit button o
 
 ### PDF password
 
-`SurveyJS_Pro_Pdf_Password` (`includes/pdf-password.php`) adds two rows to the PDF tab through `surveyjs_pro_pdf_editor_rows` (after "After submit"): the per-form setting `proPdfPassword` ("Password protect PDF", off by default; not in `SurveyJS_Pro_Pdf::pdf_defaults()`, so it never reaches the respondent's page) and a `type=password` field. Off when `SurveyJS_Pro_Libs::compatible()` is false; when `available()` is false (PHP < 8.2 or no openssl/ctype — the plugin header already requires PHP 8.2) the checkbox is disabled with a note.
+`SurveyJS_Pro_Pdf_Password` (`includes/pdf-password.php`) adds two rows to the PDF tab through `surveyjs_pro_pdf_editor_rows` (after "After submit"): the per-form setting `proPdfPassword` ("Password protect PDF", off by default; not in `SurveyJS_Pro_Pdf::pdf_defaults()`, so it never reaches the respondent's page) and a `type=password` field. when `available()` is false (PHP < 8.2 or no openssl/ctype — the plugin header already requires PHP 8.2) the checkbox is disabled with a note.
 
 - **Storage.** One password per form, in the form's post meta `_surveyjs_pro_pdf_password`: AES-256-GCM with a key derived from `wp_salt( 'auth' )` and the form ID as associated data (base64 of IV, tag and ciphertext). It is never printed: the field is always empty, with the placeholder "Password is set". The password is NFKC-normalized (the part of SASLprep that PDF readers apply to the typed password), 1–127 bytes, without control characters. New salts make the stored password unreadable, which counts as "no password".
 - **Saving.** The field has no `data-setting`, so it is neither in `Settings` of Base's save request nor in `window.surveyjsEditor.getSettings()`. After Base's save (`surveyjs:editor-saved`) `assets/pdf.js` posts to `admin-ajax.php?action=surveyjs_pro_pdf_password` (POST `form`, `password` or `remove=1`, nonce `surveyjs-pro-pdf_<form>`, capability `SurveyJS_SurveyJS::CAPABILITY`): option on and the field filled sets the password, option on and the field empty keeps it, option off deletes it. The result goes to the tab's status line. Typing only in the field does not make the editor "dirty".
@@ -366,4 +377,5 @@ JS events on `document` (`assets/survey.js`), `detail`: `id`, `survey` (the `Sur
 - Libraries: `npm install && npm run copy-libs`, commit `libs/`.
 - Tests: `npx playwright test --project=setup --project=e2e` (reads `../../demo/.env`; set `WP_CONTAINER=demo-wordpress-1` for the tests that run PHP in the container: the Base-inactive notice and the contract tests). The first login after a container restart can time out — rerun.
 - Zip: `git archive --format=zip --prefix=surveyjs-pro/ -o surveyjs-pro.zip HEAD`.
+- Updates: test site http://localhost:9905 (`../../sandboxes/pro-update-test`, Base and Pro are copies in a Docker volume): `reset.sh` copies this working tree as an older Pro and offers a bumped Base from `git/surveyjs-wordpress/src/trunk` as an update.
 - Before release: Plugin Check and `phpcs --standard=WordPress-VIP-Go` must be clean.

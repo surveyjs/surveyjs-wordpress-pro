@@ -11,9 +11,6 @@ class SurveyJS_Pro_Pdf {
     const LETTER_LOCALES = array( 'en_US', 'en_CA', 'fr_CA', 'es_MX', 'es_CL', 'es_CO', 'es_VE', 'es_GT', 'es_CR', 'es_PR', 'es_US' );
 
     public static function init() {
-        if ( ! SurveyJS_Pro_Libs::compatible() ) {
-            return;
-        }
         add_filter( 'surveyjs_form_settings_defaults', array( __CLASS__, 'defaults' ) );
         add_filter( 'surveyjs_form_settings_sanitize', array( __CLASS__, 'sanitize' ), 10, 2 );
         add_filter( 'surveyjs_editor_tabs', array( __CLASS__, 'editor_tabs' ) );

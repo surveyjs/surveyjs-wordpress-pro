@@ -18,3 +18,5 @@ if ( is_multisite() ) {
 } else {
     surveyjs_pro_uninstall_site();
 }
+
+delete_site_option( 'surveyjs_pro_update_error' );

@@ -8,18 +8,8 @@ class SurveyJS_Pro_Libs {
 
     private static $registered = false;
 
-    public static function init() {
-        add_action( 'admin_notices', array( __CLASS__, 'mismatch_notice' ) );
-    }
-
     public static function handle( $name ) {
         return self::PREFIX . $name;
-    }
-
-    // survey-core and survey-js-ui come from Base, so a page never loads two copies of the Form Library;
-    // Pro's libraries are built for one exact Form Library version and stay off when Base ships another.
-    public static function compatible() {
-        return method_exists( 'SurveyJS_SurveyJS', 'library_version' ) && SURVEYJS_PRO_LIBRARY_VERSION === SurveyJS_SurveyJS::library_version();
     }
 
     private static function scripts() {
@@ -54,9 +44,6 @@ class SurveyJS_Pro_Libs {
     public static function register() {
         if ( self::$registered ) {
             return true;
-        }
-        if ( ! self::compatible() ) {
-            return false;
         }
         wp_register_script( self::LICENSE_HANDLE, false, array( SurveyJS_SurveyJS::CORE_SCRIPT ), SURVEYJS_PRO_VERSION );
         $license_key = SurveyJS_Pro_Settings::license_key();
@@ -94,18 +81,5 @@ class SurveyJS_Pro_Libs {
 
     private static function url( $file ) {
         return plugins_url( 'libs/' . $file, SURVEYJS_PRO_FILE );
-    }
-
-    public static function mismatch_notice() {
-        if ( ! current_user_can( 'manage_options' ) || self::compatible() ) {
-            return;
-        }
-        $message = sprintf(
-            /* translators: 1: SurveyJS library version bundled with Pro, 2: SurveyJS library version bundled with SurveyJS Forms */
-            __( 'SurveyJS Forms Pro is built for SurveyJS library %1$s, but SurveyJS Forms ships %2$s. Survey Creator, PDF export and analytics are turned off until both plugins are updated to versions released together.', 'surveyjs-pro' ),
-            SURVEYJS_PRO_LIBRARY_VERSION,
-            method_exists( 'SurveyJS_SurveyJS', 'library_version' ) ? SurveyJS_SurveyJS::library_version() : __( 'an unknown version', 'surveyjs-pro' )
-        );
-        echo '<div class="notice notice-error"><p>' . esc_html( $message ) . '</p></div>';
     }
 }

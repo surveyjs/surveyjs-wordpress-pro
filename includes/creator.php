@@ -57,7 +57,7 @@ class SurveyJS_Pro_Creator {
     }
 
     public static function enabled() {
-        return SurveyJS_Pro_Libs::compatible() && apply_filters( 'surveyjs_pro_creator_enabled', SurveyJS_Pro_Settings::feature( 'creator' ) );
+        return apply_filters( 'surveyjs_pro_creator_enabled', SurveyJS_Pro_Settings::feature( 'creator' ) );
     }
 
     public static function tabs( $tabs ) {

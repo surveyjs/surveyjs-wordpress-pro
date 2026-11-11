@@ -3,7 +3,7 @@ Contributors: DevSoft Baltic
 Tags: form builder, survey, pdf, analytics
 Requires at least: 6.4
 Tested up to: 7.1
-Stable tag: 0.1.0
+Stable tag: 3.2.4
 Requires PHP: 8.2
 License: See LICENSE.md
 
@@ -37,9 +37,25 @@ Pro needs SurveyJS Forms 2.5.6 or later. When SurveyJS Forms is missing or too o
 2. Upload the SurveyJS Forms Pro zip in Plugins > Add New > Upload Plugin and activate it.
 3. Enter your SurveyJS license key in SurveyJS Forms > Settings > SurveyJS Forms Pro.
 
+On multisite, network-activate Pro so it can follow SurveyJS Forms updates.
+
+== Updates ==
+
+SurveyJS Forms and SurveyJS Forms Pro are released together with the same SurveyJS library version. When SurveyJS Forms is updated (manually, in bulk or automatically), Pro installs its latest version from surveyjs.io in the same request and stays active. When the two versions don't match, an admin notice offers to update the older one.
+
+Turn this off with `define( 'SURVEYJS_PRO_DISABLE_UPDATES', true );` in wp-config.php. On WordPress VIP and on sites where `DISALLOW_FILE_MODS` is set, Pro does not update itself.
+
+== External services ==
+
+= Pro downloads from surveyjs.io =
+
+After SurveyJS Forms is updated, or when you click "Update SurveyJS Forms Pro" in the version notice, Pro downloads its latest zip from https://surveyjs.io/Content/Downloads/wordpress/surveyjs-pro.zip. The request carries no site address or other data about your site; surveyjs.io sees only the IP address of your web server.
+
+This service is provided by Devsoft Baltic OÜ: [Terms of Use](https://surveyjs.io/terms-use), [Privacy Policy](https://surveyjs.io/privacy-policy).
+
 == Changelog ==
 
-= 0.1.0 =
+= 3.2.4 =
 * Plugin skeleton.
 * Survey Creator in the form editor.
 * Charts on the Results page.
@@ -47,3 +63,4 @@ Pro needs SurveyJS Forms 2.5.6 or later. When SurveyJS Forms is missing or too o
 * PDF export of entries and blank forms.
 * PDF logo, header text, watermark, the option to leave out unanswered questions and a live preview on the PDF tab.
 * Password-protected PDFs (AES-256).
+* Pro updates itself from surveyjs.io whenever SurveyJS Forms is updated; a notice shows when the versions don't match.
