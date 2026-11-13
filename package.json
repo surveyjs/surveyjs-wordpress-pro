@@ -2,6 +2,7 @@
   "name": "surveyjs-wordpress-pro",
   "private": true,
   "scripts": {
+    "build": "node scripts/build.js",
     "copy-libs": "node scripts/copy-libs.js",
     "test:e2e": "playwright test --project=setup --project=e2e"
   },

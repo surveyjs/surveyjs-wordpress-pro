@@ -212,6 +212,67 @@ Maintainers:
 - Packagist reads `composer.json` from the tag, and the installed files come from GitHub's archive of the tag, which honors `export-ignore` in `.gitattributes`: the Composer install has the same files as the Upload zip (no `composer.json`, `tests/`, `scripts/`, `package.json`). `--prefer-source` clones the whole repository instead.
 - Packagist setup: the GitHub repository must be public, then submit it at https://packagist.org/packages/submit and keep the GitHub hook (Packagist's GitHub app or a webhook to `https://packagist.org/api/github`) so new tags appear automatically.
 
+<a id="vip"></a>
+## WordPress VIP and git-managed sites
+
+On WordPress VIP (and any site whose code is deployed from a git repository) plugins can't be installed, updated or deleted in wp-admin: they are committed to the repository. There are two ways to get SurveyJS Forms and SurveyJS Forms Pro there:
+
+- **Composer** — see [Install with Composer](#install-with-composer), with `installer-paths` set to `plugins/{$name}/`. VIP doesn't run Composer on deploy, so commit the installed `plugins/surveyjs/` and `plugins/surveyjs-pro/` or build them in CI. The Composer package has no loader: add the two lines from [Use your own plugin loader](#use-your-own-plugin-loader) to your `client-mu-plugins/plugin-loader.php`.
+- **VIP archive** — `surveyjs-forms-vip-<version>.zip`, both plugins and a loader, laid out like a VIP repository:
+
+  ```
+  plugins/surveyjs/                      SurveyJS Forms
+  plugins/surveyjs-pro/                  SurveyJS Forms Pro
+  client-mu-plugins/surveyjs-forms.php   loads both plugins with wpcom_vip_load_plugin()
+  ```
+
+### Install from the VIP archive
+
+1. Download `surveyjs-forms-vip-<version>.zip` from https://surveyjs.io/wordpress-pro.
+2. Unzip it into the root of your VIP repository (the one created from [vip-go-skeleton](https://github.com/Automattic/vip-go-skeleton)), so the files land in the existing `plugins/` and `client-mu-plugins/` folders. Keep the folder names `surveyjs` and `surveyjs-pro`.
+3. Commit, open a pull request and merge it. VIP deploys the branch as usual.
+4. Open wp-admin → Plugins. You should see:
+   - SurveyJS Forms and SurveyJS Forms Pro, both marked "Enabled via code";
+   - no Activate, Deactivate, Delete or Update links for them — they are managed in the repository;
+   - no auto-update or "Update SurveyJS Forms Pro" button: Pro never downloads updates on VIP.
+
+   There is no activation step: both plugins create their database tables on the first request after the deploy. The SurveyJS Forms menu is available right away.
+
+### Update
+
+1. Delete `plugins/surveyjs/` and `plugins/surveyjs-pro/` from the repository (this also removes files the new version no longer has).
+2. Unzip the new archive the same way; let it overwrite `client-mu-plugins/surveyjs-forms.php`.
+3. Commit, open a pull request, merge.
+
+Always update both plugins from the same archive: Pro works only with the SurveyJS Forms version it was released with. Don't update `plugins/surveyjs/` alone from wordpress.org.
+
+### Use your own plugin loader
+
+If you already load plugins from `client-mu-plugins/plugin-loader.php`, you can add these two lines there instead of using our loader, and not commit `client-mu-plugins/surveyjs-forms.php` from the archive:
+
+```php
+wpcom_vip_load_plugin( 'surveyjs' );
+wpcom_vip_load_plugin( 'surveyjs-pro' );
+```
+
+- Keep both plugins in `plugins/`, not in `client-mu-plugins/`: VIP reports only plugins loaded from `plugins/` as active to WordPress, and Pro's `Requires Plugins: surveyjs` checks that.
+- Loading them twice (our file and your lines) does no harm: `wpcom_vip_load_plugin()` includes the plugin file with `include_once`, and VIP removes the duplicate from the active plugins list.
+- Our loader does nothing outside VIP (it checks that `wpcom_vip_load_plugin()` exists), so the same repository also works in other environments.
+
+### VIP Code Analysis Bot
+
+The pull request adds the full code of both plugins, so the VIP Code Analysis Bot checks all of it (PHPCS with the `WordPress-VIP-Go` standard, PHP and JavaScript lint). Both plugins have no errors in `WordPress-VIP-Go`. The bot may still comment with warnings — mostly the bundled minified libraries in `libs/` (which PHPCS can't tokenize) and direct queries to the plugins' own entries table. Warnings don't block the merge. To keep the bot off the bundled libraries, list `plugins/surveyjs/libs` and `plugins/surveyjs-pro/libs` in `.vipgoci_phpcs_skip_folders` and `.vipgoci_lint_skip_folders` in the repository root ([VIP docs](https://docs.wpvip.com/vip-code-analysis-bot/customize-phpcs/)).
+
+### Maintainers: building the zips
+
+`npm run build -- [options]` (`scripts/build.js`, Node 22.2+, no dependencies) builds into `dist/` (gitignored):
+
+- `surveyjs-pro-<version>.zip` — `git archive --prefix=surveyjs-pro/` of `--ref` (default `HEAD`), so `export-ignore` in `.gitattributes` applies (`vip/`, `scripts/`, `tests/`, … are left out);
+- `surveyjs-forms-vip-<version>.zip` — Base in `plugins/surveyjs/`, the same Pro files in `plugins/surveyjs-pro/`, and `vip/client-mu-plugins/surveyjs-forms.php` of the same ref as `client-mu-plugins/surveyjs-forms.php`;
+- `SHA256SUMS` for both.
+
+Base for the VIP archive: by default the wordpress.org zip of the same version (`https://downloads.wordpress.org/plugin/surveyjs.<version>.zip`), so the archive has exactly the released Base. Before Base is on wordpress.org: `--base-ref <rev>` (`src/trunk` of `../surveyjs-wordpress` at that commit; `--base-repo <dir>` for another checkout), `--base-worktree`, or `--base-zip <file|url>`. `--worktree` builds Pro from the working tree (uncommitted and untracked files, minus `.gitignore`) for local testing. The build stops when `Version`, `SURVEYJS_PRO_VERSION` and `Stable tag` differ, when Base is older than `SURVEYJS_PRO_MIN_BASE_VERSION` or ships another SurveyJS library than `SURVEYJS_PRO_LIBRARY_VERSION`, and when a development file ends up in the Pro zip. Release: `npm run build -- --ref <tag>` after Base is published on wordpress.org.
+
 ## Developer: the extension contract in SurveyJS Forms (Base)
 
 Everything below is in Base (`surveyjs-wordpress`, `src/trunk`). All hooks are generic; Base behaves exactly as before when nothing hooks into them. A working example of every hook is `tests/e2e/fixtures/contract-mu-plugin.php` (used by `tests/e2e/contract.spec.js`).
