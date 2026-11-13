@@ -134,6 +134,11 @@
         }
     }
 
+    // Creator's preview saves nothing, so files answered there stay in the browser instead of being uploaded to the site.
+    function keepFilesInBrowser(upload) {
+        upload.callback(upload.files.map((file) => ({ file: file, content: URL.createObjectURL(file) })));
+    }
+
     function createCreator() {
         const instance = new SurveyCreator.SurveyCreator({
             showLogicTab: true,
@@ -162,6 +167,9 @@
             instance.onOpenFileChooser.add((sender, chooser) => chooseMedia(chooser));
         }
         instance.onUploadFile.add((sender, upload) => uploadFile(upload));
+        instance.onSurveyInstanceCreated.add((sender, created) => {
+            if (created.area === "preview-tab") created.survey.onUploadFiles.add((survey, upload) => keepFilesInBrowser(upload));
+        });
         addGdprToolboxItem(instance);
         applyAdminTheme(instance);
         return instance;

@@ -9,3 +9,5 @@
 /playwright.config.js export-ignore
 /scripts export-ignore
 /tests export-ignore
+/composer.json export-ignore
+/vip export-ignore

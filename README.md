@@ -176,6 +176,42 @@ Survey Creator V3 replaces the JSON editing in Base's form editor (Edit button o
 - **Email.** `SurveyJS_Pro_Pdf_Respondent::notification_attachments()` swaps the owner's attachment for `SurveyJS_Pro_Pdf_Password::encrypted_copy()`; without a password or when encryption fails, the owner's email is sent without the PDF.
 - **Encryption** (`SurveyJS_Pro_Pdf_Encryptor::encrypt( $pdf, $password )`, no WordPress calls except `esc_html()` on the values in exception messages, throws on failure). AES-256, security handler revision 6 (`/V 5 /R 6`, `/AESV3`, ISO 32000-2) in `SurveyJS_Pro_Pdf_Aes256` on PHP's openssl: a random 256-bit file key from `random_bytes()`, `/U` `/UE` `/O` `/OE` with the Algorithm 2.B hash, `/Perms`, `/EncryptMetadata true`; the password is cut to 127 bytes; random owner password; all permissions allowed (`/P -4`). The document is rewritten object by object, not re-rendered, so text, fonts, links, outlines and AcroForm fields stay as they are. A tokenizer parses each object (literal strings with escapes, nested parentheses and line breaks, hex strings, names with `#xx`, dictionaries, arrays, references, comments) and writes it back with every string encrypted with the file key (AES-256-CBC, a random IV per string and stream); stream data is encrypted as is and gets a direct `/Length` (an indirect `/Length` is resolved first). The output is `%PDF-1.7` with `/Extensions << /ADBE << /BaseVersion /1.7 /ExtensionLevel 8 >> >>` in the catalog, a new classic xref table and a trailer with `/Encrypt` and the original `/ID` (random if missing). Only what jsPDF writes is accepted: a cross-reference or object stream, `/Prev` or `/XRefStm` (incremental updates), an existing `/Encrypt`, a `/Length` that does not match its stream, an object not at its xref offset or broken syntax throws `UnexpectedValueException` instead of producing a damaged file. Checked with qpdf 11.9 (`--check`; the user and owner passwords open it, a wrong password is rejected), poppler 24.02 (same text and rendering as the original), Ghostscript 10.05 and pdf.js, on compressed and uncompressed jsPDF output with links, AcroForm fields, document info, and Cyrillic and Hebrew text in an embedded font; browsers, Acrobat and Preview were not checked. poppler's command-line tools reject passwords longer than 32 bytes in any R6 file (also in files qpdf encrypts itself); qpdf, Ghostscript and pdf.js accept them up to 127 bytes.
 
+## Install with Composer
+
+Pro is the Packagist package `surveyjs/surveyjs-pro` (`type: wordpress-plugin`, no license key). It requires Base as `wp-plugin/surveyjs` from [WP Packages](https://wp-packages.org/) (the wordpress.org mirror by Roots, used by Bedrock), so one command installs both plugins into `plugins/surveyjs-pro/` and `plugins/surveyjs/`. The folder names must stay `surveyjs-pro` and `surveyjs`: `Requires Plugins: surveyjs` matches the folder name.
+
+Client's root `composer.json`:
+
+```json
+{
+  "repositories": [
+    { "type": "composer", "url": "https://repo.wp-packages.org", "only": ["wp-plugin/*", "wp-theme/*"] }
+  ],
+  "extra": {
+    "installer-paths": {
+      "wp-content/plugins/{$name}/": ["type:wordpress-plugin"]
+    }
+  },
+  "config": {
+    "allow-plugins": { "composer/installers": true }
+  }
+}
+```
+
+- `installer-paths`: `wp-content/plugins/{$name}/` for a classic layout, `web/app/plugins/{$name}/` for Bedrock, `plugins/{$name}/` for a WordPress VIP repository. Without `allow-plugins` for `composer/installers` both plugins end up in `vendor/`.
+- Install: `composer require surveyjs/surveyjs-pro`.
+- Update both: `composer update surveyjs/surveyjs-pro --with-dependencies` (or plain `composer update`).
+- Pro requires exactly its own version of Base (`"wp-plugin/surveyjs": "3.2.4"` in Pro 3.2.4), so Composer always installs a matching pair. A new Pro tag is not installed until the same Base version is on WP Packages (a few minutes after the wordpress.org release); until then `composer update` keeps the previous pair.
+- Projects on WPackagist: keep `wpackagist.org` and add the WP Packages repository above for `wp-plugin/*`. Don't also require `wpackagist-plugin/surveyjs`: it is the same plugin under another name and would install into the same `surveyjs/` folder.
+- Turn off Pro's self-update on Composer sites, or it overwrites the installed files: `DISALLOW_FILE_MODS` (Bedrock's default) or `SURVEYJS_PRO_DISABLE_UPDATES` (see "Updates").
+- WordPress VIP doesn't run Composer on deploy: commit the installed `plugins/surveyjs/` and `plugins/surveyjs-pro/`, or run `composer install` in CI and deploy the built branch. Loading on VIP is the same as for a git install.
+
+Maintainers:
+
+- `composer.json` has no `version`: Packagist takes it from the git tag, so the tag (`3.2.4` or `v3.2.4`) must equal `Version:` in `surveyjs-pro.php`. On each release bump the `wp-plugin/surveyjs` constraint in `composer.json` together with `SURVEYJS_PRO_VERSION` and `SURVEYJS_PRO_MIN_BASE_VERSION`.
+- Packagist reads `composer.json` from the tag, and the installed files come from GitHub's archive of the tag, which honors `export-ignore` in `.gitattributes`: the Composer install has the same files as the Upload zip (no `composer.json`, `tests/`, `scripts/`, `package.json`). `--prefer-source` clones the whole repository instead.
+- Packagist setup: the GitHub repository must be public, then submit it at https://packagist.org/packages/submit and keep the GitHub hook (Packagist's GitHub app or a webhook to `https://packagist.org/api/github`) so new tags appear automatically.
+
 ## Developer: the extension contract in SurveyJS Forms (Base)
 
 Everything below is in Base (`surveyjs-wordpress`, `src/trunk`). All hooks are generic; Base behaves exactly as before when nothing hooks into them. A working example of every hook is `tests/e2e/fixtures/contract-mu-plugin.php` (used by `tests/e2e/contract.spec.js`).
@@ -198,11 +234,11 @@ Admin page slugs: `surveyjs-main-menu` (Forms list), `surveyjs_editor` (`&id=<fo
 
 ### Admin menu
 
-**`surveyjs_admin_menu`** (action) — `( string $parent_slug, string $capability )`. Fires at the end of Base's `admin_menu` callback, after Base's submenus.
+**`surveyjs_admin_menu`** (action) — `( string $parent_slug, string $capability )`. Fires at the end of Base's `admin_menu` callback, after Base's submenus (All Forms, Add New Form, Getting Started, Settings). The first submenu item is the target of the top-level "SurveyJS Forms" link, so don't insert at position 0.
 
 ```php
 add_action( 'surveyjs_admin_menu', function ( $parent, $capability ) {
-    add_submenu_page( $parent, __( 'Dashboard', 'surveyjs-pro' ), __( 'Dashboard', 'surveyjs-pro' ), $capability, 'surveyjs-pro-dashboard', array( 'SurveyJS_Pro_Dashboard', 'render' ), 0 );
+    add_submenu_page( $parent, __( 'Dashboard', 'surveyjs-pro' ), __( 'Dashboard', 'surveyjs-pro' ), $capability, 'surveyjs-pro-dashboard', array( 'SurveyJS_Pro_Dashboard', 'render' ), 3 );
 }, 10, 2 );
 ```
 

@@ -1,0 +1,19 @@
+{
+    "name": "surveyjs/surveyjs-pro",
+    "description": "SurveyJS Forms Pro: Survey Creator, PDF export and analytics for the SurveyJS Forms WordPress plugin.",
+    "type": "wordpress-plugin",
+    "keywords": ["wordpress", "wordpress-plugin", "surveyjs", "forms", "survey"],
+    "homepage": "https://surveyjs.io/",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Devsoft Baltic OÜ",
+            "homepage": "https://surveyjs.io/"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "composer/installers": "^1.0 || ^2.0",
+        "wp-plugin/surveyjs": "3.2.4"
+    }
+}

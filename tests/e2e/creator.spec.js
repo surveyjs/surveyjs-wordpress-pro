@@ -70,6 +70,17 @@ test.describe("Survey Creator in the form editor", () => {
     await expect(page.locator('.svc-creator [data-sv-drop-target-survey-element="gdpr_agreement"]')).toBeVisible();
   });
 
+  test("hides the setting that stores files as text for a file question", async ({ page }) => {
+    test.skip(!formId, "Needs the form from the previous test");
+    await page.goto(`/wp-admin/admin.php?page=surveyjs_editor&id=${formId}`);
+    const creator = page.locator(".svc-creator");
+    await expect(creator).toBeVisible();
+    await creator.locator(".svc-toolbox__tool", { hasText: "File Upload" }).locator(".svc-toolbox__item").click();
+    const grid = creator.locator(".svc-side-bar");
+    await expect(grid.getByText("Wait for upload to complete")).toBeVisible();
+    await expect(grid.getByText("Store file content in JSON result as text")).toHaveCount(0);
+  });
+
   test("opens full screen by default and remembers when it is turned off", async ({ page }) => {
     test.skip(!formId, "Needs the form from the previous test");
     await page.goto(`/wp-admin/admin.php?page=surveyjs_editor&id=${formId}`);
