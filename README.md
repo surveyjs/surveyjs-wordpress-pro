@@ -461,7 +461,7 @@ JS events on `document` (`assets/survey.js`), `detail`: `id`, `survey` (the `Sur
 
 **`surveyjs_notification_tags`** (filter) — `( array $tags, string $recipient, object $survey, array $data, int $entry_id )`. Mail tags of the email notification (`$recipient` `owner`) or the auto-reply (`respondent`): `array( 'text' => array( '{tag}' => value ), 'html' => array( '{tag}' => escaped HTML ) )`, used for plain-text and HTML messages; the subject and From name use the respondent's text tags. Add the same key to both.
 
-**`surveyjs_notification_attachments`** (filter) — `( array $attachments, string $recipient, object $survey, array $settings, array $data, int $entry_id )`. `file name => path` of the email notification (`owner`) or the auto-reply (`respondent`). Keep the total under `SurveyJS_Notification::MAX_ATTACHMENTS_SIZE`.
+**`surveyjs_notification_attachments`** (filter) — `( array $attachments, string $recipient, object $survey, array $settings, array $data, int $entry_id )`. `file name => path` of the email notification (`owner`) or the auto-reply (`respondent`). Base puts local paths there (files on a stream wrapper are first copied to a temporary file); a path you add on a stream wrapper (`vip://`, `s3://`) is copied the same way, since PHPMailer refuses such paths. Keep the total under `SurveyJS_Notification::MAX_ATTACHMENTS_SIZE`.
 
 ### Other Base hooks (already existed)
 

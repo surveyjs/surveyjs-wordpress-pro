@@ -16,7 +16,20 @@ class SurveyJS_Pro_Dashboard {
 
     public static function init() {
         add_action( 'surveyjs_admin_menu', array( __CLASS__, 'add_page' ), 10, 2 );
+        add_action( 'admin_bar_menu', array( __CLASS__, 'add_admin_bar_item' ), 81 );
         add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
+    }
+
+    public static function add_admin_bar_item( $admin_bar ) {
+        if ( ! current_user_can( SurveyJS_Admin_Bar::CAPABILITY ) || ! $admin_bar->get_node( SurveyJS_Admin_Bar::NODE ) ) {
+            return;
+        }
+        $admin_bar->add_node( array(
+            'parent' => SurveyJS_Admin_Bar::NODE,
+            'id'     => SurveyJS_Admin_Bar::NODE . '-pro-dashboard',
+            'title'  => esc_html__( 'Dashboard', 'surveyjs-pro' ),
+            'href'   => self::url(),
+        ) );
     }
 
     public static function add_page( $parent, $capability ) {
