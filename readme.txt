@@ -1,5 +1,5 @@
 === SurveyJS Forms Pro ===
-Contributors: DevSoft Baltic
+Contributors: devsoftbaltic
 Tags: form builder, survey, pdf, analytics
 Requires at least: 6.5
 Tested up to: 7.1
@@ -29,7 +29,7 @@ Survey Creator: build forms visually right in the form editor — drag & drop de
 * Per form, on the PDF tab: protect PDFs with a password (AES-256). Entry PDFs, ZIP exports and blank forms you download, and the PDF attached to the email notification, then open only with the password.
 * PDFs are generated in your browser. Password protection is added by your own site. No form data is sent to any external service.
 
-Pro needs SurveyJS Forms 2.5.6 or later. When SurveyJS Forms is missing or too old, Pro shows a notice and does not load.
+Pro needs SurveyJS Forms 3.2.4 or later. When SurveyJS Forms is missing or too old, Pro shows a notice and does not load.
 
 == Installation ==
 
