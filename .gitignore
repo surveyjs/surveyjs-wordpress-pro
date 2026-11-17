@@ -3,3 +3,6 @@ test-results/
 playwright-report/
 tests/e2e/.auth/
 dist/
+blob-report/
+base/
+.tooling/

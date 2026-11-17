@@ -7,7 +7,7 @@ const { execFileSync } = require("child_process");
 
 const root = path.resolve(__dirname, "..");
 const LOADER = "vip/client-mu-plugins/surveyjs-forms.php";
-const NOT_IN_PRO_ZIP = ["vip/", "scripts/", "tests/", "node_modules/", "dist/", "README.md", "DEVELOPMENT.md", "composer.json", "package.json", "package-lock.json", "playwright.config.js", ".gitattributes", ".gitignore"];
+const NOT_IN_PRO_ZIP = [".github/", "vip/", "scripts/", "tests/", "node_modules/", "dist/", "README.md", "DEVELOPMENT.md", "composer.json", "package.json", "package-lock.json", "playwright.config.js", ".gitattributes", ".gitignore"];
 
 function usage(message) {
   if (message) console.error(message);
