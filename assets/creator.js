@@ -350,7 +350,7 @@
     if (saveButton) addFullscreenButton();
     document.addEventListener("surveyjs:editor-full-preview", onFullPreview);
     document.addEventListener("click", (event) => {
-        if (event.target.closest("#wp-sjs-save, .wp-sjs-editor__tabs .nav-tab")) flushToEditor();
+        if (event.target.closest("#wp-sjs-save, #wp-sjs-embed, [data-sjs-embed-save], .wp-sjs-editor__tabs .nav-tab")) flushToEditor();
     }, true);
     window.addEventListener("beforeunload", flushToEditor, true);
     document.addEventListener("surveyjs:editor-tab", (event) => {

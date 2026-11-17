@@ -52,6 +52,7 @@ class SurveyJS_Pro_Creator {
 
     public static function init() {
         add_filter( 'surveyjs_editor_tabs', array( __CLASS__, 'tabs' ) );
+        add_filter( 'surveyjs_visual_editor_enabled', array( __CLASS__, 'enabled' ) );
         add_action( 'surveyjs_render_editor', array( __CLASS__, 'render' ) );
         add_action( 'surveyjs_admin_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
     }
