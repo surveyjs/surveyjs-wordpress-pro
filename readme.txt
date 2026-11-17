@@ -49,7 +49,7 @@ Turn this off with `define( 'SURVEYJS_PRO_DISABLE_UPDATES', true );` in wp-confi
 
 = Pro downloads from surveyjs.io =
 
-After SurveyJS Forms is updated, or when you click "Update SurveyJS Forms Pro" in the version notice, Pro downloads its latest zip from https://surveyjs.io/Content/Downloads/wordpress/surveyjs-pro.zip. The request carries no site address or other data about your site; surveyjs.io sees only the IP address of your web server.
+After SurveyJS Forms is updated, or when you click "Update SurveyJS Forms Pro" in the version notice, Pro downloads its latest zip from https://cdn.surveyjs.io/wordpress/surveyjs-pro.zip. The request carries no site address or other data about your site; surveyjs.io sees only the IP address of your web server.
 
 This service is provided by Devsoft Baltic OÜ: [Terms of Use](https://surveyjs.io/terms-use), [Privacy Policy](https://surveyjs.io/privacy-policy).
 

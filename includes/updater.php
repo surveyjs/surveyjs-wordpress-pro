@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class SurveyJS_Pro_Updater {
 
     const BASE = 'surveyjs/surveyjs.php';
-    const PACKAGE_PATH = '/Content/Downloads/wordpress/surveyjs-pro.zip';
+    const PACKAGE_URL = 'https://cdn.surveyjs.io/wordpress/surveyjs-pro.zip';
     const ACTION = 'surveyjs_pro_update';
     const ERROR = 'surveyjs_pro_update_error';
     const VERSION_ACTION = 'surveyjs_pro_version';
@@ -277,7 +277,7 @@ JS
     }
 
     public static function package_url() {
-        return self::site_url() . self::PACKAGE_PATH;
+        return apply_filters( 'surveyjs_pro_package_url', self::PACKAGE_URL );
     }
 
     public static function download_page_url() {
