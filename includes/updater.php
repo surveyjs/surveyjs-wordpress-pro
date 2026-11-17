@@ -8,8 +8,14 @@ class SurveyJS_Pro_Updater {
     const ACTION = 'surveyjs_pro_update';
     const ERROR = 'surveyjs_pro_update_error';
     const VERSION_ACTION = 'surveyjs_pro_version';
+    const COMPOSER_PACKAGE = 'surveyjs/surveyjs-pro';
+    const COMPOSER_UPDATE = 'composer update surveyjs/surveyjs-pro --with-dependencies';
+    const COMPOSER_ROOT_DEPTH = 4;
+
+    private static $composer = null;
 
     public static function init() {
+        add_filter( 'plugin_row_meta', array( __CLASS__, 'row_meta' ), 10, 2 );
         add_action( 'admin_notices', array( __CLASS__, 'notice' ) );
         add_action( 'network_admin_notices', array( __CLASS__, 'notice' ) );
         add_action( 'in_plugin_update_message-' . self::BASE, array( __CLASS__, 'base_update_message' ), 10, 2 );
@@ -94,8 +100,13 @@ class SurveyJS_Pro_Updater {
 
     public static function base_update_message( $plugin_data, $response ) {
         $new_version = is_object( $response ) ? (string) ( $response->new_version ?? '' ) : '';
-        if ( self::enabled() && '' !== $new_version && version_compare( SURVEYJS_PRO_VERSION, $new_version, '<' ) ) {
+        if ( '' === $new_version || ! version_compare( SURVEYJS_PRO_VERSION, $new_version, '<' ) ) {
+            return;
+        }
+        if ( self::enabled() ) {
             echo ' <strong>' . esc_html__( 'SurveyJS Forms Pro will be updated to the same version automatically.', 'surveyjs-pro' ) . '</strong>';
+        } elseif ( self::managed_by_composer() ) {
+            echo ' <strong>' . esc_html__( 'SurveyJS Forms Pro is installed with Composer and is not updated here: update both plugins with Composer instead.', 'surveyjs-pro' ) . '</strong>';
         }
     }
 
@@ -152,8 +163,95 @@ JS
 
     public static function enabled() {
         $vip = ( defined( 'WPCOM_IS_VIP_ENV' ) && WPCOM_IS_VIP_ENV ) || defined( 'VIP_GO_APP_ENVIRONMENT' );
-        $disabled = defined( 'SURVEYJS_PRO_DISABLE_UPDATES' ) && SURVEYJS_PRO_DISABLE_UPDATES;
-        return ! $vip && ! $disabled && wp_is_file_mod_allowed( 'surveyjs_pro_self_update' ) && (bool) apply_filters( 'surveyjs_pro_self_update', true );
+        if ( $vip || ( defined( 'SURVEYJS_PRO_DISABLE_UPDATES' ) && SURVEYJS_PRO_DISABLE_UPDATES ) || ! wp_is_file_mod_allowed( 'surveyjs_pro_self_update' ) ) {
+            return false;
+        }
+        $composer = ! defined( 'SURVEYJS_PRO_DISABLE_UPDATES' ) && self::composer();
+        return (bool) apply_filters( 'surveyjs_pro_self_update', ! $composer );
+    }
+
+    public static function managed_by_composer() {
+        return self::composer() && ! self::enabled();
+    }
+
+    public static function composer() {
+        if ( null === self::$composer ) {
+            self::$composer = self::detect_composer();
+        }
+        return self::$composer;
+    }
+
+    private static function detect_composer() {
+        $dir = self::real_path( dirname( SURVEYJS_PRO_FILE ) );
+        if ( '' === $dir ) {
+            return false;
+        }
+        if ( class_exists( '\Composer\InstalledVersions' ) && method_exists( '\Composer\InstalledVersions', 'getInstallPath' )
+            && \Composer\InstalledVersions::isInstalled( self::COMPOSER_PACKAGE )
+            && self::real_path( (string) \Composer\InstalledVersions::getInstallPath( self::COMPOSER_PACKAGE ) ) === $dir ) {
+            return true;
+        }
+        $root = $dir;
+        for ( $depth = 0; $depth < self::COMPOSER_ROOT_DEPTH; $depth++ ) {
+            $parent = dirname( $root );
+            if ( $parent === $root || ! self::basedir_allows( $parent ) ) {
+                break;
+            }
+            $root = $parent;
+            if ( self::installs_into( $root, $dir ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static function installs_into( $root, $dir ) {
+        if ( ! is_file( $root . '/composer.json' ) ) {
+            return false;
+        }
+        $config = wp_json_file_decode( $root . '/composer.json', array( 'associative' => true ) );
+        $vendor = is_array( $config ) && isset( $config['config']['vendor-dir'] ) && is_string( $config['config']['vendor-dir'] ) ? $config['config']['vendor-dir'] : 'vendor';
+        $composer_dir = ( path_is_absolute( $vendor ) ? $vendor : $root . '/' . $vendor ) . '/composer';
+        if ( ! is_file( $composer_dir . '/installed.json' ) ) {
+            return false;
+        }
+        $installed = wp_json_file_decode( $composer_dir . '/installed.json', array( 'associative' => true ) );
+        foreach ( (array) ( $installed['packages'] ?? array() ) as $package ) {
+            if ( is_array( $package ) && self::COMPOSER_PACKAGE === ( $package['name'] ?? '' ) && is_string( $package['install-path'] ?? null ) ) {
+                $path = $package['install-path'];
+                return self::real_path( path_is_absolute( $path ) ? $path : $composer_dir . '/' . $path ) === $dir;
+            }
+        }
+        return false;
+    }
+
+    private static function real_path( $path ) {
+        $real = '' === $path ? false : realpath( $path );
+        return false === $real ? '' : untrailingslashit( wp_normalize_path( $real ) );
+    }
+
+    private static function basedir_allows( $path ) {
+        $basedir = (string) ini_get( 'open_basedir' );
+        if ( '' === $basedir ) {
+            return true;
+        }
+        foreach ( explode( PATH_SEPARATOR, $basedir ) as $allowed ) {
+            if ( '' !== $allowed && 0 === strpos( trailingslashit( $path ), trailingslashit( wp_normalize_path( $allowed ) ) ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static function row_meta( $meta, $plugin_file ) {
+        if ( self::pro_plugin() === $plugin_file && self::managed_by_composer() ) {
+            $meta[] = '<span class="surveyjs-pro-composer-note">' . sprintf(
+                /* translators: %s: Composer command */
+                esc_html__( 'Installed with Composer, so it doesn\'t update itself. Update both plugins with %s', 'surveyjs-pro' ),
+                '<code>' . esc_html( self::COMPOSER_UPDATE ) . '</code>'
+            ) . '</span>';
+        }
+        return $meta;
     }
 
     public static function base_updated( $upgrader, $hook_extra ) {
@@ -281,11 +379,23 @@ JS
                     : wp_nonce_url( admin_url( 'admin-post.php?action=' . self::ACTION ), self::ACTION );
             }
         }
-        $show_download = 'pro' === $older && ( '' !== $error || '' === $url );
+        $composer = 'pro' === $older && self::managed_by_composer();
+        $show_download = 'pro' === $older && ! $composer && ( '' !== $error || '' === $url );
         ?>
         <div class="notice notice-warning surveyjs-pro-version-notice">
             <p><strong><?php echo esc_html( $title ); ?></strong></p>
             <p><?php echo esc_html( $message ); ?></p>
+            <?php if ( $composer ) : ?>
+                <p>
+                    <?php
+                    printf(
+                        /* translators: %s: Composer command */
+                        esc_html__( 'SurveyJS Forms Pro is installed with Composer. Update both plugins with %s', 'surveyjs-pro' ),
+                        '<code>' . esc_html( self::COMPOSER_UPDATE ) . '</code>'
+                    );
+                    ?>
+                </p>
+            <?php endif; ?>
             <?php if ( '' !== $error ) : ?>
                 <p>
                     <?php

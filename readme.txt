@@ -43,7 +43,7 @@ On multisite, network-activate Pro so it can follow SurveyJS Forms updates.
 
 SurveyJS Forms and SurveyJS Forms Pro are released together with the same SurveyJS library version. When SurveyJS Forms is updated (manually, in bulk or automatically), Pro installs its latest version from surveyjs.io in the same request and stays active. When the two versions don't match, an admin notice offers to update the older one.
 
-Turn this off with `define( 'SURVEYJS_PRO_DISABLE_UPDATES', true );` in wp-config.php. On WordPress VIP and on sites where `DISALLOW_FILE_MODS` is set, Pro does not update itself.
+Turn this off with `define( 'SURVEYJS_PRO_DISABLE_UPDATES', true );` in wp-config.php. On WordPress VIP and on sites where `DISALLOW_FILE_MODS` is set, Pro does not update itself. When Pro is installed with Composer, it does not update itself either: update both plugins with `composer update surveyjs/surveyjs-pro --with-dependencies`.
 
 == External services ==
 
