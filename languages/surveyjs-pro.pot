@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-18T08:53:28+00:00\n"
+"POT-Creation-Date: 2026-11-18T09:50:26+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: surveyjs-pro\n"
@@ -126,7 +126,7 @@ msgid "Adaptive is on in the Theme tab of the form editor, so the form on your s
 msgstr ""
 
 #: includes/creator.php:124
-#: includes/pdf.php:212
+#: includes/pdf.php:306
 msgid "Full screen"
 msgstr ""
 
@@ -181,7 +181,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: includes/dashboard.php:284
-#: includes/pdf.php:183
+#: includes/pdf.php:269
 msgid "Entries"
 msgstr ""
 
@@ -495,280 +495,345 @@ msgid "0 means the link does not expire. Administrators can open expired links w
 msgstr ""
 
 #. translators: 1: entry ID, 2: entry date
-#: includes/pdf-respondent.php:166
-#: includes/pdf.php:253
+#: includes/pdf-respondent.php:163
+#: includes/pdf.php:348
 #, php-format
 msgid "Entry #%1$s, %2$s"
 msgstr ""
 
 #. translators: 1: page number, 2: number of pages
-#: includes/pdf-respondent.php:168
-#: includes/pdf.php:255
+#: includes/pdf-respondent.php:165
+#: includes/pdf.php:350
 #, php-format
 msgid "Page %1$s of %2$s"
 msgstr ""
 
-#: includes/pdf-respondent.php:169
-#: includes/pdf.php:263
+#: includes/pdf-respondent.php:166
+#: includes/pdf.php:358
 msgid "the font could not be loaded."
 msgstr ""
 
-#: includes/pdf-respondent.php:177
-#: includes/pdf-respondent.php:279
-#: includes/pdf-respondent.php:376
+#: includes/pdf-respondent.php:174
+#: includes/pdf-respondent.php:276
+#: includes/pdf-respondent.php:373
 msgid "Download PDF"
 msgstr ""
 
-#: includes/pdf-respondent.php:178
-#: includes/pdf-respondent.php:375
-#: includes/pdf.php:256
+#: includes/pdf-respondent.php:175
+#: includes/pdf-respondent.php:372
+#: includes/pdf.php:351
 msgid "Generating PDF…"
 msgstr ""
 
-#: includes/pdf-respondent.php:179
+#: includes/pdf-respondent.php:176
 msgid "Could not create the PDF. Try again."
 msgstr ""
 
-#: includes/pdf-respondent.php:180
+#: includes/pdf-respondent.php:177
 msgid "the PDF library could not be loaded."
 msgstr ""
 
 #. translators: %1$s: error message
-#: includes/pdf-respondent.php:182
-#: includes/pdf.php:261
+#: includes/pdf-respondent.php:179
+#: includes/pdf.php:356
 #, php-format
 msgid "Could not create the PDF: %1$s"
 msgstr ""
 
-#: includes/pdf-respondent.php:334
+#: includes/pdf-respondent.php:331
 msgid "This link is invalid or has expired."
 msgstr ""
 
 #. translators: 1: form name, 2: entry ID
-#: includes/pdf-respondent.php:355
+#: includes/pdf-respondent.php:352
 #, php-format
 msgid "%1$s: entry #%2$s"
 msgstr ""
 
-#: includes/pdf.php:32
+#: includes/pdf.php:33
 msgid "A4"
 msgstr ""
 
-#: includes/pdf.php:33
+#: includes/pdf.php:34
 msgid "Letter"
 msgstr ""
 
-#: includes/pdf.php:34
+#: includes/pdf.php:35
 msgid "Legal"
 msgstr ""
 
-#: includes/pdf.php:35
+#: includes/pdf.php:36
 msgid "A3"
 msgstr ""
 
-#: includes/pdf.php:36
+#: includes/pdf.php:37
 msgid "A5"
 msgstr ""
 
 #. translators: %s: page size picked from the site language, e.g. "A4"
-#: includes/pdf.php:40
+#: includes/pdf.php:41
 #, php-format
 msgid "Automatic: %s, from the site language"
 msgstr ""
 
-#: includes/pdf.php:45
+#: includes/pdf.php:46
+msgid "Portrait"
+msgstr ""
+
+#: includes/pdf.php:47
+msgid "Landscape"
+msgstr ""
+
+#: includes/pdf.php:53
 msgid "Compact"
 msgstr ""
 
-#: includes/pdf.php:46
+#: includes/pdf.php:54
 msgid "Spacious"
 msgstr ""
 
-#: includes/pdf.php:100
-#: includes/pdf.php:290
+#: includes/pdf.php:60
+msgid "Sans-serif (Helvetica)"
+msgstr ""
+
+#: includes/pdf.php:61
+msgid "Serif (Times)"
+msgstr ""
+
+#: includes/pdf.php:62
+msgid "Monospace (Courier)"
+msgstr ""
+
+#: includes/pdf.php:160
+#: includes/pdf.php:388
 msgid "PDF"
 msgstr ""
 
-#: includes/pdf.php:117
+#: includes/pdf.php:178
 msgid "Page size"
 msgstr ""
 
-#: includes/pdf.php:120
+#: includes/pdf.php:181
 msgid "Automatic uses Letter when the site language is for the US, Canada or Latin America, and A4 otherwise. Pick a size if the form is printed elsewhere."
 msgstr ""
 
-#: includes/pdf.php:124
+#: includes/pdf.php:185
+msgid "Page orientation"
+msgstr ""
+
+#: includes/pdf.php:189
 msgid "Font size"
 msgstr ""
 
-#: includes/pdf.php:126
-#: includes/pdf.php:133
+#: includes/pdf.php:191
+#: includes/pdf.php:198
 msgid "pt"
 msgstr ""
 
-#: includes/pdf.php:127
+#: includes/pdf.php:192
 msgid "Size of answers. Headings and spacing scale with it."
 msgstr ""
 
-#: includes/pdf.php:131
+#: includes/pdf.php:196
 msgid "Label font size"
 msgstr ""
 
-#: includes/pdf.php:134
+#: includes/pdf.php:199
 msgid "Size of question titles. The same value as Font size keeps the default proportions."
 msgstr ""
 
-#: includes/pdf.php:138
+#: includes/pdf.php:203
+msgid "Font"
+msgstr ""
+
+#: includes/pdf.php:206
+msgid "A PDF with letters these fonts do not have, such as Cyrillic, Greek or Hebrew, uses a font that has them instead."
+msgstr ""
+
+#: includes/pdf.php:210
 msgid "Layout"
 msgstr ""
 
-#: includes/pdf.php:141
+#: includes/pdf.php:213
 msgid "Compact fits more questions on a page. Spacious adds room between questions and is easier to read."
 msgstr ""
 
-#: includes/pdf.php:145
+#: includes/pdf.php:217
 msgid "Colors"
 msgstr ""
 
-#: includes/pdf.php:147
+#: includes/pdf.php:219
 msgid "Use the colors of the form theme"
 msgstr ""
 
-#: includes/pdf.php:148
+#: includes/pdf.php:220
 msgid "Applies when Adaptive is off on the Theme tab and the theme is light. Otherwise the PDF uses the default SurveyJS colors."
 msgstr ""
 
-#: includes/pdf.php:152
+#: includes/pdf.php:224
+#: includes/pdf.php:227
+msgid "Accent color"
+msgstr ""
+
+#: includes/pdf.php:226
+msgid "Use an accent color"
+msgstr ""
+
+#: includes/pdf.php:228
+msgid "Colors the form, page and panel titles, the selected choices and a line under the header. Light colors are used only for choices and the line, so titles stay readable. Replaces the main color of the form theme."
+msgstr ""
+
+#: includes/pdf.php:232
 msgid "Logo"
 msgstr ""
 
-#: includes/pdf.php:156
+#: includes/pdf.php:236
 msgid "Choose a logo for the PDF"
 msgstr ""
 
-#: includes/pdf.php:156
+#: includes/pdf.php:236
 msgid "Use this image"
 msgstr ""
 
-#: includes/pdf.php:156
+#: includes/pdf.php:236
 msgid "Choose image"
 msgstr ""
 
-#: includes/pdf.php:157
+#: includes/pdf.php:238
+msgid "Use site logo"
+msgstr ""
+
+#: includes/pdf.php:240
 msgid "Remove"
 msgstr ""
 
-#: includes/pdf.php:158
+#: includes/pdf.php:241
 msgid "Shown at the top left of every page, up to 12 mm high and 50 mm wide."
 msgstr ""
 
-#: includes/pdf.php:162
+#: includes/pdf.php:245
 msgid "Header text"
 msgstr ""
 
-#: includes/pdf.php:165
+#: includes/pdf.php:249
+msgid "Use site title"
+msgstr ""
+
+#: includes/pdf.php:251
 msgid "Shown at the top of every page, next to the logo, for example your company name."
 msgstr ""
 
-#: includes/pdf.php:169
+#: includes/pdf.php:255
 msgid "Watermark"
 msgstr ""
 
-#: includes/pdf.php:172
+#: includes/pdf.php:258
 msgid "Printed diagonally in light gray across every page, for example DRAFT or CONFIDENTIAL. Leave empty for no watermark."
 msgstr ""
 
-#: includes/pdf.php:176
+#: includes/pdf.php:262
 msgid "Blank form"
 msgstr ""
 
-#: includes/pdf.php:178
+#: includes/pdf.php:264
 msgid "Make the blank form a fillable PDF"
 msgstr ""
 
-#: includes/pdf.php:179
+#: includes/pdf.php:265
 msgid "Respondents can type their answers into the PDF in a PDF viewer. Turn it off for a form to print and fill in by hand. The blank form shows every question, including the ones shown only under conditions. Entries are always exported read-only."
 msgstr ""
 
-#: includes/pdf.php:185
+#: includes/pdf.php:271
 msgid "Leave out questions without an answer"
 msgstr ""
 
-#: includes/pdf.php:186
+#: includes/pdf.php:272
 msgid "Entry PDFs show only the answered questions. The blank form still shows every question."
 msgstr ""
 
-#: includes/pdf.php:190
+#: includes/pdf.php:276
+msgid "Footer text"
+msgstr ""
+
+#: includes/pdf.php:279
+msgid "Shown at the bottom of every page, for example your address or website."
+msgstr ""
+
+#: includes/pdf.php:283
 msgid "Header and footer"
 msgstr ""
 
-#: includes/pdf.php:193
+#: includes/pdf.php:286
 msgid "Show the entry number and date at the bottom of each page"
 msgstr ""
 
-#: includes/pdf.php:194
+#: includes/pdf.php:287
 msgid "Show page numbers"
 msgstr ""
 
-#: includes/pdf.php:200
+#: includes/pdf.php:288
+msgid "Show the date the PDF was created at the bottom of each page"
+msgstr ""
+
+#: includes/pdf.php:294
 msgid "Export"
 msgstr ""
 
-#: includes/pdf.php:202
+#: includes/pdf.php:296
 msgid "Preview PDF"
 msgstr ""
 
-#: includes/pdf.php:203
+#: includes/pdf.php:297
 msgid "Download blank form"
 msgstr ""
 
-#: includes/pdf.php:205
+#: includes/pdf.php:299
 msgid "Uses the form and the settings above as they are now, including unsaved changes. Export entries as PDF on the Results page: the PDF link under an entry, or Export PDF in Bulk actions."
 msgstr ""
 
-#: includes/pdf.php:213
+#: includes/pdf.php:307
 msgid "Close full screen"
 msgstr ""
 
-#: includes/pdf.php:215
+#: includes/pdf.php:309
 msgid "PDF preview"
 msgstr ""
 
 #. translators: 1: number of the PDF being generated, 2: number of PDFs
-#: includes/pdf.php:258
+#: includes/pdf.php:353
 #, php-format
 msgid "Generating PDF %1$s of %2$s…"
 msgstr ""
 
-#: includes/pdf.php:259
+#: includes/pdf.php:354
 msgid "PDF is ready."
 msgstr ""
 
-#: includes/pdf.php:262
+#: includes/pdf.php:357
 msgid "the entries could not be loaded. Reload the page and try again."
 msgstr ""
 
-#: includes/pdf.php:264
+#: includes/pdf.php:359
 msgid "the logo image could not be loaded."
 msgstr ""
 
-#: includes/pdf.php:265
+#: includes/pdf.php:360
 msgid "the selected entries were not found."
 msgstr ""
 
-#: includes/pdf.php:266
+#: includes/pdf.php:361
 msgid "the form JSON has errors. Fix them on the Config tab first."
 msgstr ""
 
-#: includes/pdf.php:267
+#: includes/pdf.php:362
 msgid "the browser blocked the preview window. Allow pop-ups for this site."
 msgstr ""
 
-#: includes/pdf.php:286
+#: includes/pdf.php:384
 msgid "Blank Form PDF"
 msgstr ""
 
-#: includes/pdf.php:298
+#: includes/pdf.php:396
 msgid "Export PDF"
 msgstr ""
 

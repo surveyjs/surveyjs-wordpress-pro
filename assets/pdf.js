@@ -25,8 +25,15 @@
     // survey-pdf draws an image at no more than 0.75 pt per pixel, so an image smaller than 1.34 px per pt would not fill its rect.
     const LOGO_PX_PER_PT = 3;
     const WATERMARK_PX_PER_PT = 1.5;
+    const STANDARD_FONTS = ["helvetica", "times", "courier"];
+    const BRAND_COLOR = "--sjs2-color-project-brand-600";
+    const ACCENT_TITLE_MIN_CONTRAST = 3;
+    const ACCENT_LINE_OFFSET = 3.5;
+    const ACCENT_LINE_WIDTH = 1.5;
+    const FOOTER_TEXT_BOTTOM_MARGIN = 16;
     const logoCache = new Map();
     const watermarkCache = new Map();
+    const lineCache = new Map();
     const HEBREW_FONT = "IBMPlexSansHebrew";
     const HEBREW_LETTERS = /[\u0590-\u05FF\uFB1D-\uFB4F]/u;
     const RTL_LETTERS = /[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/gu;
@@ -182,6 +189,56 @@
         return watermarkCache.get(key);
     }
 
+    function accentColor(settings) {
+        const color = String(settings.proPdfAccentColor || "");
+        return settings.proPdfAccent && /^#[0-9a-f]{6}$/i.test(color) ? color.toLowerCase() : "";
+    }
+
+    function contrastWithWhite(color) {
+        const [r, g, b] = [1, 3, 5].map((index) => {
+            const channel = parseInt(color.substr(index, 2), 16) / 255;
+            return channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+        });
+        return 1.05 / (0.2126 * r + 0.7152 * g + 0.0722 * b + 0.05);
+    }
+
+    function applyAccent(pdf, accent, baseTheme) {
+        pdf.applyTheme({ cssVariables: { [BRAND_COLOR]: accent } }, baseTheme);
+        if (contrastWithWhite(accent) < ACCENT_TITLE_MIN_CONTRAST) return;
+        const title = { fontColor: accent };
+        pdf.applyStyle({ survey: { title }, page: { title }, panel: { title } });
+    }
+
+    function lineImage(color, width, height) {
+        const key = `${color}:${width}x${height}`;
+        if (!lineCache.has(key)) {
+            const canvas = createCanvas(width * LOGO_PX_PER_PT, height * LOGO_PX_PER_PT);
+            const context = canvas.getContext("2d");
+            context.fillStyle = color;
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            lineCache.set(key, canvas.toDataURL("image/png"));
+        }
+        return lineCache.get(key);
+    }
+
+    function addHeaderLine(pdf, color) {
+        const margin = MARGIN * MM_TO_PT;
+        pdf.onRenderHeader.add(async (_, canvas) => {
+            const yTop = (BRANDED_TOP_MARGIN - ACCENT_LINE_OFFSET) * MM_TO_PT;
+            const rect = { xLeft: margin, xRight: canvas.rect.xRight - margin, yTop, yBot: yTop + ACCENT_LINE_WIDTH };
+            await canvas.drawImage({ base64: lineImage(color, rect.xRight - rect.xLeft, ACCENT_LINE_WIDTH), rect });
+        });
+    }
+
+    function formatDate(date) {
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        try {
+            return date.toLocaleDateString(config.locale || undefined, options);
+        } catch (error) {
+            return date.toLocaleDateString(undefined, options);
+        }
+    }
+
     function hideUnansweredQuestions(survey) {
         survey.getAllQuestions().forEach((question) => {
             if (question.hasInput && question.isEmpty() && !question.comment) question.visible = false;
@@ -217,8 +274,11 @@
         const header = entry && settings.proPdfEntryHeader ? format(i18n.entryHeader, entry.id, entry.date) : "";
         const title = String(settings.proPdfHeaderText || "").trim();
         const watermark = String(settings.proPdfWatermark || "").trim();
-        const texts = [json, entry ? entry.data : null, header, title];
-        const font = HEBREW_LETTERS.test(JSON.stringify(texts)) ? HEBREW_FONT : needsUnicodeFont(...texts) ? "segoe" : "helvetica";
+        const footerText = [String(settings.proPdfFooterText || "").trim(), settings.proPdfFooterDate ? formatDate(new Date()) : ""].filter(Boolean).join(" · ");
+        const accent = accentColor(settings);
+        const texts = [json, entry ? entry.data : null, header, title, footerText];
+        const standardFont = STANDARD_FONTS.includes(settings.proPdfFont) ? settings.proPdfFont : "helvetica";
+        const font = HEBREW_LETTERS.test(JSON.stringify(texts)) ? HEBREW_FONT : needsUnicodeFont(...texts) ? "segoe" : standardFont;
         if (font === "segoe") await loadFonts();
         if (font === HEBREW_FONT) await loadHebrewFont();
         const logo = source.logoUrl ? await loadLogo(source.logoUrl) : null;
@@ -236,8 +296,10 @@
         const labelFontSize = clamp(settings.proPdfLabelFontSize, 8, 24, fontSize);
         const pdf = new SurveyPDF.SurveyPDF(json, {
             format: settings.proPdfFormat && settings.proPdfFormat !== "auto" ? settings.proPdfFormat : config.format || "a4",
+            // survey-pdf 3.2.2 lays out a page given by a format name as landscape unless the orientation is set.
+            orientation: settings.proPdfOrientation === "landscape" ? "l" : "p",
             fontSize,
-            margins: { left: MARGIN, right: MARGIN, top: logo || title ? BRANDED_TOP_MARGIN : MARGIN, bot: MARGIN },
+            margins: { left: MARGIN, right: MARGIN, top: logo || title ? BRANDED_TOP_MARGIN : MARGIN, bot: footerText ? FOOTER_TEXT_BOTTOM_MARGIN : MARGIN },
             fontName: font,
             readonlyRenderAs: "text",
             dynamicContent: blankShowsAll,
@@ -257,9 +319,9 @@
         if (settings.proPdfLayout === "spacious" && window.DocLayout && window.DocLayout.Spacious) {
             pdf.applyLayout(layoutWithoutPagePadding(window.DocLayout.Spacious));
         }
-        if (settings.proPdfThemeColors && settings.themeMode === "surveyjs" && source.theme && source.theme.colorPalette !== "dark") {
-            pdf.applyTheme(source.theme);
-        }
+        const themeColors = settings.proPdfThemeColors && settings.themeMode === "surveyjs" && source.theme && source.theme.colorPalette !== "dark";
+        if (accent) applyAccent(pdf, accent, themeColors ? source.theme : undefined);
+        else if (themeColors) pdf.applyTheme(source.theme);
         if (entry) {
             pdf.data = entry.data;
             if (settings.proPdfHideEmpty) hideUnansweredQuestions(pdf);
@@ -269,16 +331,23 @@
         const textMargins = { left: MARGIN * MM_TO_PT, right: MARGIN * MM_TO_PT };
         const start = rtl ? "right" : "left";
         const end = rtl ? "left" : "right";
+        const footerLine = footerText ? { verticalAlign: "bottom", margins: { ...textMargins, bot: (MARGIN / 2) * MM_TO_PT } } : { margins: textMargins };
         if (logo || title) addPageHeader(pdf, logo, title, rtl);
+        if (accent && (logo || title)) addHeaderLine(pdf, accent);
+        if (footerText) {
+            pdf.onRenderFooter.add((_, canvas) => {
+                canvas.drawText({ text: footerText, fontSize: 9, horizontalAlign: "center", verticalAlign: "top", margins: { ...textMargins, top: (MARGIN / 2) * MM_TO_PT } });
+            });
+        }
         if (header) {
             pdf.onRenderFooter.add((_, canvas) => {
-                canvas.drawText({ text: header, fontSize: 9, horizontalAlign: start, margins: textMargins });
+                canvas.drawText({ text: header, fontSize: 9, horizontalAlign: start, ...footerLine });
             });
         }
         if (watermark) addWatermark(pdf, watermark);
         if (settings.proPdfPageNumbers) {
             pdf.onRenderFooter.add((_, canvas) => {
-                canvas.drawText({ text: format(i18n.page, canvas.pageNumber, canvas.pageCount), fontSize: 9, horizontalAlign: end, margins: textMargins });
+                canvas.drawText({ text: format(i18n.page, canvas.pageNumber, canvas.pageCount), fontSize: 9, horizontalAlign: end, ...footerLine });
             });
         }
         return pdf.raw("blob");
@@ -393,6 +462,8 @@
         const preview = document.getElementById("wp-sjs-pro-pdf-logo-preview");
         const chooseButton = document.getElementById("wp-sjs-pro-pdf-logo-choose");
         const removeButton = document.getElementById("wp-sjs-pro-pdf-logo-remove");
+        const siteButton = document.getElementById("wp-sjs-pro-pdf-logo-site");
+        const siteLogo = config.site && config.site.logo;
         if (!input || !preview || !chooseButton || !removeButton) return;
 
         function render() {
@@ -425,7 +496,18 @@
             frame.open();
         });
         removeButton.addEventListener("click", () => setLogo(0, ""));
+        if (siteButton && siteLogo) siteButton.addEventListener("click", () => setLogo(siteLogo.id, siteLogo.url));
         render();
+    }
+
+    function initSiteTitle() {
+        const button = document.getElementById("wp-sjs-pro-pdf-header-site");
+        const input = document.getElementById("wp-sjs-pro-pdf-header-text");
+        if (!button || !input || !config.site) return;
+        button.addEventListener("click", () => {
+            input.value = config.site.title;
+            input.dispatchEvent(new Event("input", { bubbles: true }));
+        });
     }
 
     function initEditor() {
@@ -443,6 +525,7 @@
 
         const logoUrls = new Map([[String(config.logo.id), config.logo.url]]);
         initLogoPicker(logoUrls);
+        initSiteTitle();
 
         let pdfQueue = Promise.resolve();
 

@@ -115,10 +115,6 @@ class SurveyJS_Pro_Pdf_Respondent {
             || ( ! empty( $settings['autoReplyEnabled'] ) && ! empty( $settings['proPdfAttachAutoReply'] ) );
     }
 
-    private static function pdf_settings( $settings ) {
-        return array_intersect_key( $settings, SurveyJS_Pro_Pdf::pdf_defaults() ) + array( 'themeMode' => $settings['themeMode'] );
-    }
-
     public static function max_attachment_size() {
         return min( (int) apply_filters( 'surveyjs_pro_pdf_attachment_max_size', 10 * MB_IN_BYTES ), (int) wp_max_upload_size() );
     }
@@ -130,7 +126,7 @@ class SurveyJS_Pro_Pdf_Respondent {
             $config['proPdf'] = array(
                 'download' => $download,
                 'attach'   => $attach,
-                'settings' => self::pdf_settings( $settings ),
+                'settings' => SurveyJS_Pro_Pdf::client_settings( $settings ),
                 'logoUrl'  => SurveyJS_Pro_Pdf::logo( $survey )['url'],
             );
         }
@@ -159,6 +155,7 @@ class SurveyJS_Pro_Pdf_Respondent {
             'pdf'         => array(
                 'page'     => 'front',
                 'format'   => SurveyJS_Pro_Pdf::page_format(),
+                'locale'   => SurveyJS_Pro_Pdf::date_locale(),
                 'fontsUrl' => SurveyJS_Pro_Libs::script_url( 'pdf-fonts' ),
                 'hebrewFont' => SurveyJS_Pro_Pdf::hebrew_font(),
                 'i18n'     => array(
@@ -342,7 +339,7 @@ class SurveyJS_Pro_Pdf_Respondent {
                 'formName' => $survey->name,
                 'json'     => empty( $json ) ? new stdClass() : $json,
                 'theme'    => SurveyJS_Themes::decode( $survey->theme ),
-                'settings' => self::pdf_settings( $settings ),
+                'settings' => SurveyJS_Pro_Pdf::client_settings( $settings ),
                 'logoUrl'  => SurveyJS_Pro_Pdf::logo( $survey )['url'],
                 'entry'    => array(
                     'id'   => (int) $entry->id,
