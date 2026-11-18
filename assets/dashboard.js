@@ -11,6 +11,7 @@
         adminTheme.isDark();
         return {
             bar: adminTheme.color("chart-1"),
+            bar2: adminTheme.color("chart-2"),
             grid: adminTheme.color("grid"),
             axis: adminTheme.color("border"),
             text: adminTheme.color("text-2")
@@ -23,12 +24,13 @@
     Chart.defaults.color = colors.text;
     Chart.defaults.plugins.tooltip.rtl = rtl;
 
-    function bars(values) {
+    function bars(values, label, color) {
         return {
-            label: data.i18n.entries,
+            label: label || data.i18n.entries,
             data: values,
-            backgroundColor: colors.bar,
-            hoverBackgroundColor: colors.bar,
+            colorKey: color || "bar",
+            backgroundColor: colors[color || "bar"],
+            hoverBackgroundColor: colors[color || "bar"],
             borderRadius: 4,
             borderSkipped: "start",
             maxBarThickness: 28
@@ -50,8 +52,8 @@
 
     function recolor(chart) {
         chart.data.datasets.forEach(function (dataset) {
-            dataset.backgroundColor = colors.bar;
-            dataset.hoverBackgroundColor = colors.bar;
+            dataset.backgroundColor = colors[dataset.colorKey];
+            dataset.hoverBackgroundColor = colors[dataset.colorKey];
         });
         Object.keys(chart.options.scales).forEach(function (key) {
             var scale = chart.options.scales[key];
@@ -85,6 +87,41 @@
                         callbacks: {
                             title: function (items) {
                                 return data.timeline.titles[items[0].dataIndex];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: categoryAxis({ reverse: rtl, ticks: { autoSkip: true, maxRotation: 0 } }),
+                    y: countAxis({ position: rtl ? "right" : "left" })
+                }
+            }
+        }));
+    }
+
+    var views = document.getElementById("wp-sjs-pro-dashboard-views");
+    if (views && data.views) {
+        charts.push(new Chart(views, {
+            type: "bar",
+            data: {
+                labels: data.timeline.labels,
+                datasets: [
+                    bars(data.views.views, data.i18n.views),
+                    bars(data.views.submissions, data.i18n.submissions, "bar2")
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+                interaction: { mode: "index", intersect: false },
+                plugins: {
+                    legend: { display: true, position: "top", align: "start", rtl: rtl, labels: { boxWidth: 12, boxHeight: 12 } },
+                    tooltip: {
+                        callbacks: {
+                            title: function (items) {
+                                return data.timeline.titles[items[0].dataIndex];
+                            },
+                            footer: function (items) {
+                                return data.i18n.conversion.replace("%s", data.views.conversion[items[0].dataIndex]);
                             }
                         }
                     }

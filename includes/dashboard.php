@@ -91,9 +91,24 @@ class SurveyJS_Pro_Dashboard {
                 'recent'     => 0,
                 'previous'   => 0,
                 'last_entry' => '',
+                'views'       => 0,
+                'submissions' => 0,
+                'previous_views'       => 0,
+                'previous_submissions' => 0,
             );
         }
-        $totals = array( 'total' => 0, 'unread' => 0, 'recent' => 0, 'previous' => 0 );
+        $totals = array( 'total' => 0, 'unread' => 0, 'recent' => 0, 'previous' => 0, 'views' => 0, 'submissions' => 0, 'previous_views' => 0, 'previous_submissions' => 0 );
+        $views = self::views_enabled();
+        if ( $views ) {
+            foreach ( array( '' => array( $period['start_date'], '' ), 'previous_' => array( $period['previous_start_date'], $period['start_date'] ) ) as $prefix => $dates ) {
+                foreach ( SurveyJS_Form_Stats::totals( array_keys( $forms ), $dates[0], $dates[1] ) as $form_id => $stats ) {
+                    if ( isset( $forms[ $form_id ] ) ) {
+                        $forms[ $form_id ]->{ $prefix . 'views' } = $stats->views;
+                        $forms[ $form_id ]->{ $prefix . 'submissions' } = $stats->submissions;
+                    }
+                }
+            }
+        }
         foreach ( self::form_counts( array_keys( $forms ), $period ) as $row ) {
             $form = $forms[ (int) $row->form_id ] ?? null;
             if ( ! $form ) {
@@ -118,7 +133,7 @@ class SurveyJS_Pro_Dashboard {
             return array( $b->recent, $b->total, $b->last_entry ) <=> array( $a->recent, $a->total, $a->last_entry );
         } );
         $active = array_filter( $forms, function ( $form ) {
-            return $form->total > 0;
+            return $form->total > 0 || $form->views > 0;
         } );
         self::$data = array(
             'range'    => $range,
@@ -127,6 +142,7 @@ class SurveyJS_Pro_Dashboard {
             'active'   => $active,
             'totals'   => $totals,
             'timeline' => self::timeline( array_keys( $active ), $period ),
+            'views'    => $views ? self::views_timeline( array_keys( $forms ), $period ) : null,
             'latest'   => self::latest_entries( array_keys( $active ) ),
         );
         return self::$data;
@@ -150,12 +166,15 @@ class SurveyJS_Pro_Dashboard {
             );
         }
         $utc = new DateTimeZone( 'UTC' );
+        $previous_start = $start->modify( '-' . $count . ' ' . $unit );
         return array(
             'unit'           => $unit,
             'count'          => $count,
             'label'          => $config['label'],
             'start'          => $start->setTimezone( $utc )->format( 'Y-m-d H:i:s' ),
-            'previous_start' => $start->modify( '-' . $count . ' ' . $unit )->setTimezone( $utc )->format( 'Y-m-d H:i:s' ),
+            'previous_start' => $previous_start->setTimezone( $utc )->format( 'Y-m-d H:i:s' ),
+            'start_date'          => $start->format( 'Y-m-d' ),
+            'previous_start_date' => $previous_start->format( 'Y-m-d' ),
             'offset'         => $timezone->getOffset( new DateTimeImmutable( 'now', $timezone ) ),
             'buckets'        => $buckets,
         );
@@ -187,6 +206,20 @@ class SurveyJS_Pro_Dashboard {
                 if ( isset( $values[ $row->bucket ] ) ) {
                     $values[ $row->bucket ] += (int) $row->total;
                 }
+            }
+        }
+        return $values;
+    }
+
+    public static function views_enabled() {
+        return class_exists( 'SurveyJS_Form_Stats' ) && SurveyJS_Form_Stats::enabled();
+    }
+
+    private static function views_timeline( $form_ids, $period ) {
+        $values = array_fill_keys( array_keys( $period['buckets'] ), array( 'views' => 0, 'submissions' => 0 ) );
+        foreach ( SurveyJS_Form_Stats::timeline( $form_ids, $period['start_date'], $period['unit'] ) as $bucket => $stats ) {
+            if ( isset( $values[ $bucket ] ) ) {
+                $values[ $bucket ] = array( 'views' => $stats->views, 'submissions' => $stats->submissions );
             }
         }
         return $values;
@@ -240,7 +273,7 @@ class SurveyJS_Pro_Dashboard {
             $chart_forms['values'][] = array_sum( wp_list_pluck( $rest, 'recent' ) );
             $chart_forms['urls'][] = '';
         }
-        return array(
+        $chart = array(
             'timeline' => array(
                 'labels' => array_values( wp_list_pluck( $data['period']['buckets'], 'label' ) ),
                 'titles' => array_values( wp_list_pluck( $data['period']['buckets'], 'title' ) ),
@@ -248,9 +281,23 @@ class SurveyJS_Pro_Dashboard {
             ),
             'forms'    => $chart_forms,
             'i18n'     => array(
-                'entries' => __( 'Entries', 'surveyjs-pro' ),
+                'entries'     => __( 'Entries', 'surveyjs-pro' ),
+                'views'       => __( 'Views', 'surveyjs-pro' ),
+                'submissions' => __( 'Submissions', 'surveyjs-pro' ),
+                /* translators: %s: conversion rate, e.g. "12.5%" */
+                'conversion'  => __( 'Conversion: %s', 'surveyjs-pro' ),
             ),
         );
+        if ( $data['views'] ) {
+            $chart['views'] = array(
+                'views'       => array_values( wp_list_pluck( $data['views'], 'views' ) ),
+                'submissions' => array_values( wp_list_pluck( $data['views'], 'submissions' ) ),
+                'conversion'  => array_values( array_map( function ( $bucket ) {
+                    return SurveyJS_Form_Stats::format_conversion( $bucket['views'], $bucket['submissions'] );
+                }, $data['views'] ) ),
+            );
+        }
+        return $chart;
     }
 
     private static function change_text( $recent, $previous, $period ) {
@@ -266,6 +313,15 @@ class SurveyJS_Pro_Dashboard {
         // U+2066/U+2069 isolate the number as left-to-right, or RTL languages show "+12%" as "12%+".
         /* translators: 1: signed percentage change, e.g. "+12%", 2: the comparison period, e.g. "previous 30 days" */
         return sprintf( __( '%1$s vs %2$s', 'surveyjs-pro' ), "\u{2066}" . ( $change > 0 ? '+' : '' ) . number_format_i18n( $change ) . "%\u{2069}", $previous_label );
+    }
+
+    private static function conversion_note( $views, $submissions ) {
+        return sprintf(
+            /* translators: 1: number of submissions, 2: number of views */
+            _n( '%1$s submission from %2$s views', '%1$s submissions from %2$s views', $submissions, 'surveyjs-pro' ),
+            number_format_i18n( $submissions ),
+            number_format_i18n( $views )
+        );
     }
 
     public static function render() {
@@ -328,6 +384,18 @@ class SurveyJS_Pro_Dashboard {
                     <span class="wp-sjs-pro-dashboard__stat-label"><?php esc_html_e( 'Forms', 'surveyjs-pro' ); ?></span>
                     <span class="wp-sjs-pro-dashboard__stat-value"><a href="<?php echo esc_url( $forms_url ); ?>"><?php echo esc_html( number_format_i18n( count( $data['forms'] ) ) ); ?></a></span>
                 </div>
+                <?php if ( $data['views'] ) : ?>
+                    <div class="wp-sjs-pro-dashboard__stat">
+                        <span class="wp-sjs-pro-dashboard__stat-label"><?php esc_html_e( 'Views', 'surveyjs-pro' ); ?></span>
+                        <span class="wp-sjs-pro-dashboard__stat-value"><?php echo esc_html( number_format_i18n( $totals['views'] ) ); ?></span>
+                        <span class="wp-sjs-pro-dashboard__stat-note"><?php echo esc_html( self::change_text( $totals['views'], $totals['previous_views'], $period ) ); ?></span>
+                    </div>
+                    <div class="wp-sjs-pro-dashboard__stat">
+                        <span class="wp-sjs-pro-dashboard__stat-label"><?php esc_html_e( 'Conversion', 'surveyjs-pro' ); ?></span>
+                        <span class="wp-sjs-pro-dashboard__stat-value"><?php echo esc_html( SurveyJS_Form_Stats::format_conversion( $totals['views'], $totals['submissions'] ) ); ?></span>
+                        <span class="wp-sjs-pro-dashboard__stat-note"><?php echo esc_html( self::conversion_note( $totals['views'], $totals['submissions'] ) ); ?></span>
+                    </div>
+                <?php endif; ?>
             </div>
 
             <div class="wp-sjs-pro-dashboard__charts">
@@ -349,6 +417,23 @@ class SurveyJS_Pro_Dashboard {
                     <?php endif; ?>
                 </section>
             </div>
+
+            <section class="wp-sjs-pro-dashboard__panel wp-sjs-pro-dashboard__conversion">
+                <h2><?php esc_html_e( 'Views and submissions', 'surveyjs-pro' ); ?></h2>
+                <?php if ( ! $data['views'] ) : ?>
+                    <p class="description">
+                        <?php esc_html_e( 'Form views are not counted, so there is no conversion rate.', 'surveyjs-pro' ); ?>
+                        <a href="<?php echo esc_url( self::base_url( 'surveyjs-settings' ) ); ?>"><?php esc_html_e( 'Turn on Form views in Settings', 'surveyjs-pro' ); ?></a>
+                    </p>
+                <?php elseif ( $totals['views'] > 0 || $totals['submissions'] > 0 ) : ?>
+                    <div class="wp-sjs-pro-dashboard__chart">
+                        <canvas id="wp-sjs-pro-dashboard-views" role="img" aria-label="<?php echo esc_attr( sprintf( /* translators: 1: number of views, 2: number of submissions, 3: period, e.g. "Last 30 days" */ __( '%1$s views and %2$s submissions, %3$s; the same numbers per form are in the Forms table below.', 'surveyjs-pro' ), number_format_i18n( $totals['views'] ), number_format_i18n( $totals['submissions'] ), $period['label'] ) ); ?>"></canvas>
+                    </div>
+                    <p class="description"><?php esc_html_e( 'Conversion is submissions divided by views. A view is counted when a visitor sees the form on the site; logged-in users who can edit posts and bots are not counted.', 'surveyjs-pro' ); ?></p>
+                <?php else : ?>
+                    <p class="description"><?php esc_html_e( 'No views in this period. A view is counted when a visitor sees a form on the site; logged-in users who can edit posts are not counted.', 'surveyjs-pro' ); ?></p>
+                <?php endif; ?>
+            </section>
 
             <div class="wp-sjs-pro-dashboard__tables">
                 <section class="wp-sjs-pro-dashboard__panel">
@@ -398,6 +483,10 @@ class SurveyJS_Pro_Dashboard {
                                     <th scope="col" class="num"><?php echo esc_html( $period['label'] ); ?></th>
                                     <th scope="col" class="num"><?php esc_html_e( 'All entries', 'surveyjs-pro' ); ?></th>
                                     <th scope="col" class="num"><?php esc_html_e( 'Unread', 'surveyjs-pro' ); ?></th>
+                                    <?php if ( $data['views'] ) : ?>
+                                        <th scope="col" class="num"><?php esc_html_e( 'Views', 'surveyjs-pro' ); ?></th>
+                                        <th scope="col" class="num"><?php esc_html_e( 'Conversion', 'surveyjs-pro' ); ?></th>
+                                    <?php endif; ?>
                                     <th scope="col"><?php esc_html_e( 'Last entry', 'surveyjs-pro' ); ?></th>
                                 </tr>
                             </thead>
@@ -415,7 +504,11 @@ class SurveyJS_Pro_Dashboard {
                                                 0
                                             <?php endif; ?>
                                         </td>
-                                        <td><?php echo esc_html( SurveyJS_Entries::format_date( $form->last_entry ) ); ?></td>
+                                        <?php if ( $data['views'] ) : ?>
+                                            <td class="num"><?php echo esc_html( number_format_i18n( $form->views ) ); ?></td>
+                                            <td class="num" title="<?php echo esc_attr( self::conversion_note( $form->views, $form->submissions ) ); ?>"><?php echo esc_html( SurveyJS_Form_Stats::format_conversion( $form->views, $form->submissions ) ); ?></td>
+                                        <?php endif; ?>
+                                        <td><?php echo esc_html( '' !== $form->last_entry ? SurveyJS_Entries::format_date( $form->last_entry ) : "\u{2014}" ); ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -425,6 +518,10 @@ class SurveyJS_Pro_Dashboard {
                                     <td class="num"><?php echo esc_html( number_format_i18n( $totals['recent'] ) ); ?></td>
                                     <td class="num"><?php echo esc_html( number_format_i18n( $totals['total'] ) ); ?></td>
                                     <td class="num"><?php echo esc_html( number_format_i18n( $totals['unread'] ) ); ?></td>
+                                    <?php if ( $data['views'] ) : ?>
+                                        <td class="num"><?php echo esc_html( number_format_i18n( $totals['views'] ) ); ?></td>
+                                        <td class="num"><?php echo esc_html( SurveyJS_Form_Stats::format_conversion( $totals['views'], $totals['submissions'] ) ); ?></td>
+                                    <?php endif; ?>
                                     <td></td>
                                 </tr>
                             </tfoot>

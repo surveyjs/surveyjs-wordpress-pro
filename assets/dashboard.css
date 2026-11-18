@@ -76,6 +76,14 @@
     height: 280px;
 }
 
+.wp-sjs-pro-dashboard__conversion {
+    margin-bottom: 16px;
+}
+
+.wp-sjs-pro-dashboard__conversion .description {
+    margin-bottom: 0;
+}
+
 .wp-sjs-pro-dashboard__panel .widefat {
     border-left: 0;
     border-right: 0;

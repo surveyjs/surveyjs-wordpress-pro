@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-18T08:21:47+00:00\n"
+"POT-Creation-Date: 2026-11-18T08:40:34+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: surveyjs-pro\n"
@@ -77,7 +77,7 @@ msgid "Showing the latest %1$s of %2$s entries. Export CSV includes all of them.
 msgstr ""
 
 #: includes/analytics.php:85
-#: includes/dashboard.php:387
+#: includes/dashboard.php:472
 msgid "No entries yet."
 msgstr ""
 
@@ -136,7 +136,7 @@ msgstr ""
 
 #: includes/dashboard.php:30
 #: includes/dashboard.php:36
-#: includes/dashboard.php:282
+#: includes/dashboard.php:338
 msgid "Dashboard"
 msgstr ""
 
@@ -161,20 +161,36 @@ msgid "(no title)"
 msgstr ""
 
 #. translators: %s: number of forms
-#: includes/dashboard.php:237
+#: includes/dashboard.php:270
 #, php-format
 msgid "Other (%s form)"
 msgid_plural "Other (%s forms)"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/dashboard.php:251
+#: includes/dashboard.php:284
 #: includes/pdf.php:183
 msgid "Entries"
 msgstr ""
 
+#: includes/dashboard.php:285
+#: includes/dashboard.php:389
+#: includes/dashboard.php:487
+msgid "Views"
+msgstr ""
+
+#: includes/dashboard.php:286
+msgid "Submissions"
+msgstr ""
+
+#. translators: %s: conversion rate, e.g. "12.5%"
+#: includes/dashboard.php:288
+#, php-format
+msgid "Conversion: %s"
+msgstr ""
+
 #. translators: %s: number of days or months
-#: includes/dashboard.php:263
+#: includes/dashboard.php:310
 #, php-format
 msgid "previous %s month"
 msgid_plural "previous %s months"
@@ -182,7 +198,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: number of days or months
-#: includes/dashboard.php:263
+#: includes/dashboard.php:310
 #, php-format
 msgid "previous %s day"
 msgid_plural "previous %s days"
@@ -190,102 +206,141 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: 1: signed percentage change, e.g. "+12%", 2: the comparison period, e.g. "previous 30 days"
-#: includes/dashboard.php:268
+#: includes/dashboard.php:315
 #, php-format
 msgid "%1$s vs %2$s"
 msgstr ""
 
-#: includes/dashboard.php:273
+#. translators: 1: number of submissions, 2: number of views
+#: includes/dashboard.php:321
+#, php-format
+msgid "%1$s submission from %2$s views"
+msgid_plural "%1$s submissions from %2$s views"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/dashboard.php:329
 msgid "Sorry, you are not allowed to access this page."
 msgstr ""
 
-#: includes/dashboard.php:287
+#: includes/dashboard.php:343
 msgid "No forms yet. Create a form, add it to a page, and its entries will show up here."
 msgstr ""
 
-#: includes/dashboard.php:288
+#: includes/dashboard.php:344
 msgid "Go to Forms"
 msgstr ""
 
-#: includes/dashboard.php:320
-#: includes/dashboard.php:399
+#: includes/dashboard.php:376
+#: includes/dashboard.php:484
 msgid "All entries"
 msgstr ""
 
-#: includes/dashboard.php:324
-#: includes/dashboard.php:400
+#: includes/dashboard.php:380
+#: includes/dashboard.php:485
 msgid "Unread"
 msgstr ""
 
-#: includes/dashboard.php:328
-#: includes/dashboard.php:392
+#: includes/dashboard.php:384
+#: includes/dashboard.php:477
 msgid "Forms"
 msgstr ""
 
-#: includes/dashboard.php:335
+#: includes/dashboard.php:394
+#: includes/dashboard.php:488
+msgid "Conversion"
+msgstr ""
+
+#: includes/dashboard.php:403
 msgid "Entries over time"
 msgstr ""
 
 #. translators: 1: number of entries, 2: period, e.g. "Last 30 days"
-#: includes/dashboard.php:337
+#: includes/dashboard.php:405
 #, php-format
 msgid "%1$s entries, %2$s"
 msgstr ""
 
-#: includes/dashboard.php:341
+#: includes/dashboard.php:409
 msgid "Entries by form"
 msgstr ""
 
-#: includes/dashboard.php:345
+#: includes/dashboard.php:413
 msgid "Entries by form; the same numbers are in the Forms table below."
 msgstr ""
 
-#: includes/dashboard.php:348
+#: includes/dashboard.php:416
 msgid "No entries in this period."
 msgstr ""
 
-#: includes/dashboard.php:355
+#: includes/dashboard.php:422
+msgid "Views and submissions"
+msgstr ""
+
+#: includes/dashboard.php:425
+msgid "Form views are not counted, so there is no conversion rate."
+msgstr ""
+
+#: includes/dashboard.php:426
+msgid "Turn on Form views in Settings"
+msgstr ""
+
+#. translators: 1: number of views, 2: number of submissions, 3: period, e.g. "Last 30 days"
+#: includes/dashboard.php:430
+#, php-format
+msgid "%1$s views and %2$s submissions, %3$s; the same numbers per form are in the Forms table below."
+msgstr ""
+
+#: includes/dashboard.php:432
+msgid "Conversion is submissions divided by views. A view is counted when a visitor sees the form on the site; logged-in users who can edit posts and bots are not counted."
+msgstr ""
+
+#: includes/dashboard.php:434
+msgid "No views in this period. A view is counted when a visitor sees a form on the site; logged-in users who can edit posts are not counted."
+msgstr ""
+
+#: includes/dashboard.php:440
 msgid "Latest entries"
 msgstr ""
 
-#: includes/dashboard.php:360
+#: includes/dashboard.php:445
 msgid "Entry"
 msgstr ""
 
-#: includes/dashboard.php:361
-#: includes/dashboard.php:397
+#: includes/dashboard.php:446
+#: includes/dashboard.php:482
 msgid "Form"
 msgstr ""
 
-#: includes/dashboard.php:362
+#: includes/dashboard.php:447
 msgid "Submitted by"
 msgstr ""
 
-#: includes/dashboard.php:363
+#: includes/dashboard.php:448
 msgid "Date"
 msgstr ""
 
-#: includes/dashboard.php:380
+#: includes/dashboard.php:465
 msgid "Guest"
 msgstr ""
 
-#: includes/dashboard.php:401
+#: includes/dashboard.php:490
 msgid "Last entry"
 msgstr ""
 
-#: includes/dashboard.php:424
+#: includes/dashboard.php:517
 msgid "Total"
 msgstr ""
 
 #. translators: %s: number of forms
-#: includes/dashboard.php:438
+#: includes/dashboard.php:535
 #, php-format
 msgid "%s form has no entries yet."
 msgid_plural "%s forms have no entries yet."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/dashboard.php:440
+#: includes/dashboard.php:537
 msgid "All forms"
 msgstr ""
 
