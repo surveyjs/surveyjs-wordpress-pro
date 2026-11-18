@@ -4,7 +4,7 @@
     const config = window.surveyjsProPdf;
     if (!config || !window.SurveyPDF) return;
 
-    // survey-pdf 3.2.2 RTL workarounds: jsPDF mirrors brackets only with isSymmetricSwapping, which survey-pdf never passes;
+    // survey-pdf 3.2.4 RTL workarounds: jsPDF mirrors brackets only with isSymmetricSwapping, which survey-pdf never passes;
     // jsPDF's bidi moves the trailing number of a purely LTR line to its start ("2 Page 1 of"), so such lines stay LTR;
     // survey-pdf reverses fillable field values by characters, while PDF viewers apply bidi to them themselves.
     window.jspdf.jsPDF.API.events.push(["preProcessText", (payload) => {

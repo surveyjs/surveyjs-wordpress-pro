@@ -51,8 +51,8 @@ On WordPress VIP `wpcom_vip_load_plugin()` does not fire activation hooks, so th
 |---|---|---|
 | survey-creator-core | 3.2.4 | `survey-creator-core.min.js`, `survey-creator-core.min.css`, `images/`, `i18n/*.min.js` (Creator UI translations, 36 languages; `index` and `english` are skipped) |
 | survey-creator-js | 3.2.4 | `survey-creator-js.min.js` |
-| survey-pdf | 3.2.2 | `survey.pdf.min.js`, `survey.pdf.fonts.min.js` (Segoe UI for non-Latin text), `spacious.min.js` (from `layouts/`, the Spacious layout preset, global `DocLayout.Spacious`) |
-| survey-analytics | 3.2.2 | `survey.analytics.min.js/.css` (Chart.js) |
+| survey-pdf | 3.2.4 | `survey.pdf.min.js`, `survey.pdf.fonts.min.js` (Segoe UI for non-Latin text), `spacious.min.js` (from `layouts/`, the Spacious layout preset, global `DocLayout.Spacious`) |
+| survey-analytics | 3.2.4 | `survey.analytics.min.js/.css` (Chart.js) |
 | jspdf | 4.2.1 | `jspdf.umd.min.js` (needed by survey-pdf) |
 | chart.js | 4.6.1 | `chart.umd.min.js` (needed by survey-analytics) |
 | chartjs-plugin-datalabels | 2.2.0 | `chartjs-plugin-datalabels.min.js` (optional for survey-analytics; register it with `Chart.register(ChartDataLabels)` if wanted) |

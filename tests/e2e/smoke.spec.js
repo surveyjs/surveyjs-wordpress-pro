@@ -87,6 +87,34 @@ test("Pro libraries run on the Form Library shipped with SurveyJS Forms", async 
   expect(errors).toEqual([]);
 });
 
+test("Pro's SurveyJS libraries have the version of the Form Library shipped with SurveyJS Forms", async ({ page }) => {
+  await page.goto("/wp-admin/index.php");
+  await addScripts(page, [BASE_LIBS + "survey.core.min.js"]);
+  await page.evaluate(() => {
+    window.e2eLibraryVersions = {};
+    Survey.checkLibraryVersion = (version, name) => {
+      window.e2eLibraryVersions[name] = version;
+    };
+  });
+  await addScripts(page, [
+    BASE_LIBS + "survey-js-ui.min.js",
+    PRO_LIBS + "survey-creator-core/survey-creator-core.min.js",
+    PRO_LIBS + "survey-creator-js/survey-creator-js.min.js",
+    PRO_LIBS + "jspdf/jspdf.umd.min.js",
+    PRO_LIBS + "survey-pdf/survey.pdf.min.js"
+  ]);
+  const { core, versions } = await page.evaluate(() => ({ core: Survey.Version, versions: window.e2eLibraryVersions }));
+  const analytics = await (await page.request.get(PRO_LIBS + "survey-analytics/survey.analytics.min.js")).text();
+  versions["survey-analytics"] = (analytics.match(/SurveyJS Analytics library v(\S+)/) || [])[1];
+  expect(versions).toEqual({
+    "survey-js-ui": core,
+    "survey-creator-core": core,
+    "survey-creator-react": core,
+    "survey-pdf": core,
+    "survey-analytics": core
+  });
+});
+
 test("Pro shows a notice instead of loading when SurveyJS Forms is inactive", async ({ page }) => {
   test.skip(!WP_CONTAINER, "Set WP_CONTAINER to the WordPress container name to deactivate SurveyJS Forms");
   expect(basePlugin("deactivate").active).toBe(false);
