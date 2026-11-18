@@ -12,6 +12,7 @@ Author: Devsoft Baltic OÜ
 Author URI: https://surveyjs.io/
 License: See LICENSE.md
 Text Domain: surveyjs-pro
+Domain Path: /languages
 */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
@@ -36,5 +37,6 @@ require_once __DIR__ . '/includes/pdf-aes256.php';
 require_once __DIR__ . '/includes/pdf-encryptor.php';
 require_once __DIR__ . '/includes/pdf-password.php';
 
+add_action( 'init', array( 'SurveyJS_Pro', 'load_textdomain' ) );
 // Pro sorts before Base in the active plugins list, so Base is checked only after every plugin has loaded.
 add_action( 'plugins_loaded', array( 'SurveyJS_Pro', 'boot' ) );

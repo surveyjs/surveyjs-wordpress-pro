@@ -17,6 +17,10 @@ class SurveyJS_Pro {
         do_action( 'surveyjs_pro_loaded' );
     }
 
+    public static function load_textdomain() {
+        load_plugin_textdomain( 'surveyjs-pro', false, dirname( plugin_basename( SURVEYJS_PRO_FILE ) ) . '/languages' );
+    }
+
     public static function base_version() {
         return defined( 'SURVEYJS_VERSION' ) ? (string) SURVEYJS_VERSION : '';
     }
