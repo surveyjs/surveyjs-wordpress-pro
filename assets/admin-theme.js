@@ -86,6 +86,32 @@
         return false;
     }
 
+    function oklabLightness(color) {
+        var rgb = (color.match(/[\d.]+/g) || []).slice(0, 3).map(function (value) {
+            value /= 255;
+            return value <= 0.04045 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
+        });
+        var l = 0.4122214708 * rgb[0] + 0.5363325363 * rgb[1] + 0.0514459929 * rgb[2];
+        var m = 0.2119034982 * rgb[0] + 0.6806995451 * rgb[1] + 0.1073969566 * rgb[2];
+        var s = 0.0883024619 * rgb[0] + 0.2817188376 * rgb[1] + 0.6299787005 * rgb[2];
+        return 0.2104542553 * Math.cbrt(l) + 0.793617785 * Math.cbrt(m) - 0.0040720342 * Math.cbrt(s);
+    }
+
+    function setLightness(name, value) {
+        var style = document.documentElement.style;
+        value = value.toFixed(4);
+        if (style.getPropertyValue(name) !== value) {
+            style.setProperty(name, value);
+        }
+    }
+
+    // Dark accents keep the admin color's hue and chroma but are lightened to stay readable on dark surfaces.
+    function setDarkLightness() {
+        var admin = oklabLightness(resolve("var(--wp-admin-theme-color, #2271b1)"));
+        setLightness("--wp-sjs-pro-dark-accent-l", Math.max(admin, 0.72));
+        setLightness("--wp-sjs-pro-dark-chart-1-l", Math.min(Math.max(admin, 0.55), 0.62));
+    }
+
     function detect() {
         switch (config.mode) {
             case "light":
@@ -103,6 +129,9 @@
         var next = detect();
         var changed = dark !== null && next !== dark;
         dark = next;
+        if (dark && document.body) {
+            setDarkLightness();
+        }
         document.documentElement.classList.toggle(DARK_CLASS, dark);
         if (changed) {
             listeners.slice().forEach(function (listener) {

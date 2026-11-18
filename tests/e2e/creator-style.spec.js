@@ -29,7 +29,7 @@ async function creatorStyles(page) {
   await page.locator(".svc-toolbox__tool", { hasText: "Single-Line Input" }).locator(".svc-toolbox__item").click();
   await expect(page.locator(".svc-creator .svc-side-bar .sd-formbox").first()).toBeVisible();
   return page.evaluate(() => {
-    const tab = getComputedStyle(document.querySelector(".svc-tabbed-menu-item"));
+    const tab = getComputedStyle(document.querySelector(".svc-tabbed-menu-item__text"));
     const input = getComputedStyle(document.querySelector(".svc-side-bar .sd-formbox"));
     const probe = document.createElement("span");
     probe.style.color = "var(--wp-sjs-pro-input-border)";

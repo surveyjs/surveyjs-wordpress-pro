@@ -17,6 +17,12 @@ function isDark(page) {
 }
 
 test.describe("light and dark colors of Pro pages", () => {
+  test.afterEach(async ({ context }) => {
+    const page = await context.newPage();
+    await setColorMode(page, "auto");
+    await page.close();
+  });
+
   test("the accent is the admin color scheme's color and a light admin keeps Pro pages light", async ({ page }) => {
     await setColorMode(page, "auto");
     await page.goto(DASHBOARD_URL);
@@ -33,19 +39,15 @@ test.describe("light and dark colors of Pro pages", () => {
   });
 
   test("the Dark and device color modes switch Pro pages to dark", async ({ page }) => {
-    try {
-      await setColorMode(page, "dark");
-      await page.goto(DASHBOARD_URL);
-      expect(await isDark(page)).toBe(true);
+    await setColorMode(page, "dark");
+    await page.goto(DASHBOARD_URL);
+    expect(await isDark(page)).toBe(true);
 
-      await setColorMode(page, "system");
-      await page.emulateMedia({ colorScheme: "light" });
-      await page.goto(DASHBOARD_URL);
-      expect(await isDark(page)).toBe(false);
-      await page.emulateMedia({ colorScheme: "dark" });
-      await expect.poll(() => isDark(page)).toBe(true);
-    } finally {
-      await setColorMode(page, "auto");
-    }
+    await setColorMode(page, "system");
+    await page.emulateMedia({ colorScheme: "light" });
+    await page.goto(DASHBOARD_URL);
+    expect(await isDark(page)).toBe(false);
+    await page.emulateMedia({ colorScheme: "dark" });
+    await expect.poll(() => isDark(page)).toBe(true);
   });
 });

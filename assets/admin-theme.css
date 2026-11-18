@@ -42,9 +42,13 @@ body {
     --wp-sjs-pro-chart-4-text: #1d2327;
 }
 
+/*
+ * Chromium up to at least 130 crashes the tab on min()/max()/clamp() over a relative color's channels, even inside @supports,
+ * so admin-theme.js clamps the admin color's lightness and sets it on html; the fallbacks fit the default blue scheme.
+ */
 html.wp-sjs-pro-dark body {
-    --wp-sjs-pro-accent: oklch(from var(--wp-admin-theme-color, #2271b1) max(l, 0.72) c h);
-    --wp-sjs-pro-accent-dim: oklch(from var(--wp-admin-theme-color, #2271b1) calc(max(l, 0.72) - 0.06) c h);
+    --wp-sjs-pro-accent: oklch(from var(--wp-admin-theme-color, #2271b1) var(--wp-sjs-pro-dark-accent-l, 0.72) c h);
+    --wp-sjs-pro-accent-dim: oklch(from var(--wp-admin-theme-color, #2271b1) calc(var(--wp-sjs-pro-dark-accent-l, 0.72) - 0.06) c h);
     --wp-sjs-pro-on-accent: #1d2327;
 
     --wp-sjs-pro-page: #1d2327;
@@ -64,7 +68,7 @@ html.wp-sjs-pro-dark body {
     --wp-sjs-pro-shadow: rgba(0, 0, 0, 0.3);
     --wp-sjs-pro-shadow-floating: rgba(0, 0, 0, 0.6);
 
-    --wp-sjs-pro-chart-1: oklch(from var(--wp-admin-theme-color, #2271b1) clamp(0.55, l, 0.62) c h);
+    --wp-sjs-pro-chart-1: oklch(from var(--wp-admin-theme-color, #2271b1) var(--wp-sjs-pro-dark-chart-1-l, 0.55) c h);
     --wp-sjs-pro-chart-1-text: #fff;
     --wp-sjs-pro-chart-2: #d95926;
     --wp-sjs-pro-chart-3: #199e70;
