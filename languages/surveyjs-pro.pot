@@ -8,14 +8,14 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-18T08:40:34+00:00\n"
+"POT-Creation-Date: 2026-11-18T08:53:28+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: surveyjs-pro\n"
 
 #. Plugin Name of the plugin
 #: surveyjs-pro.php
-#: includes/settings.php:44
+#: includes/settings.php:45
 msgid "SurveyJS Forms Pro"
 msgstr ""
 
@@ -56,8 +56,20 @@ msgstr ""
 msgid "Color mode"
 msgstr ""
 
-#: includes/admin-theme.php:64
+#: includes/admin-theme.php:55
+msgid "Survey Creator style"
+msgstr ""
+
+#: includes/admin-theme.php:65
 msgid "Light or dark colors for Survey Creator, Charts and Dashboard. Accent colors always follow your admin color scheme (Users > Profile). WordPress has no dark admin of its own: \"Match the WordPress admin\" turns dark when a dark mode plugin darkens the admin."
+msgstr ""
+
+#: includes/admin-theme.php:73
+msgid "Match the WordPress admin style"
+msgstr ""
+
+#: includes/admin-theme.php:74
+msgid "Survey Creator takes the admin color scheme, font size, input fields and compact sizes of the WordPress admin. Turn off to use the default SurveyJS look. Color mode applies either way."
 msgstr ""
 
 #: includes/analytics.php:22
@@ -101,36 +113,36 @@ msgstr ""
 msgid "Loading Creator…"
 msgstr ""
 
-#: includes/creator.php:117
+#: includes/creator.php:121
 msgid "GDPR Agreement"
 msgstr ""
 
-#: includes/creator.php:118
+#: includes/creator.php:122
 msgid "A required consent checkbox with a link to your Privacy Policy page."
 msgstr ""
 
-#: includes/creator.php:119
+#: includes/creator.php:123
 msgid "Adaptive is on in the Theme tab of the form editor, so the form on your site uses your site's theme styles instead of this theme. Turn Adaptive off there to use this theme."
 msgstr ""
 
-#: includes/creator.php:120
+#: includes/creator.php:124
 #: includes/pdf.php:212
 msgid "Full screen"
 msgstr ""
 
-#: includes/creator.php:121
+#: includes/creator.php:125
 msgid "Exit full screen"
 msgstr ""
 
-#: includes/creator.php:122
+#: includes/creator.php:126
 msgid "Choose a file"
 msgstr ""
 
-#: includes/creator.php:123
+#: includes/creator.php:127
 msgid "Use this file"
 msgstr ""
 
-#: includes/creator.php:124
+#: includes/creator.php:128
 msgid "The file was not uploaded to the Media Library."
 msgstr ""
 
@@ -778,23 +790,23 @@ msgstr ""
 msgid "Install SurveyJS Forms"
 msgstr ""
 
-#: includes/settings.php:45
+#: includes/settings.php:46
 msgid "Form editor"
 msgstr ""
 
-#: includes/settings.php:46
+#: includes/settings.php:47
 msgid "SurveyJS License Key"
 msgstr ""
 
-#: includes/settings.php:63
+#: includes/settings.php:65
 msgid "One SurveyJS license key covers Survey Creator, PDF Generator and Dashboard used by this plugin."
 msgstr ""
 
-#: includes/settings.php:71
+#: includes/settings.php:73
 msgid "Edit forms in Survey Creator"
 msgstr ""
 
-#: includes/settings.php:72
+#: includes/settings.php:74
 msgid "Turn off to edit forms the classic way, as in the free version: the Config tab (JSON editor) comes back instead of Survey Creator. Your forms stay as they are, and you can turn Creator on again at any time."
 msgstr ""
 

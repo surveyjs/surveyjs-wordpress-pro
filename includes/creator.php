@@ -110,10 +110,14 @@ class SurveyJS_Pro_Creator {
     }
 
     private static function config( $locale ) {
+        $admin_style = SurveyJS_Pro_Settings::feature( 'admin_style' );
         return array(
-            'tab'    => self::TAB,
-            'locale' => $locale,
-            'labels' => array(
+            'tab'        => self::TAB,
+            'locale'     => $locale,
+            'adminStyle' => $admin_style,
+            // Creator ships only its default light theme; its default dark look is Base's "default-dark" preset.
+            'darkTheme'  => $admin_style ? null : ( SurveyJS_Themes::presets()['default-dark'] ?? null ),
+            'labels'     => array(
                 'gdprAgreement'    => __( 'GDPR Agreement', 'surveyjs-pro' ),
                 'gdprHelp'         => __( 'A required consent checkbox with a link to your Privacy Policy page.', 'surveyjs-pro' ),
                 'adaptiveTheme'    => __( 'Adaptive is on in the Theme tab of the form editor, so the form on your site uses your site\'s theme styles instead of this theme. Turn Adaptive off there to use this theme.', 'surveyjs-pro' ),

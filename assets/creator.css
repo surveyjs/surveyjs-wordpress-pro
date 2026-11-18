@@ -1,3 +1,14 @@
+/* Creator derives every size from these units (8px each by default); these give WordPress admin sizes: 13px text, 2px corners. */
+body {
+    --wp-sjs-pro-creator-unit-size: 6.5px;
+    --wp-sjs-pro-creator-unit-spacing: 6px;
+    --wp-sjs-pro-creator-unit-font-size: 6.5px;
+    --wp-sjs-pro-creator-unit-line-height: 6.67px;
+    --wp-sjs-pro-creator-unit-radius: 2px;
+    --wp-sjs-pro-creator-font-size-small: 12px;
+    --wp-sjs-pro-creator-line-height-small: 16px;
+}
+
 .wp-sjs-editor[data-active-tab="creator"] .wp-sjs-editor__columns {
     grid-template-columns: minmax(0, 1fr);
 }

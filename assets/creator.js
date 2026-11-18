@@ -14,6 +14,27 @@
     const SITE_PREVIEW_CLASS = "wp-sjs-pro-site-preview";
     // Creator picks its JSON tab (Monaco or a plain text area) when it is created, so it waits for Base's Monaco.
     const MONACO_TIMEOUT = 15000;
+    const DEFAULT_THEME = { themeName: "default", colorPalette: "light", isLight: true, cssVariables: {} };
+    const CREATOR_LAYOUT = {
+        "--sjs2-base-unit-size": "unit-size",
+        "--sjs2-base-unit-spacing": "unit-spacing",
+        "--sjs2-base-unit-font-size": "unit-font-size",
+        "--sjs2-base-unit-line-height": "unit-line-height",
+        "--sjs2-base-unit-radius": "unit-radius"
+    };
+    const CREATOR_VARIABLES = {
+        "--sjs2-typography-font-size-small": "var(--wp-sjs-pro-creator-font-size-small)",
+        "--sjs2-typography-line-height-small": "var(--wp-sjs-pro-creator-line-height-small)",
+        "--sjs2-color-component-formbox-default-bg": "var(--wp-sjs-pro-input-bg)",
+        "--sjs2-color-component-formbox-hovered-bg": "var(--wp-sjs-pro-input-bg)",
+        "--sjs2-color-component-formbox-focused-bg": "var(--wp-sjs-pro-input-bg)",
+        "--sjs2-color-component-formbox-highlighted-bg": "var(--wp-sjs-pro-input-bg)",
+        "--sjs2-color-component-formbox-invalid-bg": "var(--wp-sjs-pro-input-bg)",
+        "--sjs2-color-component-formbox-invalid-focused-bg": "var(--wp-sjs-pro-input-bg)",
+        "--sjs2-color-component-formbox-default-border": "var(--wp-sjs-pro-input-border)",
+        "--sjs2-color-component-formbox-hovered-border": "var(--wp-sjs-pro-input-border)",
+        "--sjs2-color-component-formbox-highlighted-border": "var(--wp-sjs-pro-text-2)"
+    };
 
     const columns = rootElement.querySelector(".wp-sjs-editor__columns");
     const sitePreview = rootElement.querySelector(".wp-sjs-editor__preview");
@@ -146,6 +167,7 @@
             showTranslationTab: true,
             showJSONEditorTab: true,
             showPreviewTab: true,
+            showCreatorThemeSettings: false,
             isAutoSave: true
         });
         if (options.locale) {
@@ -175,12 +197,30 @@
         return instance;
     }
 
+    // Creator reads its base units as plain lengths, so the creator.css tokens are resolved before they are handed over.
+    function creatorLayout() {
+        const style = window.getComputedStyle(document.body);
+        const layout = {};
+        Object.keys(CREATOR_LAYOUT).forEach((name) => {
+            const value = style.getPropertyValue("--wp-sjs-pro-creator-" + CREATOR_LAYOUT[name]).trim();
+            if (value) layout[name] = value;
+        });
+        return layout;
+    }
+
     function applyAdminTheme(instance) {
         const adminTheme = window.surveyjsProAdminTheme;
         if (!adminTheme) return;
-        instance.preferredColorPalette = adminTheme.isDark() ? "dark" : "light";
-        if (window.monaco) window.monaco.editor.setTheme(adminTheme.isDark() ? "vs-dark" : "vs");
-        instance.applyCreatorTheme(adminTheme.surveyjsTheme());
+        const dark = adminTheme.isDark();
+        instance.preferredColorPalette = dark ? "dark" : "light";
+        if (window.monaco) window.monaco.editor.setTheme(dark ? "vs-dark" : "vs");
+        if (!options.adminStyle) {
+            instance.applyCreatorTheme(dark && options.darkTheme ? options.darkTheme : DEFAULT_THEME);
+            return;
+        }
+        const theme = adminTheme.surveyjsTheme();
+        Object.assign(theme.cssVariables, CREATOR_VARIABLES, creatorLayout());
+        instance.applyCreatorTheme(theme);
     }
 
     function sitePreviewTarget() {

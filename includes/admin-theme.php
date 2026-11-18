@@ -52,6 +52,7 @@ class SurveyJS_Pro_Admin_Theme {
 
     public static function register_setting_field( $page ) {
         add_settings_field( 'surveyjs_pro_admin_theme', esc_html__( 'Color mode', 'surveyjs-pro' ), array( __CLASS__, 'render_setting' ), $page, SurveyJS_Pro_Settings::SECTION, array( 'label_for' => 'sjs-pro-admin-theme' ) );
+        add_settings_field( 'surveyjs_pro_admin_style', esc_html__( 'Survey Creator style', 'surveyjs-pro' ), array( __CLASS__, 'render_style_setting' ), $page, SurveyJS_Pro_Settings::SECTION );
     }
 
     public static function render_setting() {
@@ -62,6 +63,16 @@ class SurveyJS_Pro_Admin_Theme {
         }
         echo '</select>';
         echo '<p class="description">' . esc_html__( 'Light or dark colors for Survey Creator, Charts and Dashboard. Accent colors always follow your admin color scheme (Users > Profile). WordPress has no dark admin of its own: "Match the WordPress admin" turns dark when a dark mode plugin darkens the admin.', 'surveyjs-pro' ) . '</p>';
+    }
+
+    public static function render_style_setting() {
+        printf(
+            '<label><input type="checkbox" name="%1$s[admin_style]" value="1" %2$s /> %3$s</label><p class="description">%4$s</p>',
+            esc_attr( SurveyJS_Pro_Settings::OPTION ),
+            checked( SurveyJS_Pro_Settings::feature( 'admin_style' ), true, false ),
+            esc_html__( 'Match the WordPress admin style', 'surveyjs-pro' ),
+            esc_html__( 'Survey Creator takes the admin color scheme, font size, input fields and compact sizes of the WordPress admin. Turn off to use the default SurveyJS look. Color mode applies either way.', 'surveyjs-pro' )
+        );
     }
 }
 

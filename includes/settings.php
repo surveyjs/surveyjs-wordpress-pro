@@ -15,6 +15,7 @@ class SurveyJS_Pro_Settings {
             'license_key' => '',
             'creator'     => true,
             'admin_theme' => 'auto',
+            'admin_style' => true,
         );
     }
 
@@ -53,6 +54,7 @@ class SurveyJS_Pro_Settings {
             $sanitized['license_key'] = trim( sanitize_text_field( (string) $input['license_key'] ) );
         }
         $sanitized['creator'] = ! empty( $input['creator'] );
+        $sanitized['admin_style'] = ! empty( $input['admin_style'] );
         if ( isset( $input['admin_theme'] ) && in_array( $input['admin_theme'], SurveyJS_Pro_Admin_Theme::MODES, true ) ) {
             $sanitized['admin_theme'] = $input['admin_theme'];
         }
