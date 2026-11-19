@@ -186,7 +186,7 @@ test.describe("PDF theme", () => {
     await save(page);
     const pdf = inspect((await entryPdf(page, form.id)).data);
     expect(pdf.usesFont("Times-Roman")).toBe(false);
-    expect(pdf.content).toMatch(/\/BaseFont \/[A-Za-z+]*Segoe/i);
+    expect(pdf.content).toMatch(/\/BaseFont \/[A-Za-z+]*NotoSans/);
   });
 
   test("the PDF attached to the email notification uses the theme", async ({ browser, request }) => {
@@ -207,7 +207,7 @@ test.describe("PDF theme", () => {
     const pdf = inspect(attachment);
     expect(pdf.portrait).toBe(true);
     expect(pdf.usesColor(ACCENT)).toBe(true);
-    expect(pdf.content).toMatch(/\/BaseFont \/[A-Za-z+]*Segoe/i);
+    expect(pdf.content).toMatch(/\/BaseFont \/[A-Za-z+]*NotoSans/);
   });
 
   test("Landscape page orientation turns the live preview and the entry PDF", async ({ page }) => {

@@ -8,7 +8,7 @@ const target = path.join(root, "libs");
 const FILES = {
   "survey-creator-core": ["survey-creator-core.min.js", "survey-creator-core.min.css", "images", "LICENSE"],
   "survey-creator-js": ["survey-creator-js.min.js", "LICENSE"],
-  "survey-pdf": ["survey.pdf.min.js", "survey.pdf.fonts.min.js", "layouts/spacious.min.js", "LICENSE"],
+  "survey-pdf": ["survey.pdf.min.js", "layouts/spacious.min.js", "LICENSE"],
   "survey-analytics": [
     "survey.analytics.min.js",
     "survey.analytics.min.css",

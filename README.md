@@ -148,7 +148,7 @@ A `composer.json` or a `vendor/` folder alone isn't enough, so a site that uses 
 
 ## License
 
-See [LICENSE.md](LICENSE.md). The SurveyJS libraries and third-party libraries in `libs/` have their own license files.
+See [LICENSE.md](LICENSE.md). The SurveyJS libraries and third-party libraries in `libs/` and the PDF fonts in `assets/fonts/` (SIL Open Font License) have their own license files.
 
 ## Support
 

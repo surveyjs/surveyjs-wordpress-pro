@@ -37,8 +37,8 @@
     const HEBREW_FONT = "IBMPlexSansHebrew";
     const HEBREW_LETTERS = /[\u0590-\u05FF\uFB1D-\uFB4F]/u;
     const RTL_LETTERS = /[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/gu;
-    let fontsPromise = null;
-    let hebrewFontPromise = null;
+    const UNICODE_FONT = "NotoSans";
+    const fontPromises = new Map();
     let busy = false;
 
     function format(template, ...values) {
@@ -55,60 +55,21 @@
         return Number.isNaN(number) ? fallback : Math.min(max, Math.max(min, number));
     }
 
-    let amdHidden = 0;
-    let amd = null;
-
-    // Monaco's AMD loader on the editor page makes UMD scripts register as AMD modules instead of globals,
-    // so `define.amd` is hidden while a library loads; Monaco's own `define` calls don't read it.
-    function loadScript(url, errorMessage) {
-        return new Promise((resolve, reject) => {
-            const script = document.createElement("script");
-            if (!amdHidden++ && window.define && window.define.amd) {
-                amd = window.define.amd;
-                window.define.amd = undefined;
-            }
-            const done = () => {
-                if (!--amdHidden && amd) {
-                    window.define.amd = amd;
-                    amd = null;
-                }
-            };
-            script.src = url;
-            script.onload = () => {
-                done();
-                resolve();
-            };
-            script.onerror = () => {
-                done();
-                script.remove();
-                reject(new Error(errorMessage));
-            };
-            document.head.appendChild(script);
-        });
-    }
-
-    function loadFonts() {
-        if (SurveyPDF.DocOptions.SEGOE_NORMAL) return Promise.resolve();
-        fontsPromise ||= loadScript(config.fontsUrl, i18n.fontError).catch((error) => {
-            fontsPromise = null;
-            throw error;
-        });
-        return fontsPromise;
-    }
-
-    function loadHebrewFont() {
-        hebrewFontPromise ||= Promise.all(["normal", "bold"].map(async (style) => {
-            const response = await fetch(config.hebrewFont[style]);
-            if (!response.ok) throw new Error(response.statusText);
-            const bytes = new Uint8Array(await response.arrayBuffer());
-            let binary = "";
-            for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-            SurveyPDF.DocController.addFont(HEBREW_FONT, btoa(binary), style);
-        })).catch(() => {
-            hebrewFontPromise = null;
-            throw new Error(i18n.fontError);
-        });
-        return hebrewFontPromise;
+    function loadFont(name, urls) {
+        if (!fontPromises.has(name)) {
+            fontPromises.set(name, Promise.all(["normal", "bold"].map(async (style) => {
+                const response = await fetch(urls[style]);
+                if (!response.ok) throw new Error(response.statusText);
+                const bytes = new Uint8Array(await response.arrayBuffer());
+                let binary = "";
+                for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+                SurveyPDF.DocController.addFont(name, btoa(binary), style);
+            })).catch(() => {
+                fontPromises.delete(name);
+                throw new Error(i18n.fontError);
+            }));
+        }
+        return fontPromises.get(name);
     }
 
     function isRightToLeft(survey) {
@@ -278,9 +239,9 @@
         const accent = accentColor(settings);
         const texts = [json, entry ? entry.data : null, header, title, footerText];
         const standardFont = STANDARD_FONTS.includes(settings.proPdfFont) ? settings.proPdfFont : "helvetica";
-        const font = HEBREW_LETTERS.test(JSON.stringify(texts)) ? HEBREW_FONT : needsUnicodeFont(...texts) ? "segoe" : standardFont;
-        if (font === "segoe") await loadFonts();
-        if (font === HEBREW_FONT) await loadHebrewFont();
+        const font = HEBREW_LETTERS.test(JSON.stringify(texts)) ? HEBREW_FONT : needsUnicodeFont(...texts) ? UNICODE_FONT : standardFont;
+        if (font === HEBREW_FONT) await loadFont(font, config.hebrewFont);
+        if (font === UNICODE_FONT) await loadFont(font, config.unicodeFont);
         const logo = source.logoUrl ? await loadLogo(source.logoUrl) : null;
 
         const readOnly = Boolean(entry) || !settings.proPdfFillable;
