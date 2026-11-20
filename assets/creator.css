@@ -84,18 +84,18 @@ body {
     line-height: 16px;
 }
 
-body.wp-sjs-pro-fullscreen-mode {
+.wp-sjs-pro-fullscreen-mode body {
     overflow: hidden;
 }
 
-body.wp-sjs-pro-fullscreen-mode #wpadminbar,
-body.wp-sjs-pro-fullscreen-mode #adminmenumain,
-body.wp-sjs-pro-fullscreen-mode #wpfooter {
+.wp-sjs-pro-fullscreen-mode #wpadminbar,
+.wp-sjs-pro-fullscreen-mode #adminmenumain,
+.wp-sjs-pro-fullscreen-mode #wpfooter {
     display: none;
 }
 
 /* Below SurveyJS popups (z-index 2000), which Creator mounts in <body>. */
-.wp-sjs-editor.wp-sjs-pro-fullscreen {
+.wp-sjs-pro-fullscreen-mode .wp-sjs-editor {
     position: fixed;
     inset: 0;
     z-index: 1000;
@@ -108,32 +108,32 @@ body.wp-sjs-pro-fullscreen-mode #wpfooter {
     overflow: hidden;
 }
 
-.wp-sjs-editor.wp-sjs-pro-fullscreen h1 {
+.wp-sjs-pro-fullscreen-mode .wp-sjs-editor h1 {
     color: inherit;
 }
 
 /* Base's full preview is fixed inside this container, which sets the stacking level it can reach. */
-.wp-sjs-editor.wp-sjs-pro-fullscreen.wp-sjs-editor--full-preview {
+.wp-sjs-pro-fullscreen-mode .wp-sjs-editor.wp-sjs-editor--full-preview {
     z-index: 100000;
 }
 
-.wp-sjs-pro-fullscreen .wp-sjs-editor__columns {
+.wp-sjs-pro-fullscreen-mode .wp-sjs-editor__columns {
     flex: 1 1 auto;
     min-height: 0;
     overflow: auto;
 }
 
-.wp-sjs-pro-fullscreen[data-active-tab="creator"] .wp-sjs-editor__columns {
+.wp-sjs-pro-fullscreen-mode .wp-sjs-editor[data-active-tab="creator"] .wp-sjs-editor__columns {
     grid-template-rows: minmax(0, 1fr);
     overflow: hidden;
 }
 
-.wp-sjs-pro-fullscreen .wp-sjs-pro-creator {
+.wp-sjs-pro-fullscreen-mode .wp-sjs-pro-creator {
     height: 100%;
     min-height: 0;
 }
 
-.wp-sjs-pro-fullscreen .wp-sjs-editor__preview {
+.wp-sjs-pro-fullscreen-mode .wp-sjs-editor__preview {
     top: 0;
     height: calc(100vh - 140px);
 }

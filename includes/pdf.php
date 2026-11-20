@@ -15,7 +15,7 @@ class SurveyJS_Pro_Pdf {
         add_filter( 'surveyjs_form_settings_defaults', array( __CLASS__, 'defaults' ) );
         add_filter( 'surveyjs_form_settings_sanitize', array( __CLASS__, 'sanitize' ), 10, 2 );
         add_filter( 'surveyjs_editor_tabs', array( __CLASS__, 'editor_tabs' ) );
-        add_action( 'surveyjs_render_editor', array( __CLASS__, 'render_editor_panel' ) );
+        add_action( 'surveyjs_render_editor', array( __CLASS__, 'render_editor_panel' ), 10, 2 );
         add_action( 'surveyjs_admin_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
         add_action( 'surveyjs_results_title_actions', array( __CLASS__, 'render_title_actions' ) );
         add_filter( 'surveyjs_entry_row_actions', array( __CLASS__, 'entry_row_actions' ), 10, 2 );
@@ -168,10 +168,10 @@ class SurveyJS_Pro_Pdf {
         echo '</select>';
     }
 
-    public static function render_editor_panel( $survey ) {
+    public static function render_editor_panel( $survey, $initial_tab = null ) {
         $branding = self::site_branding();
         ?>
-        <div class="wp-sjs-editor__settings wp-sjs-pro-pdf" data-panel="<?php echo esc_attr( self::TAB ); ?>" hidden>
+        <div class="wp-sjs-editor__settings wp-sjs-pro-pdf" data-panel="<?php echo esc_attr( self::TAB ); ?>"<?php echo self::TAB === $initial_tab ? '' : ' hidden'; ?>>
             <div class="wp-sjs-pro-pdf__settings">
             <table class="form-table" role="presentation">
                 <tr>

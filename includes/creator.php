@@ -6,6 +6,8 @@ class SurveyJS_Pro_Creator {
     const TAB = 'creator';
     const HANDLE = 'surveyjs-pro-creator-editor';
     const LOCALE_HANDLE = 'surveyjs-pro-creator-i18n';
+    const FULLSCREEN_HANDLE = 'surveyjs-pro-creator-fullscreen';
+    const FULLSCREEN_KEY = 'surveyjs-pro-editor-fullscreen';
 
     // WordPress language or locale => array( file name in libs/survey-creator-core/i18n, Creator locale code ).
     const LOCALES = array(
@@ -53,7 +55,7 @@ class SurveyJS_Pro_Creator {
     public static function init() {
         add_filter( 'surveyjs_editor_tabs', array( __CLASS__, 'tabs' ) );
         add_filter( 'surveyjs_visual_editor_enabled', array( __CLASS__, 'enabled' ) );
-        add_action( 'surveyjs_render_editor', array( __CLASS__, 'render' ) );
+        add_action( 'surveyjs_render_editor', array( __CLASS__, 'render' ), 10, 2 );
         add_action( 'surveyjs_admin_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
     }
 
@@ -69,12 +71,12 @@ class SurveyJS_Pro_Creator {
         return array( self::TAB => __( 'Config', 'surveyjs-pro' ) ) + $tabs;
     }
 
-    public static function render() {
+    public static function render( $survey = null, $initial_tab = null ) {
         if ( ! self::enabled() ) {
             return;
         }
         ?>
-        <div class="wp-sjs-pro-creator" data-panel="<?php echo esc_attr( self::TAB ); ?>" hidden>
+        <div class="wp-sjs-pro-creator" data-panel="<?php echo esc_attr( self::TAB ); ?>"<?php echo self::TAB === $initial_tab ? '' : ' hidden'; ?>>
             <div id="wp-sjs-pro-creator" class="wp-sjs-pro-creator__host"><p class="wp-sjs-pro-creator__loading"><?php esc_html_e( 'Loading Creator…', 'surveyjs-pro' ); ?></p></div>
         </div>
         <?php
@@ -85,6 +87,10 @@ class SurveyJS_Pro_Creator {
             return;
         }
         SurveyJS_Pro_Admin_Theme::enqueue();
+        // Full screen is set in <head> so the page is never painted with the admin menu first.
+        wp_register_script( self::FULLSCREEN_HANDLE, false, array(), SURVEYJS_PRO_VERSION, false );
+        wp_enqueue_script( self::FULLSCREEN_HANDLE );
+        wp_add_inline_script( self::FULLSCREEN_HANDLE, '(function(){try{if(window.localStorage.getItem(' . wp_json_encode( self::FULLSCREEN_KEY ) . ')==="0")return;}catch(e){}document.documentElement.classList.add("wp-sjs-pro-fullscreen-mode");})();' );
         wp_enqueue_style( self::HANDLE, self::asset_url( 'creator.css' ), array( SurveyJS_Pro_Libs::handle( 'creator' ), SurveyJS_Pro_Admin_Theme::HANDLE, 'dashicons' ), self::asset_version( 'creator.css' ) );
         $deps = array( SurveyJS_Pro_Libs::handle( 'creator' ), SurveyJS_SurveyJS::EDITOR_SCRIPT, SurveyJS_Pro_Admin_Theme::HANDLE, 'wp-api-fetch' );
         $locale = self::locale();

@@ -449,6 +449,7 @@
                 library: { type: "image" },
                 multiple: false
             });
+            frame.$el.addClass("wp-sjs-media-frame");
             frame.on("select", () => {
                 const attachment = frame.state().get("selection").first().toJSON();
                 const url = attachment.sizes && attachment.sizes.large ? attachment.sizes.large.url : attachment.url;

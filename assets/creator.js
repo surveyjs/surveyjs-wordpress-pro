@@ -128,6 +128,7 @@
             library: types.length > 0 ? { type: types } : {},
             multiple: false
         });
+        frame.$el.addClass("wp-sjs-media-frame");
         frame.on("select", () => {
             const attachment = frame.state().get("selection").first().toJSON();
             const file = new File([], attachment.filename || "file", { type: attachment.mime || "" });
@@ -355,7 +356,7 @@
 
     function setFullscreen(button, on) {
         rootElement.classList.toggle("wp-sjs-pro-fullscreen", on);
-        document.body.classList.toggle("wp-sjs-pro-fullscreen-mode", on);
+        document.documentElement.classList.toggle("wp-sjs-pro-fullscreen-mode", on);
         button.setAttribute("aria-pressed", String(on));
         button.querySelector(".dashicons").className = "dashicons " + (on ? "dashicons-fullscreen-exit-alt" : "dashicons-fullscreen-alt");
         button.querySelector(".wp-sjs-pro-toolbar-button__label").textContent = on ? labels.exitFullscreen : labels.fullscreen;

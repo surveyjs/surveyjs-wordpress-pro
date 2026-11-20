@@ -70,6 +70,56 @@ test.describe("Survey Creator in the form editor", () => {
     await expect(page.locator('.svc-creator [data-sv-drop-target-survey-element="gdpr_agreement"]')).toBeVisible();
   });
 
+  test("never renders Base's Config editor while Creator replaces it", async ({ page }) => {
+    test.skip(!formId, "Needs the form from the previous test");
+    const editorUrl = `/wp-admin/admin.php?page=surveyjs_editor&id=${formId}`;
+    await page.addInitScript(() => {
+      window.__sjsSeen = { config: false, fullscreenAtRoot: null };
+      const check = () => {
+        const pane = document.getElementById("wp-sjs-json-pane");
+        if ((pane && !pane.hidden) || document.getElementById("wp-sjs-set-logo") || document.getElementById("wp-sjs-lint")) window.__sjsSeen.config = true;
+        if (window.__sjsSeen.fullscreenAtRoot === null && document.querySelector(".wp-sjs-editor")) {
+          window.__sjsSeen.fullscreenAtRoot = document.documentElement.classList.contains("wp-sjs-pro-fullscreen-mode");
+        }
+      };
+      new MutationObserver(check).observe(document, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden"] });
+    });
+    await page.goto(editorUrl);
+    await expect(page.locator(".svc-creator")).toBeVisible();
+    await expect(page.locator(".wp-sjs-editor__tabs .nav-tab-active")).toHaveAttribute("data-tab", "creator");
+    expect(await page.evaluate(() => window.__sjsSeen)).toEqual({ config: false, fullscreenAtRoot: true });
+    await expect(page.locator("#wp-sjs-json-pane")).toBeHidden();
+
+    await page.locator(".wp-sjs-editor__tabs").getByRole("link", { name: "Theme", exact: true }).click();
+    await expect(page.locator("#wp-sjs-json-pane .monaco-editor")).toBeVisible();
+    await expect(page.locator("#wp-sjs-set-logo")).toHaveCount(0);
+  });
+
+  test("shows Base's Config editor again when Creator is turned off", async ({ page }) => {
+    test.skip(!formId, "Needs the form from the previous test");
+    const setCreator = async (on) => {
+      await page.goto("/wp-admin/admin.php?page=surveyjs-settings");
+      const checkbox = page.getByLabel("Edit forms in Survey Creator");
+      await checkbox.setChecked(on);
+      const saved = page.waitForResponse(r => r.url().includes("/wp-admin/options.php") && r.request().method() === "POST");
+      await page.getByRole("button", { name: "Save Changes" }).click();
+      await saved;
+      await page.waitForLoadState();
+      await expect(checkbox).toBeChecked({ checked: on });
+    };
+    await setCreator(false);
+    try {
+      await page.goto(`/wp-admin/admin.php?page=surveyjs_editor&id=${formId}`);
+      await expect(page.locator(".wp-sjs-editor__tabs .nav-tab-active")).toHaveAttribute("data-tab", "survey");
+      await expect(page.locator("#wp-sjs-json-pane .monaco-editor")).toBeVisible();
+      await expect(page.locator("#wp-sjs-set-logo")).toBeVisible();
+      await expect(page.locator(".wp-sjs-pro-creator")).toHaveCount(0);
+      await expect(page.locator("html")).not.toHaveClass(/wp-sjs-pro-fullscreen-mode/);
+    } finally {
+      await setCreator(true);
+    }
+  });
+
   test("hides the setting that stores files as text for a file question", async ({ page }) => {
     test.skip(!formId, "Needs the form from the previous test");
     await page.goto(`/wp-admin/admin.php?page=surveyjs_editor&id=${formId}`);
