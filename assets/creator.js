@@ -394,6 +394,10 @@
         if (event.target.closest("#wp-sjs-save, #wp-sjs-embed, [data-sjs-embed-save], .wp-sjs-editor__tabs .nav-tab")) flushToEditor();
     }, true);
     window.addEventListener("beforeunload", flushToEditor, true);
+    document.addEventListener("surveyjs:editor-flush", flushToEditor);
+    document.addEventListener("surveyjs:editor-external-change", () => {
+        if (creator) pullFromEditor();
+    });
     document.addEventListener("surveyjs:editor-tab", (event) => {
         if (event.detail.tab === options.tab) showCreator();
         else if (creator) placeSitePreview();

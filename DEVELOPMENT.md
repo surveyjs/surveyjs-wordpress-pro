@@ -322,7 +322,13 @@ Defined by `editor.js` (handle `SurveyJS_SurveyJS::EDITOR_SCRIPT`, in the footer
 | `setSurvey(json)` / `setTheme(json)` | Replace the survey / theme JSON (undoable in the JSON editor), refresh the preview and the lint, mark the form changed. Returns `false` if `json` is not an object. Does not save. |
 | `getSettings()` | Current per-form settings from all `data-setting` inputs. |
 | `getActiveTab()` / `switchTab(slug)` | Active tab; switch tabs (JSON tabs only after the JSON editor loaded). |
-| `isDirty()` | Unsaved changes (name, survey, theme or settings). |
+| `isDirty()` | Unsaved changes (name, survey, theme or settings). An AI draft loaded into the editor counts as unsaved. |
+| `hasAiDraft()` | Whether the editor holds an AI draft that is not saved yet (see "AI connection (MCP)"). |
+| `getSnapshot()` | What the editor shows now, `{ name, json, theme, settings }`, or `null` while the JSON has errors. Fires `surveyjs:editor-flush` first, so Survey Creator pushes its JSON. Used by the AI chat. |
+| `applyAiDraft( draft, content? )` | Loads an AI draft (`SurveyJS_AI_Drafts::editor_config()['draft']`, or `null` for none) and shows `content` (or the draft, or the saved form) without reloading the page, then fires `surveyjs:editor-external-change`. |
+| `hasEditsAfterAi()` | Whether the person edited the form after the AI draft was loaded. |
+| `setAiBusy( busy )` | While true, AI drafts reported by the Heartbeat don't show the "An AI app changed this form" notice. |
+| `settingLabel( key )` | The editor's label of a form setting, e.g. `Email: Send To`. |
 | `save()` | Same as the Save button: saves survey, theme and settings in one request. |
 | `isFullPreviewOpen()` | Whether Base's full preview is open. |
 | `setPreviewShowInvisibleElements(show)` | Show questions, panels and pages hidden by `visible` / `visibleIf` in the preview and the full preview (`survey.showInvisibleElements`), until set back. Not saved. |
@@ -438,6 +444,24 @@ JS events on `document` (`assets/survey.js`), `detail`: `id`, `survey` (the `Sur
 **`surveyjs_notification_tags`** (filter) — `( array $tags, string $recipient, object $survey, array $data, int $entry_id )`. Mail tags of the email notification (`$recipient` `owner`) or the auto-reply (`respondent`): `array( 'text' => array( '{tag}' => value ), 'html' => array( '{tag}' => escaped HTML ) )`, used for plain-text and HTML messages; the subject and From name use the respondent's text tags. Add the same key to both.
 
 **`surveyjs_notification_attachments`** (filter) — `( array $attachments, string $recipient, object $survey, array $settings, array $data, int $entry_id )`. `file name => path` of the email notification (`owner`) or the auto-reply (`respondent`). Base puts local paths there (files on a stream wrapper are first copied to a temporary file); a path you add on a stream wrapper (`vip://`, `s3://`) is copied the same way, since PHPMailer refuses such paths. Keep the total under `SurveyJS_Notification::MAX_ATTACHMENTS_SIZE`.
+
+### AI connection (MCP)
+
+Base registers its abilities (Abilities API, WordPress 6.9+) in the category `surveyjs` while the AI connection is on (option `surveyjs_ai_enabled`) or the AI chat is available (WordPress 7.0+ AI Client, not turned off with `surveyjs_ai_chat_disabled`). It serves every ability of that category on its own MCP server `/wp-json/mcp/surveyjs` through the MCP Adapter plugin; while the AI connection is on, tools are also listed by the adapter's default server (`meta.mcp.public`), so its discovery tool finds them. The Abilities REST API never lists them (`meta.show_in_rest` is false). Abilities whose `annotations.readonly` is false refuse to run unless "Enable MCP write access" is on (option `surveyjs_ai_write`), except inside the AI chat, which may change only the open form. Tools without an input schema get an empty object schema, so MCP clients may send `{}`.
+
+Events of the form editor: `surveyjs:editor-flush` (before the AI chat reads the editor; Pro pushes Survey Creator's JSON) and `surveyjs:editor-external-change` (after the chat or Undo replaced the editor content; Pro reloads Survey Creator from the editor).
+
+**`surveyjs_ai_register_abilities`** (action) — fires inside `wp_abilities_api_init` while the AI connection is on. Register abilities with **`SurveyJS_AI_Abilities::register_ability( $name, $args )`**: it sets the category, a `manage_options` permission check and the MCP meta (`meta.mcp.type` `tool` by default, `resource` or `prompt` when set). Rules for abilities on this server: no access to entries, nothing deletes data; form changes go through `SurveyJS_AI_Drafts::save( $form, $changes )` so a person saves them in the form editor; start descriptions of read tools with what they return and end them with `SurveyJS_AI_Abilities::DATA_NOTICE`.
+
+**`surveyjs_ai_form_settings_schema`** (filter) — `( array $schema )`, `key => array( 'type', 'default', 'description', 'enum'? )` for every per-form setting, returned by `surveyjs-get-form-settings`. Base builds the types and defaults from `surveyjs_form_settings_defaults`; add descriptions and allowed values of your keys.
+
+**`surveyjs_ai_read_only_form_settings`** (filter) — `( string[] $keys )`. Keys an AI app can't change (Base: entry retention, because it deletes entries).
+
+**`surveyjs_ai_sensitive_form_settings`** (filter) — `( string[] $keys )`. When an AI draft changes one of these keys, the form editor warns that the AI changed who receives emails or what they include (Base: recipients, Reply-To, attachments, auto-reply).
+
+Other filters: `surveyjs_ai_question_types` (question types the JSON check accepts besides the built-in ones), `surveyjs_ai_instructions` (the MCP server instructions), `surveyjs_ai_docs_server_url` (the SurveyJS documentation MCP server), `surveyjs_ai_plugin_guide` (the plugin guide served by `surveyjs-get-plugin-guide` and `surveyjs://guide/plugin`; Pro appends its features), `surveyjs_ai_chat_abilities` (abilities the AI chat may call), `surveyjs_ai_chat_system_instruction`, `surveyjs_ai_chat_providers` (provider rows of the chat checklist).
+
+Pro (`includes/ai.php`) adds `surveyjs-pro/get-settings` and `surveyjs-pro/update-settings` (Creator, color mode, Creator style; never the license key), descriptions of the `proPdf*` form settings, and marks PDF attachments and PDF links in emails as sensitive.
 
 ### Other Base hooks (already existed)
 

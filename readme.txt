@@ -29,6 +29,15 @@ Survey Creator: build forms visually right in the form editor — drag & drop de
 * Per form, on the PDF tab: protect PDFs with a password (AES-256). Entry PDFs, ZIP exports and blank forms you download, and the PDF attached to the email notification, then open only with the password.
 * PDFs are generated in your browser. Password protection is added by your own site. No form data is sent to any external service.
 
+= AI assistants (MCP) =
+
+When the AI connection of SurveyJS Forms is on (SurveyJS Forms > Settings > AI MCP), Pro adds to it:
+
+* PDF settings of each form (page size, fonts, colors, header, footer, watermark, Download PDF button, PDF in emails and others): the AI app changes them like other form settings, as a draft that you review and save in the form editor. The form editor warns when the AI changed PDF attachments or PDF links in emails.
+* The Pro admin settings: Survey Creator on or off, its color mode and style. They change only the WordPress admin and apply right away. The AI app can't read or change the license key.
+
+Pro sends nothing to external services for this.
+
 Pro needs SurveyJS Forms 3.2.4 or later. When SurveyJS Forms is missing or too old, Pro shows a notice and does not load.
 
 == Installation ==
