@@ -2,7 +2,7 @@
 /*
 Plugin Name: SurveyJS Forms Pro
 Plugin URI: https://surveyjs.io/
-Description: Adds Survey Creator, PDF export and analytics to SurveyJS Forms.
+Description: Adds Survey Creator with the AI assistant, PDF export and analytics to SurveyJS Forms.
 Version: 3.2.4
 Requires at least: 6.5
 Requires PHP: 8.2

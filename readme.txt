@@ -7,7 +7,7 @@ Stable tag: 3.2.4
 Requires PHP: 8.2
 License: See LICENSE.md
 
-Adds Survey Creator, PDF export and analytics to SurveyJS Forms.
+Adds Survey Creator with the AI assistant, PDF export and analytics to SurveyJS Forms.
 
 == Description ==
 
