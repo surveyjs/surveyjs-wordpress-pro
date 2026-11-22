@@ -28,7 +28,7 @@ msgstr ""
 #. Description of the plugin
 #: surveyjs-pro.php
 #: includes/updater.php:64
-msgid "Adds Survey Creator, PDF export and analytics to SurveyJS Forms."
+msgid "Adds Survey Creator with the AI assistant, PDF export and analytics to SurveyJS Forms."
 msgstr ""
 
 #. Author of the plugin
