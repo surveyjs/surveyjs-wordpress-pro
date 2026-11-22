@@ -10,6 +10,25 @@ class SurveyJS_Pro_AI {
         add_filter( 'surveyjs_ai_form_settings_schema', array( __CLASS__, 'form_settings_schema' ) );
         add_filter( 'surveyjs_ai_sensitive_form_settings', array( __CLASS__, 'sensitive_settings' ) );
         add_filter( 'surveyjs_ai_plugin_guide', array( __CLASS__, 'plugin_guide' ) );
+        add_filter( 'surveyjs_ai_secret_values', array( __CLASS__, 'secret_values' ) );
+        add_filter( 'surveyjs_ai_admin_urls', array( __CLASS__, 'admin_urls' ) );
+    }
+
+    public static function secret_values( $values ) {
+        $values = (array) $values;
+        $values[] = SurveyJS_Pro_Settings::license_key();
+        if ( SurveyJS_Pro_Pdf_Password::available() ) {
+            foreach ( SurveyJS_Forms::names() as $form ) {
+                $values[] = SurveyJS_Pro_Pdf_Password::password( (int) $form->id );
+            }
+        }
+        return $values;
+    }
+
+    public static function admin_urls( $urls ) {
+        $urls = (array) $urls;
+        $urls['dashboard'] = admin_url( 'admin.php?page=' . SurveyJS_Pro_Dashboard::PAGE );
+        return $urls;
     }
 
     public static function register() {
