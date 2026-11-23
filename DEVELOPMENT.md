@@ -434,7 +434,7 @@ Base hides the links when `SURVEYJS_PRO_VERSION` is defined, so Pro needs no cod
 
 JS events on `document` (`assets/survey.js`), `detail`: `id`, `survey` (the `Survey.Model`), `config`, `container` (`.wp-sjs-survey`), `data` (answers being sent):
 
-- `surveyjs:before-submit` — right before the entry is sent (after CAPTCHA). Add request fields to `detail.fields`, or call `detail.waitUntil( promise )` with a promise of an object of fields (rejections are logged and ignored; the submit waits, so settle it in a few seconds). Values are strings or `Blob`s; with a `Blob` the request is `multipart/form-data` and the file is in `$_FILES`. Base's own fields win over yours.
+- `surveyjs:before-submit` — right before the entry is sent (after CAPTCHA; before the wait for the minimum time to submit, when it is on). Add request fields to `detail.fields`, or call `detail.waitUntil( promise )` with a promise of an object of fields (rejections are logged and ignored; the submit waits, so settle it in a few seconds). Values are strings or `Blob`s; with a `Blob` the request is `multipart/form-data` and the file is in `$_FILES`. Base's own fields win over yours.
 - `surveyjs:submitted` — after the server accepted the entry; `detail.response` is the `data` of `surveyjs_save_result_response`, or `null`. With CAPTCHA it fires before the completed page is shown.
 
 **`surveyjs_save_result_response`** (filter) — `( array $response, object $survey, int $entry_id, array $data )`, default `array()`. Fires at the end of the save request (after the emails and `wp_surveyjs_save_result`); a non-empty array is sent with `wp_send_json_success()`. `$entry_id` is `0` when entries are not stored.
