@@ -95,6 +95,31 @@ test.describe("Survey Creator in the form editor", () => {
     await expect(page.locator("#wp-sjs-set-logo")).toHaveCount(0);
   });
 
+  test("keeps WordPress button and input styles out of the find widget of the JSON Editor tab", async ({ page }) => {
+    test.skip(!formId, "Needs the form from the previous test");
+    await page.goto(`/wp-admin/admin.php?page=surveyjs_editor&id=${formId}`);
+    const creator = page.locator(".svc-creator");
+    await creator.locator(".svc-tabbed-menu").getByText("JSON Editor", { exact: true }).click();
+    await creator.locator(".monaco-editor .view-lines").click();
+    await page.keyboard.press("Control+h");
+    const widget = creator.locator(".find-widget.visible");
+    await expect(widget).toBeVisible();
+
+    const leaks = await widget.evaluate(node => {
+      const color = getComputedStyle(node).color;
+      return [...node.querySelectorAll(".button, textarea")].flatMap(element => {
+        const style = getComputedStyle(element);
+        const found = [];
+        if (style.borderTopStyle !== "none") found.push("border");
+        if (style.minHeight !== "auto" && style.minHeight !== "0px") found.push("min-height " + style.minHeight);
+        if (style.boxShadow !== "none") found.push("box-shadow");
+        if (element.matches(".button") && style.color !== color) found.push("color");
+        return found.map(leak => element.className + ": " + leak);
+      });
+    });
+    expect(leaks).toEqual([]);
+  });
+
   test("shows Base's Config editor again when Creator is turned off", async ({ page }) => {
     test.skip(!formId, "Needs the form from the previous test");
     const setCreator = async (on) => {
