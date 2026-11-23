@@ -148,4 +148,38 @@ test.describe("Survey Creator in the form editor", () => {
     await expect(page.locator(".wp-sjs-editor")).toHaveClass(/wp-sjs-pro-fullscreen/);
     await expect(page.locator("#wpadminbar")).toBeHidden();
   });
+
+  test("shows Embed as a dialog over full screen Creator and closes it back to Creator", async ({ page }) => {
+    test.skip(!formId, "Needs the form from the previous test");
+    const editorUrl = new RegExp(`page=surveyjs_editor&id=${formId}$`);
+    await page.goto(`/wp-admin/admin.php?page=surveyjs_editor&id=${formId}`);
+    await expect(page.locator(".wp-sjs-editor")).toHaveClass(/wp-sjs-pro-fullscreen/);
+    const creator = page.locator(".svc-creator");
+    await expect(creator).toBeVisible();
+    const embedButton = page.locator("#wp-sjs-embed");
+    const dialog = page.getByRole("dialog", { name: "Embed the form" });
+
+    for (const width of [1400, 390]) {
+      await page.setViewportSize({ width, height: 800 });
+      await embedButton.click();
+      await expect(dialog).toBeVisible();
+      await expect(dialog.locator(".wp-sjs-embed__header").getByRole("button", { name: "Close" })).toBeInViewport();
+      const box = await dialog.boundingBox();
+      expect(box.x + box.width).toBeLessThanOrEqual(width);
+      await page.mouse.click(2, 2);
+      await expect(dialog).toBeHidden();
+      await expect(page).toHaveURL(editorUrl);
+      await expect(creator).toBeVisible();
+    }
+
+    await embedButton.click();
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    await expect(embedButton).toBeFocused();
+    await embedButton.click();
+    await page.goBack();
+    await expect(dialog).toBeHidden();
+    await expect(page).toHaveURL(editorUrl);
+    await expect(creator).toBeVisible();
+  });
 });
