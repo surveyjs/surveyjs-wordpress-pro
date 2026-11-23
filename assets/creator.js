@@ -14,6 +14,8 @@
     const SITE_PREVIEW_CLASS = "wp-sjs-pro-site-preview";
     // Creator picks its JSON tab (Monaco or a plain text area) when it is created, so it waits for Base's Monaco.
     const MONACO_TIMEOUT = 15000;
+    const REVIEW_ATTEMPTS = 40;
+    const REVIEW_RETRY_MS = 100;
     const DEFAULT_THEME = { themeName: "default", colorPalette: "light", isLight: true, cssVariables: {} };
     const CREATOR_LAYOUT = {
         "--sjs2-base-unit-size": "unit-size",
@@ -97,10 +99,29 @@
         }
     }
 
+    // While the JSON Editor tab is open, Creator's JSON setter only hands the text to a callback that nothing sets, so
+    // the tab and the survey behind it would keep the old JSON while the form editor (preview, Save) has the new one.
+    // There the text goes into the tab and is applied the way typed text is.
+    function loadIntoCreator(survey) {
+        const jsonTab = creator.activeTab === "json" ? creator.getPlugin("json") : null;
+        if (!jsonTab) {
+            creator.JSON = survey;
+            return;
+        }
+        const text = JSON.stringify(survey, null, 2);
+        try {
+            jsonTab.model.text = text;
+            jsonTab.model.isJSONChanged = true;
+            jsonTab.model.applyChanges(true);
+        } catch (error) {
+            creator.changeText(text, false, true);
+        }
+    }
+
     function pullFromEditor() {
         const survey = editor.getSurvey();
         if (survey && JSON.stringify(survey) !== editorSurvey) {
-            creator.JSON = survey;
+            loadIntoCreator(survey);
             editorSurvey = JSON.stringify(survey);
             creatorSurvey = JSON.stringify(creator.JSON);
         }
@@ -117,6 +138,7 @@
         const jsonTab = creator.activeTab === "json" ? creator.getPlugin("json") : null;
         if (jsonTab && jsonTab.model) jsonTab.model.applyChanges();
         if (JSON.stringify(creator.JSON) !== creatorSurvey) pushSurvey();
+        else pullFromEditor();
     }
 
     function chooseMedia(chooser) {
@@ -178,8 +200,10 @@
         instance.autoSaveDelay = 0;
         instance.JSON = editor.getSurvey() || {};
         instance.theme = editor.getTheme() || {};
+        // Loading the form editor's JSON into the JSON Editor tab also ends in this autosave; handing the same survey
+        // back would count as a new edit there and mark the AI draft as edited by the person.
         instance.saveSurveyFunc = (saveNo, callback) => {
-            pushSurvey();
+            if (JSON.stringify(instance.JSON) !== creatorSurvey) pushSurvey();
             callback(saveNo, true);
         };
         instance.saveThemeFunc = (saveNo, callback) => {
@@ -195,7 +219,34 @@
         });
         addGdprToolboxItem(instance);
         applyAdminTheme(instance);
+        // Base counts the issues of a saved form itself; with Creator's lint options it counts what the JSON Editor tab shows.
+        if (editor.setLintOptions && window.SurveyCreatorCore && SurveyCreatorCore.getCreatorLintOptions) {
+            editor.setLintOptions(SurveyCreatorCore.getCreatorLintOptions(instance));
+        }
         return instance;
+    }
+
+    function jsonErrors() {
+        const plugin = creator && creator.activeTab === "json" ? creator.getPlugin("json") : null;
+        const list = plugin && plugin.model ? plugin.model.errorList : null;
+        return list ? list.actions.map((action) => action.data && action.data.error).filter(Boolean) : [];
+    }
+
+    // Creator renders its JSON Editor tab and lints the text only after the switch, so the error is looked up until it is there.
+    function reviewIssues(path, attempt = 0) {
+        if (!creator) {
+            if (attempt < REVIEW_ATTEMPTS) setTimeout(() => reviewIssues(path, attempt + 1), REVIEW_RETRY_MS);
+            return;
+        }
+        if (creator.activeTab !== "json") creator.switchTab("json");
+        const errors = jsonErrors();
+        const error = errors.find((item) => item.finding && item.finding.path === path) || errors[0];
+        try {
+            if (!error) throw new Error("no error yet");
+            creator.getPlugin("json").model.gotoError(error.at, error.rowAt, error.columnAt);
+        } catch (failure) {
+            if (attempt < REVIEW_ATTEMPTS) setTimeout(() => reviewIssues(path, attempt + 1), REVIEW_RETRY_MS);
+        }
     }
 
     // Creator reads its base units as plain lengths, so the creator.css tokens are resolved before they are handed over.
@@ -397,6 +448,11 @@
     document.addEventListener("surveyjs:editor-flush", flushToEditor);
     document.addEventListener("surveyjs:editor-external-change", () => {
         if (creator) pullFromEditor();
+    });
+    document.addEventListener("surveyjs:editor-review-issues", (event) => {
+        event.preventDefault();
+        if (editor.getActiveTab() !== options.tab) editor.switchTab(options.tab);
+        reviewIssues(event.detail.path);
     });
     document.addEventListener("surveyjs:editor-tab", (event) => {
         if (event.detail.tab === options.tab) showCreator();

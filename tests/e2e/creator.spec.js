@@ -182,4 +182,66 @@ test.describe("Survey Creator in the form editor", () => {
     await expect(page).toHaveURL(editorUrl);
     await expect(creator).toBeVisible();
   });
+
+  test("shows an AI change in Creator also when its JSON Editor tab is open, and saves that JSON", async ({ page }) => {
+    test.skip(!formId, "Needs the form from the previous test");
+    const stale = { elements: [{ type: "checkbox", name: "methods", choices: ["Medication", "Other"], showOtherItem: true }] };
+    const fixed = { elements: [{ type: "checkbox", name: "methods", choices: ["Medication"], showOtherItem: true }] };
+    await page.goto(`/wp-admin/admin.php?page=surveyjs_editor&id=${formId}`);
+    const creator = page.locator(".svc-creator");
+    await expect(creator).toBeVisible();
+    await page.evaluate((json) => {
+      window.surveyjsEditor.setSurvey(json);
+      document.dispatchEvent(new CustomEvent("surveyjs:editor-external-change"));
+    }, stale);
+    await save(page);
+
+    const tabs = creator.locator(".svc-tabbed-menu");
+    await tabs.getByText("JSON Editor", { exact: true }).click();
+    const creatorJsonText = () => page.evaluate(() => {
+      const host = document.querySelector(".svc-creator");
+      const own = window.monaco.editor.getEditors().find((item) => host.contains(item.getContainerDomNode()));
+      return own ? own.getValue() : "";
+    });
+    await expect.poll(creatorJsonText).toContain('"Other"');
+
+    await page.evaluate((json) => {
+      const editor = window.surveyjsEditor;
+      editor.applyAiDraft(null, { name: editor.config.name, json: json, theme: editor.getTheme(), settings: editor.getSettings() });
+    }, fixed);
+    await expect.poll(creatorJsonText).not.toContain('"Other"');
+    await expect(creator.locator(".svc-json-error")).toHaveCount(0);
+
+    await tabs.getByText("Designer", { exact: true }).click();
+    await tabs.getByText("JSON Editor", { exact: true }).click();
+    await expect.poll(creatorJsonText).not.toContain('"Other"');
+
+    await save(page);
+    await expect(page.locator("#wp-sjs-editor-notice")).toContainText("Form saved.");
+    const { json } = contract("state", formId);
+    const methods = (json.pages || [json]).flatMap(p => p.elements || []).find(e => e.name === "methods");
+    expect(methods.choices).toEqual(["Medication"]);
+  });
+
+  test("opens Creator's JSON Editor tab at the first issue from the save notice", async ({ page }) => {
+    test.skip(!formId, "Needs the form from the previous test");
+    await page.goto(`/wp-admin/admin.php?page=surveyjs_editor&id=${formId}`);
+    const creator = page.locator(".svc-creator");
+    await expect(creator).toBeVisible();
+    await page.evaluate(() => {
+      window.surveyjsEditor.setSurvey({ elements: [{ type: "text", name: "q1" }, { type: "checkbox", name: "methods", choices: ["Medication", "Other"], showOtherItem: true }] });
+      document.dispatchEvent(new CustomEvent("surveyjs:editor-external-change"));
+    });
+    await save(page);
+    const notice = page.locator("#wp-sjs-editor-notice");
+    await expect(notice).toContainText("Form saved with 1 issue.");
+    await expect(notice.locator(".wp-sjs-editor__issues li")).toContainText('contain "Other" while showOtherItem is on');
+
+    await notice.getByRole("button", { name: "Review and fix" }).click();
+    await expect(creator.locator(".svc-json-error").first()).toContainText('"Other"');
+    await expect.poll(() => page.evaluate(() => {
+      const focused = window.monaco.editor.getEditors().find((item) => item.hasTextFocus());
+      return focused ? focused.getModel().getLineContent(focused.getPosition().lineNumber) : "";
+    })).toContain('"Other"');
+  });
 });
