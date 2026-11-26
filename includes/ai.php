@@ -36,13 +36,13 @@ class SurveyJS_Pro_AI {
             return;
         }
         SurveyJS_AI_Abilities::register_ability( 'surveyjs-pro/get-settings', array(
-            'label'            => __( 'Get SurveyJS Forms Pro settings', 'surveyjs-pro' ),
-            'description'      => 'Returns the site-wide settings of SurveyJS Forms Pro: whether forms are edited in Survey Creator, the color mode and the style of Survey Creator, Charts and Dashboard, and whether a SurveyJS license key is entered. PDF settings are per form: the proPdf* keys of surveyjs-get-form-settings. ' . SurveyJS_AI_Abilities::DATA_NOTICE,
+            'label'            => __( 'Get SurveyJS Forms Add-on settings', 'surveyjs-pro' ),
+            'description'      => 'Returns the site-wide settings of SurveyJS Forms Add-on: whether forms are edited in Survey Creator, the color mode and the style of Survey Creator, Charts and Dashboard, and whether a SurveyJS license key is entered. PDF settings are per form: the proPdf* keys of surveyjs-get-form-settings. ' . SurveyJS_AI_Abilities::DATA_NOTICE,
             'execute_callback' => array( __CLASS__, 'get_settings' ),
             'meta'             => array( 'annotations' => array( 'readonly' => true, 'destructive' => false, 'idempotent' => true ) ),
         ) );
         SurveyJS_AI_Abilities::register_ability( 'surveyjs-pro/update-settings', array(
-            'label'            => __( 'Update SurveyJS Forms Pro settings', 'surveyjs-pro' ),
+            'label'            => __( 'Update SurveyJS Forms Add-on settings', 'surveyjs-pro' ),
             'description'      => 'Changes how the form editor looks for site administrators: creator (edit forms in Survey Creator instead of the JSON editor), admin_theme (color mode), admin_style (match the WordPress admin style). Pass only the keys to change. These settings apply right away, not as a draft, and respondents see no difference. The license key can be changed only by a person in the WordPress admin.',
             'input_schema'     => array(
                 'type'       => 'object',
@@ -100,9 +100,9 @@ class SurveyJS_Pro_AI {
     public static function plugin_guide( $guide ) {
         $lines = array(
             '',
-            '## SurveyJS Forms Pro (installed on this site)',
+            '## SurveyJS Forms Add-on (installed on this site)',
             '',
-            '- **Survey Creator**: the Config tab of the form editor is the visual Survey Creator (drag and drop, logic, translations, preview, full screen). Turn it off in SurveyJS Forms > Settings > SurveyJS Forms Pro to get the JSON editor back.',
+            '- **Survey Creator**: the Config tab of the form editor is the visual Survey Creator (drag and drop, logic, translations, preview, full screen). Turn it off in SurveyJS Forms > Settings > Add-on to get the JSON editor back.',
             '- **Charts**: charts for every question with a date range filter, on the Entries screen of a form (Charts view).',
             '- **Dashboard** (SurveyJS Forms > Dashboard): entries across all forms over time, latest entries and counts per form.',
             '- **PDF tab** of the form editor: page size, orientation, fonts, colors, logo, header, footer, watermark and a live preview; a Download PDF button for respondents; the PDF of the entry attached to the email notification or the auto-reply; {pdf_link} and {pdf_url} tags in emails; password protection. Download entry PDFs from the Entries screen (one entry or Bulk actions > Export PDF) and the blank form as a fillable PDF.',

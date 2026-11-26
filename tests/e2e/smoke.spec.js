@@ -4,7 +4,7 @@ const { execFileSync } = require("child_process");
 const { test, expect } = require("@playwright/test");
 
 const WP_CONTAINER = process.env.WP_CONTAINER;
-const SETTINGS_URL = "/wp-admin/admin.php?page=surveyjs-settings";
+const SETTINGS_URL = "/wp-admin/admin.php?page=surveyjs-settings&tab=addon";
 const BASE_LIBS = "/wp-content/plugins/surveyjs/libs/library/";
 const PRO_LIBS = "/wp-content/plugins/surveyjs-pro/libs/";
 
@@ -16,11 +16,11 @@ function basePlugin(action) {
   return JSON.parse(output.toString().trim().split("\n").pop());
 }
 
+// The Add-on tab saves a field when it is left or on Enter.
 async function saveSettings(page) {
-  await Promise.all([
-    page.waitForURL(/settings-updated=true/),
-    page.getByRole("button", { name: "Save Changes" }).click()
-  ]);
+  const saved = page.waitForResponse(r => r.url().includes("/wp-admin/options.php") && r.request().method() === "POST");
+  await page.keyboard.press("Enter");
+  await saved;
 }
 
 async function addScripts(page, urls) {
@@ -38,7 +38,7 @@ test("Pro is active next to SurveyJS Forms", async ({ page }) => {
 
 test("the license key is saved in the Pro section of Settings", async ({ page }) => {
   await page.goto(SETTINGS_URL);
-  await expect(page.getByRole("heading", { name: "SurveyJS Forms Pro" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "SurveyJS Forms Add-on" })).toBeVisible();
   const field = page.getByLabel("SurveyJS License Key");
   const original = await field.inputValue();
   const key = `e2e-license-${Date.now()}`;
@@ -120,7 +120,7 @@ test("Pro shows a notice instead of loading when SurveyJS Forms is inactive", as
   expect(basePlugin("deactivate").active).toBe(false);
   try {
     await page.goto("/wp-admin/index.php");
-    await expect(page.locator(".surveyjs-pro-base-notice")).toContainText("Activate SurveyJS Forms to use Pro.");
+    await expect(page.locator(".surveyjs-pro-base-notice")).toContainText("Activate SurveyJS Forms to use the add-on.");
   } finally {
     expect(basePlugin("activate").active).toBe(true);
   }

@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: SurveyJS Forms Pro
+Plugin Name: SurveyJS Forms Add-on
 Plugin URI: https://surveyjs.io/
 Description: Adds Survey Creator with the AI assistant, PDF export and analytics to SurveyJS Forms.
 Version: 3.2.4

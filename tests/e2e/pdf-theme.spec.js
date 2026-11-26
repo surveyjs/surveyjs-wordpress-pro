@@ -67,7 +67,7 @@ async function save(page) {
   const saved = page.waitForResponse((r) => r.url().includes("action=SurveyJS_SaveSurvey"));
   await page.getByRole("button", { name: "Save", exact: true }).click();
   await saved;
-  await expect(page.locator("#wp-sjs-editor-notice")).toContainText("Form saved");
+  await expect(page.locator(".wp-sjs-snackbars")).toContainText("Form saved");
 }
 
 async function mailPdf(request, query) {

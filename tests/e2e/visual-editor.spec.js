@@ -5,7 +5,7 @@ const { test, expect } = require("@playwright/test");
 
 const WP_CONTAINER = process.env.WP_CONTAINER;
 const LIST_URL = "/wp-admin/admin.php?page=surveyjs-main-menu";
-const SETTINGS_URL = "/wp-admin/admin.php?page=surveyjs-settings";
+const SETTINGS_URL = "/wp-admin/admin.php?page=surveyjs-settings&tab=addon";
 const TEMPLATES_URL = "/wp-admin/admin.php?page=surveyjs-templates";
 
 function contract(...args) {
@@ -18,11 +18,12 @@ function contract(...args) {
 
 async function setCreator(page, on) {
   await page.goto(SETTINGS_URL);
-  await page.getByLabel("Edit forms in Survey Creator").setChecked(on);
-  await Promise.all([
-    page.waitForURL(/settings-updated=true/),
-    page.getByRole("button", { name: "Save Changes" }).click()
-  ]);
+  const box = page.getByLabel("Edit forms in Survey Creator");
+  if ((await box.isChecked()) !== on) {
+    const saved = page.waitForResponse(r => r.url().includes("/wp-admin/options.php") && r.request().method() === "POST"); // saved as soon as it changes
+    await box.setChecked(on);
+    await saved;
+  }
 }
 
 test.describe.serial("Base's blank form texts and empty-form hint follow the Creator setting", () => {

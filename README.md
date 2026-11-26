@@ -3,7 +3,7 @@
 SurveyJS Forms Pro is an add-on for the free [SurveyJS Forms](https://wordpress.org/plugins/surveyjs/) WordPress plugin. SurveyJS Forms keeps your forms and entries; Pro adds features on top of them:
 
 - **Survey Creator** in the form editor: drag & drop designer, logic, translations, JSON editor and preview.
-- **Charts** on each form's Results page and a **Dashboard** with entries across all forms.
+- **Charts** on each form's Entries page and a **Dashboard** with entries across all forms.
 - **PDF export**: entries and blank forms as PDF, a Download PDF button for respondents, PDFs in emails, password-protected PDFs.
 
 With the AI connection of SurveyJS Forms on (SurveyJS Forms > Settings > AI MCP), AI apps such as Claude Code or Cursor also change Pro's per-form PDF settings (as a draft, like all AI changes) and the Pro admin settings (Survey Creator on or off, color mode, style; applied right away). The license key stays out of reach of AI apps.

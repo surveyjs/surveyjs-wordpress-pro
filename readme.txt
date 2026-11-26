@@ -1,4 +1,4 @@
-=== SurveyJS Forms Pro ===
+=== SurveyJS Forms Add-on ===
 Contributors: devsoftbaltic
 Tags: form builder, survey, pdf, analytics
 Requires at least: 6.5
@@ -11,17 +11,17 @@ Adds Survey Creator with the AI assistant, PDF export and analytics to SurveyJS 
 
 == Description ==
 
-SurveyJS Forms Pro is an add-on for the free SurveyJS Forms plugin. SurveyJS Forms keeps your forms and entries; Pro adds features on top of them.
+SurveyJS Forms Add-on is an add-on for the free SurveyJS Forms plugin. SurveyJS Forms keeps your forms and entries; the add-on adds features on top of them.
 
-Survey Creator: build forms visually right in the form editor — drag & drop designer, logic, translations, JSON editor and preview, with a full-screen mode. A GDPR Agreement question in the toolbox. Images come from your Media Library. Survey Creator matches the WordPress admin style — admin colors, font size, input fields and compact sizes; turn off "Match the WordPress admin style" in SurveyJS Forms > Settings > SurveyJS Forms Pro to use the default SurveyJS look.
+Survey Creator: build forms visually right in the form editor — drag & drop designer, logic, translations, JSON editor and preview, with a full-screen mode. A GDPR Agreement question in the toolbox. Images come from your Media Library. Survey Creator matches the WordPress admin style — admin colors, font size, input fields and compact sizes; turn off "Match the WordPress admin style" in SurveyJS Forms > Settings > Add-on to use the default SurveyJS look.
 
-* Charts: charts for every question of a form, with a date range filter, on the form's Results page.
+* Charts: charts for every question of a form, with a date range filter, on the form's Entries page.
 
 **Dashboard** (SurveyJS Forms > Dashboard): entries across all forms for the last 7, 30 or 90 days or 12 months, charts of entries over time and by form, the latest entries and entry counts per form.
 
 = PDF export =
 
-* Download any entry as a PDF from the Results page, or select several entries and choose Export PDF in Bulk actions to get a ZIP with one PDF per entry.
+* Download any entry as a PDF from the Entries page, or select several entries and choose Export PDF in Bulk actions to get a ZIP with one PDF per entry.
 * Download the blank form as a fillable PDF that respondents can fill in a PDF viewer, or as a printable form.
 * Set the page size and orientation, font size, layout, colors and header and footer for each form on the PDF tab of the form editor, and see a live preview next to the settings before saving. By default the page size (A4 or Letter) follows the site language; a font that covers the form's language is picked automatically.
 * Add your logo, a header text and a watermark such as DRAFT or CONFIDENTIAL to every page, and leave unanswered questions out of entry PDFs.
@@ -31,34 +31,34 @@ Survey Creator: build forms visually right in the form editor — drag & drop de
 
 = AI assistants (MCP) =
 
-When the AI connection of SurveyJS Forms is on (SurveyJS Forms > Settings > AI MCP), Pro adds to it:
+When the AI connection of SurveyJS Forms is on (SurveyJS Forms > Settings > AI MCP), the add-on adds to it:
 
 * PDF settings of each form (page size, fonts, colors, header, footer, watermark, Download PDF button, PDF in emails and others): the AI app changes them like other form settings, as a draft that you review and save in the form editor. The form editor warns when the AI changed PDF attachments or PDF links in emails.
-* The Pro admin settings: Survey Creator on or off, its color mode and style. They change only the WordPress admin and apply right away. The AI app can't read or change the license key.
+* The add-on's admin settings: Survey Creator on or off, its color mode and style. They change only the WordPress admin and apply right away. The AI app can't read or change the license key.
 
-Pro sends nothing to external services for this.
+The add-on sends nothing to external services for this.
 
-Pro needs SurveyJS Forms 3.2.4 or later. When SurveyJS Forms is missing or too old, Pro shows a notice and does not load.
+The add-on needs SurveyJS Forms 3.2.4 or later. When SurveyJS Forms is missing or too old, the add-on shows a notice and does not load.
 
 == Installation ==
 
 1. Install and activate SurveyJS Forms from the WordPress.org plugin directory.
-2. Upload the SurveyJS Forms Pro zip in Plugins > Add New > Upload Plugin and activate it.
-3. Enter your SurveyJS license key in SurveyJS Forms > Settings > SurveyJS Forms Pro.
+2. Upload the SurveyJS Forms Add-on zip in Plugins > Add New > Upload Plugin and activate it.
+3. Enter your SurveyJS license key in SurveyJS Forms > Settings > Add-on.
 
-On multisite, network-activate Pro so it can follow SurveyJS Forms updates.
+On multisite, network-activate the add-on so it can follow SurveyJS Forms updates.
 
 == Updates ==
 
-SurveyJS Forms and SurveyJS Forms Pro are released together with the same SurveyJS library version. When SurveyJS Forms is updated (manually, in bulk or automatically), Pro installs its latest version from surveyjs.io in the same request and stays active. When the two versions don't match, an admin notice offers to update the older one.
+SurveyJS Forms and SurveyJS Forms Add-on are released together with the same SurveyJS library version. When SurveyJS Forms is updated (manually, in bulk or automatically), the add-on installs its latest version from surveyjs.io in the same request and stays active. When the two versions don't match, an admin notice offers to update the older one.
 
-Turn this off with `define( 'SURVEYJS_PRO_DISABLE_UPDATES', true );` in wp-config.php. On WordPress VIP and on sites where `DISALLOW_FILE_MODS` is set, Pro does not update itself. When Pro is installed with Composer, it does not update itself either: update both plugins with `composer update surveyjs/surveyjs-pro --with-dependencies`.
+Turn this off with `define( 'SURVEYJS_PRO_DISABLE_UPDATES', true );` in wp-config.php. On WordPress VIP and on sites where `DISALLOW_FILE_MODS` is set, the add-on does not update itself. When the add-on is installed with Composer, it does not update itself either: update both plugins with `composer update surveyjs/surveyjs-pro --with-dependencies`.
 
 == External services ==
 
-= Pro downloads from surveyjs.io =
+= Add-on downloads from surveyjs.io =
 
-After SurveyJS Forms is updated, or when you click "Update SurveyJS Forms Pro" in the version notice, Pro downloads its latest zip from https://cdn.surveyjs.io/wordpress/surveyjs-pro.zip. The request carries no site address or other data about your site; surveyjs.io sees only the IP address of your web server.
+After SurveyJS Forms is updated, or when you click "Update SurveyJS Forms Add-on" in the version notice, the add-on downloads its latest zip from https://cdn.surveyjs.io/wordpress/surveyjs-pro.zip. The request carries no site address or other data about your site; surveyjs.io sees only the IP address of your web server.
 
 This service is provided by Devsoft Baltic OÜ: [Terms of Use](https://surveyjs.io/terms-use), [Privacy Policy](https://surveyjs.io/privacy-policy).
 
@@ -67,9 +67,9 @@ This service is provided by Devsoft Baltic OÜ: [Terms of Use](https://surveyjs.
 = 3.2.4 =
 * Plugin skeleton.
 * Survey Creator in the form editor.
-* Charts on the Results page.
+* Charts on the Entries page.
 * Dashboard across all forms.
 * PDF export of entries and blank forms.
 * PDF logo, header text, watermark, the option to leave out unanswered questions and a live preview on the PDF tab.
 * Password-protected PDFs (AES-256).
-* Pro updates itself from surveyjs.io whenever SurveyJS Forms is updated; a notice shows when the versions don't match.
+* The add-on updates itself from surveyjs.io whenever SurveyJS Forms is updated; a notice shows when the versions don't match.

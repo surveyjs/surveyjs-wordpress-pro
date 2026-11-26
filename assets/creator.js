@@ -421,7 +421,7 @@
     function toolbarButton(className, iconName, text) {
         const button = document.createElement("button");
         button.type = "button";
-        button.className = "button wp-sjs-pro-toolbar-button " + className;
+        button.className = "button wp-sjs-button-icon wp-sjs-pro-toolbar-button " + className;
         const icon = document.createElement("span");
         icon.className = "dashicons " + iconName;
         icon.setAttribute("aria-hidden", "true");

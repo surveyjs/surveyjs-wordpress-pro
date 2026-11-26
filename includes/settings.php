@@ -42,7 +42,7 @@ class SurveyJS_Pro_Settings {
             'sanitize_callback' => array( __CLASS__, 'sanitize' ),
             'default'           => self::defaults(),
         ) );
-        add_settings_section( self::SECTION, esc_html__( 'SurveyJS Forms Pro', 'surveyjs-pro' ), array( __CLASS__, 'render_section' ), $page );
+        add_settings_section( self::SECTION, esc_html__( 'SurveyJS Forms Add-on', 'surveyjs-pro' ), array( __CLASS__, 'render_section' ), $page );
         add_settings_field( 'surveyjs_pro_creator', esc_html__( 'Form editor', 'surveyjs-pro' ), array( __CLASS__, 'render_creator' ), $page, self::SECTION );
         add_settings_field( 'surveyjs_pro_license_key', esc_html__( 'SurveyJS License Key', 'surveyjs-pro' ), array( __CLASS__, 'render_license_key' ), $page, self::SECTION, array( 'label_for' => 'sjs-pro-license-key' ) );
     }

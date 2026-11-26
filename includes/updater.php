@@ -52,7 +52,7 @@ class SurveyJS_Pro_Updater {
         $version = 'pro' === self::older() ? SurveyJS_Pro::base_version() : SURVEYJS_PRO_VERSION;
         $page = esc_url( self::download_page_url() );
         return (object) array(
-            'name'          => 'SurveyJS Forms Pro',
+            'name'          => 'SurveyJS Forms Add-on',
             'slug'          => 'surveyjs-pro',
             'version'       => $version,
             'author'        => '<a href="https://surveyjs.io/">Devsoft Baltic OÜ</a>',
@@ -62,8 +62,8 @@ class SurveyJS_Pro_Updater {
             'download_link' => self::package_url(),
             'sections'      => array(
                 'description' => '<p>' . esc_html__( 'Adds Survey Creator with the AI assistant, PDF export and analytics to SurveyJS Forms.', 'surveyjs-pro' ) . '</p>'
-                    . '<p>' . esc_html__( 'SurveyJS Forms Pro is released together with SurveyJS Forms and always has the same version.', 'surveyjs-pro' ) . '</p>'
-                    . '<p><a href="' . $page . '" target="_blank" rel="noopener">' . esc_html__( 'SurveyJS Forms Pro on surveyjs.io', 'surveyjs-pro' ) . '</a></p>',
+                    . '<p>' . esc_html__( 'SurveyJS Forms Add-on is released together with SurveyJS Forms and always has the same version.', 'surveyjs-pro' ) . '</p>'
+                    . '<p><a href="' . $page . '" target="_blank" rel="noopener">' . esc_html__( 'SurveyJS Forms Add-on on surveyjs.io', 'surveyjs-pro' ) . '</a></p>',
                 'changelog'   => '<p><a href="' . esc_url( self::download_page_url() . '#changelog' ) . '" target="_blank" rel="noopener">' . esc_html__( 'See the changelog on surveyjs.io', 'surveyjs-pro' ) . '</a></p>',
             ),
         );
@@ -104,9 +104,9 @@ class SurveyJS_Pro_Updater {
             return;
         }
         if ( self::enabled() ) {
-            echo ' <strong>' . esc_html__( 'SurveyJS Forms Pro will be updated to the same version automatically.', 'surveyjs-pro' ) . '</strong>';
+            echo ' <strong>' . esc_html__( 'SurveyJS Forms Add-on will be updated to the same version automatically.', 'surveyjs-pro' ) . '</strong>';
         } elseif ( self::managed_by_composer() ) {
-            echo ' <strong>' . esc_html__( 'SurveyJS Forms Pro is installed with Composer and is not updated here: update both plugins with Composer instead.', 'surveyjs-pro' ) . '</strong>';
+            echo ' <strong>' . esc_html__( 'SurveyJS Forms Add-on is installed with Composer and is not updated here: update both plugins with Composer instead.', 'surveyjs-pro' ) . '</strong>';
         }
     }
 
@@ -358,7 +358,7 @@ JS
         $error = '';
         if ( 'base' === $older ) {
             $title = __( 'Please update SurveyJS Forms', 'surveyjs-pro' );
-            $message = __( 'SurveyJS Forms Pro needs the latest SurveyJS Forms.', 'surveyjs-pro' );
+            $message = __( 'SurveyJS Forms Add-on needs the latest SurveyJS Forms.', 'surveyjs-pro' );
             $label = __( 'Update SurveyJS Forms', 'surveyjs-pro' );
             if ( $can_update ) {
                 $updates = get_site_transient( 'update_plugins' );
@@ -367,9 +367,9 @@ JS
                     : network_admin_url( 'plugins.php' );
             }
         } else {
-            $title = __( 'Please update SurveyJS Forms Pro', 'surveyjs-pro' );
-            $message = __( 'SurveyJS Forms Pro is older than SurveyJS Forms.', 'surveyjs-pro' );
-            $label = __( 'Update SurveyJS Forms Pro', 'surveyjs-pro' );
+            $title = __( 'Please update SurveyJS Forms Add-on', 'surveyjs-pro' );
+            $message = __( 'SurveyJS Forms Add-on is older than SurveyJS Forms.', 'surveyjs-pro' );
+            $label = __( 'Update SurveyJS Forms Add-on', 'surveyjs-pro' );
             $error = (string) get_site_option( self::ERROR, '' );
             if ( $can_update && self::enabled() ) {
                 $pro = self::pro_plugin();
@@ -390,7 +390,7 @@ JS
                     <?php
                     printf(
                         /* translators: %s: Composer command */
-                        esc_html__( 'SurveyJS Forms Pro is installed with Composer. Update both plugins with %s', 'surveyjs-pro' ),
+                        esc_html__( 'SurveyJS Forms Add-on is installed with Composer. Update both plugins with %s', 'surveyjs-pro' ),
                         '<code>' . esc_html( self::COMPOSER_UPDATE ) . '</code>'
                     );
                     ?>
@@ -400,7 +400,7 @@ JS
                 <p>
                     <?php
                     /* translators: %s: error message */
-                    echo esc_html( sprintf( __( 'The last update of SurveyJS Forms Pro failed: %s', 'surveyjs-pro' ), $error ) );
+                    echo esc_html( sprintf( __( 'The last update of SurveyJS Forms Add-on failed: %s', 'surveyjs-pro' ), $error ) );
                     ?>
                 </p>
             <?php endif; ?>

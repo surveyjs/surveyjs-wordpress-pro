@@ -55,7 +55,7 @@ class SurveyJS_Pro_Pdf_Respondent {
             <th scope="row"><?php esc_html_e( 'After submit', 'surveyjs-pro' ); ?></th>
             <td>
                 <label><input type="checkbox" data-setting="proPdfDownload" /> <?php esc_html_e( 'Show a Download PDF button to the respondent', 'surveyjs-pro' ); ?></label>
-                <p class="description"><?php esc_html_e( 'The button appears on the completed page of the form on your site and creates a PDF of the respondent\'s answers in their browser.', 'surveyjs-pro' ); ?></p>
+                <p class="description"><?php esc_html_e( 'Shown on the completed page; the PDF of the answers is created in the respondent\'s browser.', 'surveyjs-pro' ); ?></p>
             </td>
         </tr>
         <?php
@@ -73,7 +73,7 @@ class SurveyJS_Pro_Pdf_Respondent {
                         <?php
                         printf(
                             /* translators: 1: seconds, 2: maximum file size, e.g. "10 MB" */
-                            esc_html__( 'The respondent\'s browser creates the PDF when the form is submitted and sends it with the entry. If it is not ready in %1$s seconds or is larger than %2$s, the email is sent without it. The PDF looks as set on the PDF tab.', 'surveyjs-pro' ),
+                            esc_html__( 'Created in the respondent\'s browser on submit, styled as set on the PDF tab. If it takes over %1$s seconds or exceeds %2$s, the email is sent without it.', 'surveyjs-pro' ),
                             (int) self::GENERATE_TIMEOUT,
                             esc_html( size_format( self::max_attachment_size() ) )
                         );
@@ -89,13 +89,12 @@ class SurveyJS_Pro_Pdf_Respondent {
         }
         ?>
         <div role="group" aria-labelledby="wp-sjs-pro-pdf-link-title">
-            <h2 class="title" id="wp-sjs-pro-pdf-link-title"><?php esc_html_e( 'PDF Link in Emails', 'surveyjs-pro' ); ?></h2>
             <table class="form-table" role="presentation">
                 <tr>
-                    <th scope="row"><?php esc_html_e( 'PDF link', 'surveyjs-pro' ); ?></th>
+                    <th scope="row" id="wp-sjs-pro-pdf-link-title"><?php esc_html_e( 'PDF link in emails', 'surveyjs-pro' ); ?></th>
                     <td>
                         <label><input type="checkbox" data-setting="proPdfEmailLink" /> <?php esc_html_e( 'Allow a link to the PDF of the entry in emails', 'surveyjs-pro' ); ?></label>
-                        <p class="description"><?php esc_html_e( 'Add {pdf_link} (a Download PDF link) or {pdf_url} (the address only) to the email notification or the auto-reply message. The link opens a page that creates the PDF of that entry in the browser. Anyone with the link can see the entry, so send it only to the respondent or to trusted addresses. Needs "Save submitted entries in the database" on the Entries tab. Turning this option off disables the links already sent.', 'surveyjs-pro' ); ?></p>
+                        <p class="description"><?php esc_html_e( 'Add {pdf_link} (a Download PDF link) or {pdf_url} (the address only) to the notification or auto-reply. Anyone with the link can see the entry, so send it only to the respondent or trusted addresses. Needs Store entries on the Entries tab. Turning this off disables links already sent.', 'surveyjs-pro' ); ?></p>
                     </td>
                 </tr>
                 <tr data-enabled-by="proPdfEmailLink">

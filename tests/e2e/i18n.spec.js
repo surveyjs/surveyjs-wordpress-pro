@@ -33,7 +33,7 @@ test.describe("translations bundled in languages/", () => {
   });
 
   test("PHP strings, the menu and the plugin description switch to the user's language", async ({ page }) => {
-    await page.goto("/wp-admin/admin.php?page=surveyjs-settings");
+    await page.goto("/wp-admin/admin.php?page=surveyjs-settings&tab=addon");
     await expect(page.locator("#wpbody-content")).toContainText("Ein SurveyJS-Lizenzschlüssel gilt für Survey Creator");
     await expect(page.locator("#wpbody-content")).toContainText("Formulare im Survey Creator bearbeiten");
     await expect(page.locator("#adminmenu a[href$='page=surveyjs-pro-dashboard']")).toHaveText("Übersicht");
