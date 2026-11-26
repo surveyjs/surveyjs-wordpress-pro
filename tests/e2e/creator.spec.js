@@ -41,7 +41,7 @@ test.describe("Survey Creator in the form editor", () => {
     await expect(tabs.locator(".nav-tab").first()).toHaveText("Config");
     await expect(tabs.locator(".nav-tab-active")).toHaveAttribute("data-tab", "creator");
     await expect(tabs.locator('[data-tab="survey"]')).toHaveCount(0);
-    for (const tab of ["Theme", "Email", "Webhooks", "Entries", "Spam Protection", "PDF", "Advanced"]) {
+    for (const tab of ["Theme", "Email", "Integrations", "Entries", "Spam Protection", "PDF", "Advanced"]) {
       await expect(tabs.getByRole("link", { name: tab, exact: true })).toBeVisible();
     }
     await expect(page.locator("#wp-sjs-monaco")).toBeHidden();

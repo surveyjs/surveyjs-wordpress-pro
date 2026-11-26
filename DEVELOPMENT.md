@@ -294,7 +294,7 @@ The editor page has a tab bar (`.wp-sjs-editor__tabs .nav-tab[data-tab]`) and pa
 **`surveyjs_render_editor`** (action) — `( object $survey )`. Fires inside `.wp-sjs-editor__columns`, after Base's panels and before the preview. Output one element per added tab:
 
 - `data-panel="<tab slug>"` and `hidden` (Base shows it when its tab is active). Use `class="wp-sjs-editor__settings"` for a settings panel with Base's styling.
-- Inputs with `data-setting="<key>"` are per-form settings: Base fills them from the stored settings on load, includes them in dirty tracking and sends them with Save (see "Per-form settings"). Checkboxes store booleans (or `data-checked-value` / `data-unchecked-value`); a hidden input with `data-setting-type="json"` stores a JSON value (Base uses it for the `webhooks` list). `data-enabled-by="<setting> [<setting>…]"` on a row disables its controls while none of those checkbox settings is on.
+- Inputs with `data-setting="<key>"` are per-form settings: Base fills them from the stored settings on load, includes them in dirty tracking and sends them with Save (see "Per-form settings"). Checkboxes store booleans (or `data-checked-value` / `data-unchecked-value`); a hidden input with `data-setting-type="json"` stores a JSON value (Base uses it for the `webhooks` and `integrations` lists). `data-enabled-by="<setting> [<setting>…]"` on a row disables its controls while none of those checkbox settings is on.
 
 ```php
 add_filter( 'surveyjs_editor_tabs', function ( $tabs ) {
@@ -329,14 +329,15 @@ Defined by `editor.js` (handle `SurveyJS_SurveyJS::EDITOR_SCRIPT`, in the footer
 | `applyAiDraft( draft, content? )` | Loads an AI draft (`SurveyJS_AI_Drafts::editor_config()['draft']`, or `null` for none) and shows `content` (or the draft, or the saved form) without reloading the page, then fires `surveyjs:editor-external-change`. |
 | `hasEditsAfterAi()` | Whether the person edited the form after the AI draft was loaded. |
 | `setAiBusy( busy )` | While true, AI drafts reported by the Heartbeat don't show the "An AI app changed this form" notice. |
-| `settingLabel( key )` | The editor's label of a form setting: the tab and the row heading, e.g. `Email: Send To`, or the tab alone for a setting without a row (`webhooks` → `Webhooks`). |
+| `settingLabel( key )` | The editor's label of a form setting: the tab and the row heading, e.g. `Email: Send To`, or the tab alone for a setting without a row (`webhooks` → `Integrations`). |
 | `save()` | Same as the Save button: saves survey, theme and settings in one request. |
+| `addSaveCheck( check )` | `check()` runs before every save; a non-empty string it returns stops the save and is shown as "Save failed: …". Base's integrations use it for the consent check. |
 | `getIssues()` | The SurveyJS linter findings of the current survey JSON, `[{ ruleId, severity, message, path }]`, or `null` while the JSON is invalid. Save sends them with the form (`Issues`), the AI chat with each message; AI tools read them back while the JSON is unchanged. |
 | `setLintOptions( options )` | Lint options for the editor's checks (`SurveyLinter.lintSurvey( json, options )`): the Static analysis panel, `getIssues()` and "Form saved with N issues". Pro passes `SurveyCreatorCore.getCreatorLintOptions( creator )`, so the count matches Creator's JSON Editor tab. |
 | `isFullPreviewOpen()` | Whether Base's full preview is open. |
 | `setPreviewShowInvisibleElements(show)` | Show questions, panels and pages hidden by `visible` / `visibleIf` in the preview and the full preview (`survey.showInvisibleElements`), until set back. Not saved. |
 
-Events on `document`: `surveyjs:editor-ready` (`detail` = the API), `surveyjs:editor-tab` (`detail.tab`), `surveyjs:editor-saved` (`detail`: `id`, `json`, `theme`, `settings`), `surveyjs:editor-settings-filled` (the settings inputs were filled again, e.g. from an AI draft; the webhook list re-renders), `surveyjs:editor-review-issues` (cancelable, `detail.path` = linter path of the first issue; fired by "Review and fix" in the "Form saved with N issues" notice; without `preventDefault()` Base opens its Config tab at the issue, Pro opens Creator's JSON Editor tab at it), `surveyjs:ai-chat-ask` (`detail.text`; the form editor's AI chat opens and sends the text, used by "Fix with AI").
+Events on `document`: `surveyjs:editor-ready` (`detail` = the API), `surveyjs:editor-tab` (`detail.tab`), `surveyjs:editor-saved` (`detail`: `id`, `json`, `theme`, `settings`), `surveyjs:editor-settings-filled` (the settings inputs were filled again, e.g. from an AI draft; the integration and webhook lists re-render), `surveyjs:editor-review-issues` (cancelable, `detail.path` = linter path of the first issue; fired by "Review and fix" in the "Form saved with N issues" notice; without `preventDefault()` Base opens its Config tab at the issue, Pro opens Creator's JSON Editor tab at it), `surveyjs:ai-chat-ask` (`detail.text`; the form editor's AI chat opens and sends the text, used by "Fix with AI").
 
 Creator integration sketch: on `creator.onModified` call `surveyjsEditor.setSurvey(creator.JSON)`; on theme changes `setTheme(...)`; load with `creator.JSON = surveyjsEditor.getSurvey()`; on `surveyjs:editor-tab` re-read JSON if the user edited it in the JSON tab. Base's Save button, unsaved-changes prompt and preview keep working.
 
@@ -450,13 +451,30 @@ JS events on `document` (`assets/survey.js`), `detail`: `id`, `survey` (the `Sur
 
 ### Webhooks
 
-Webhooks are the per-form setting `webhooks`, a list (`id`, `name`, `enabled`, `url`, `headers` — `name`/`value` pairs —, `conditions`). Each active webhook whose conditions match the answers gets a POST request with a JSON body, sent by WP-Cron (`surveyjs_webhook_deliver`) right after the submission and retried after 5 minutes and after 1 hour; headers `X-SurveyJS-Event`, `X-SurveyJS-Delivery` and the webhook's custom headers. Body: `event` (`entry.submitted` or `test`), `form`, `entry` (`id`, `submitted_at`, `url`), `site`, `answers` (question name → answer text), `data` (raw answers, file `content` = signed download link), `fields` (`name`, `title`, `text`).
+Webhooks are the per-form setting `webhooks`, a list (`id`, `name`, `enabled`, `url`, `headers` — `name`/`value` pairs —, `conditions`), edited on the form editor's Integrations tab below the integrations (`?tab=webhooks` opens it). Each active webhook whose conditions match the answers gets a POST request with a JSON body, sent through the delivery queue (below) right after the submission and retried after 5 minutes and after 1 hour; headers `X-SurveyJS-Event`, `X-SurveyJS-Delivery` and the webhook's custom headers. Body: `event` (`entry.submitted` or `test`), `form`, `entry` (`id`, `submitted_at`, `url`), `site`, `answers` (question name → answer text), `data` (raw answers, file `content` = signed download link), `fields` (`name`, `title`, `text`).
 
-**`surveyjs_webhook_payload`** (filter) — `( array $payload, object $survey, array $data, int $entry_id )`. The JSON body; built once per entry, so retries send the same body.
+**`surveyjs_webhook_payload`** (filter) — `( array $payload, object $survey, array $data, int $entry_id )`. The JSON body of webhooks only (integrations build their requests from the unfiltered `SurveyJS_Webhooks::snapshot()`); built once per entry, so retries send the same body.
 
 **`surveyjs_webhook_timeout`** (filter) — `( int $seconds )`, default `10`.
 
 Requests go through `wp_safe_remote_post()`, and every address of the host must be public; to allow a host in a private network use WordPress's `http_request_host_is_external` and `http_allowed_safe_ports` filters.
+
+### Integrations
+
+Integrations send each entry to an account connected on SurveyJS Forms > Settings > Integrations (`SurveyJS_Connections`, option `surveyjs_connections`; keys encrypted with libsodium, never shown to the browser or the AI). The per-form setting `integrations` is a list: `id`, `name`, `enabled`, `service`, `connection` (a connection id, never a key), `conditions`, plus the service's own fields. All integrations live in Base (Mailchimp with an API key; new services are files in Base `integrations/services/`); Pro adds none. Delivery goes through the delivery queue and is retried after 5 minutes, 1 hour and 6 hours; 401/403 mark the connection "Needs attention".
+
+**`surveyjs_integration_services`** (filter) — `( SurveyJS_Integration_Service[] $services )`. For third-party add-ons: add instances of your services; read once all plugins are loaded. A service extends one of:
+- `SurveyJS_Integration_Chat_Service` — a chat app with an incoming webhook URL (Discord, Microsoft Teams, Google Chat): `id()`, `label()`, `description()`, `help_html()`, `url_pattern()`, `url_prefix()`, `message( $title, $text, $entry_url, $context )` (the JSON body), `text_message( $text )`; optional `escape()`, `field_line()`, `format_help()`, `outcome( $code )`. The form editor needs no script of its own.
+- `SurveyJS_Integration_Contacts_Service` — an email marketing service with an API key (Brevo, ActiveCampaign, MailerLite): `credentials_from( $input )`, `account( $credentials )`, `lists( $credentials )`, `fields( $credentials, $list )`, `subscribe( $credentials, $feed, $contact )` with `json_request()`; optional `credential_fields()`, `list_label()`, `fields_label()`, `supports( $feature )`, `error_message()`. The editor's "contacts" script loads the lists (a single connection or list is chosen for the person) and maps the fields. Consent is built in: such an integration is not saved without a condition unless its `signupForm` ("This form is a newsletter signup") is on, and the card has a button that adds a "Subscribe me to the newsletter" checkbox with the condition.
+- `SurveyJS_Integration_Service` — anything else: `connect()`, `deliver( $feed, $credentials, $payload )` returning `ok`, `code`, `error`, `outcome` (`ok`, `retry`, `reauth`, `permanent`), `retry_after`, `note`; `feed_defaults()`, `sanitize_feed()`, `feed_schema()` (told to the AI), `render_feed_rows()` (table rows with `data-field` inputs and `__KEY__` in ids), `render_rows_after_conditions()`, `feed_error( $feed )` (a message refuses the form's save: in the editor, in the save request and in AI writes), `targets()` (lists the editor loads through `SurveyJS_IntegrationTargets`). Its editor script registers with `window.surveyjsEditorItems.integrations.register( id, { renderExtra( item, node, commit ), onRefresh( item, node ), onFieldChange( item, node, field, commit ), onAction( action, button, item, node, commit ), error( item ) } )`.
+
+Integrations of a service that is not registered now (its add-on is inactive) are kept as stored when the form is saved, and send nothing.
+
+**`surveyjs_integration_timeout`** (filter) — `( int $seconds, string $service_id )`, default `15`.
+
+### Delivery queue
+
+Webhooks and integrations share `SurveyJS_Delivery_Queue`: jobs wait in non-autoloaded options `surveyjs_delivery_queue_<due time>_<key>`, and one WP-Cron event `surveyjs_deliver` (no arguments) sends every due job and schedules itself for the next one. The log of a form is the option `surveyjs_delivery_log_<form_id>` (last 30 attempts, `type` `webhook` or `integration`); a failed entry that is not retried any more can be sent again from the log (`SurveyJS_ResendDelivery`). Deactivation deletes every queued job.
 
 ### AI connection (MCP)
 
@@ -470,9 +488,9 @@ Events of the form editor: `surveyjs:editor-flush` (before the AI chat reads the
 
 **`surveyjs_ai_read_only_form_settings`** (filter) — `( string[] $keys )`. Keys an AI app can't change (Base: entry retention, because it deletes entries).
 
-**`surveyjs_ai_sensitive_form_settings`** (filter) — `( string[] $keys )`. When an AI draft changes one of these keys, the form editor warns that the AI changed who receives emails or what they include (Base: recipients, Reply-To, attachments, auto-reply). Base also warns, separately, when the AI changes a webhook's `enabled`, `url`, `headers` or `conditions`, and says so when a webhook URL is new.
+**`surveyjs_ai_sensitive_form_settings`** (filter) — `( string[] $keys )`. When an AI draft changes one of these keys, the form editor warns that the AI changed who receives emails or what they include (Base: recipients, Reply-To, attachments, auto-reply). Base also warns, separately, when the AI changes a webhook's `enabled`, `url`, `headers` or `conditions` (and says so when a webhook URL is new), and when it changes any field of an integration but its name.
 
-**`surveyjs_ai_secret_values`** (filter) — `( string[] $values )`. Exact values replaced with `[hidden]` in everything an ability returns (Base: the CAPTCHA secret key, the Akismet key, connector API keys, SMTP passwords from constants, and every form's webhook header values). Webhook header values are also always `[hidden]` in form settings; when the AI sends `[hidden]` back for a header with the same name in a webhook with the same `id` and URL, the stored value is kept. A webhook whose URL the AI changes gets no stored header values. Any other write that contains `[hidden]` is refused.
+**`surveyjs_ai_secret_values`** (filter) — `( string[] $values )`. Exact values replaced with `[hidden]` in everything an ability returns (Base: the CAPTCHA secret key, the Akismet key, connector API keys, SMTP passwords from constants, every form's webhook header values and the keys of every integration connection). Webhook header values are also always `[hidden]` in form settings; when the AI sends `[hidden]` back for a header with the same name in a webhook with the same `id` and URL, the stored value is kept. A webhook whose URL the AI changes gets no stored header values. Any other write that contains `[hidden]` is refused.
 
 Other filters: `surveyjs_ai_question_types` (question types the JSON check accepts besides the built-in ones), `surveyjs_ai_instructions` (the MCP server instructions), `surveyjs_ai_docs_server_url` (the SurveyJS documentation MCP server), `surveyjs_ai_plugin_guide` (the plugin guide served by `surveyjs-get-plugin-guide` and `surveyjs://guide/plugin`; Pro appends its features), `surveyjs_ai_chat_abilities` (abilities the AI chat may call), `surveyjs_ai_chat_system_instruction`, `surveyjs_ai_chat_providers` (provider rows of the chat checklist).
 
