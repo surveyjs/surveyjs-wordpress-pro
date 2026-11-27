@@ -60,7 +60,7 @@ async function entryPdf(page, formId) {
   await page.goto(`/wp-admin/admin.php?page=surveyjs_results&id=${formId}`);
   const row = page.locator("#the-list tr").first();
   await row.hover();
-  return download(page, () => row.locator(".wp-sjs-pro-pdf-entry").click());
+  return download(page, () => row.locator(".wp-sjs-addon-pdf-entry").click());
 }
 
 async function save(page) {
@@ -100,12 +100,12 @@ test.describe("PDF theme", () => {
 
   test("new forms keep the default PDF look", async ({ page }) => {
     expect(fixture("settings", form.id)).toMatchObject({
-      proPdfOrientation: "portrait",
-      proPdfFont: "helvetica",
-      proPdfAccent: false,
-      proPdfAccentColor: "#19b394",
-      proPdfFooterText: "",
-      proPdfFooterDate: false
+      addonPdfOrientation: "portrait",
+      addonPdfFont: "helvetica",
+      addonPdfAccent: false,
+      addonPdfAccentColor: "#19b394",
+      addonPdfFooterText: "",
+      addonPdfFooterDate: false
     });
 
     const pdf = inspect((await entryPdf(page, form.id)).data);
@@ -120,44 +120,44 @@ test.describe("PDF theme", () => {
 
   test("the PDF tab saves the theme settings", async ({ page }) => {
     await page.goto(editorUrl());
-    const color = page.locator('input[data-setting="proPdfAccentColor"]');
+    const color = page.locator('input[data-setting="addonPdfAccentColor"]');
     await expect(color).toBeDisabled();
-    await page.locator("#wp-sjs-pro-pdf-font").selectOption("times");
-    await page.locator('input[data-setting="proPdfAccent"]').check();
+    await page.locator("#wp-sjs-addon-pdf-font").selectOption("times");
+    await page.locator('input[data-setting="addonPdfAccent"]').check();
     await expect(color).toBeEnabled();
     await color.fill(ACCENT);
-    await page.locator("#wp-sjs-pro-pdf-header-site").click();
-    const siteTitle = await page.evaluate(() => window.surveyjsProPdf.site.title);
-    await expect(page.locator("#wp-sjs-pro-pdf-header-text")).toHaveValue(siteTitle);
-    await page.locator("#wp-sjs-pro-pdf-footer-text").fill(FOOTER);
-    await page.locator('input[data-setting="proPdfFooterDate"]').check();
+    await page.locator("#wp-sjs-addon-pdf-header-site").click();
+    const siteTitle = await page.evaluate(() => window.surveyjsAddonPdf.site.title);
+    await expect(page.locator("#wp-sjs-addon-pdf-header-text")).toHaveValue(siteTitle);
+    await page.locator("#wp-sjs-addon-pdf-footer-text").fill(FOOTER);
+    await page.locator('input[data-setting="addonPdfFooterDate"]').check();
     await save(page);
 
     expect(fixture("settings", form.id)).toMatchObject({
-      proPdfFont: "times",
-      proPdfAccent: true,
-      proPdfAccentColor: ACCENT,
-      proPdfHeaderText: siteTitle,
-      proPdfFooterText: FOOTER,
-      proPdfFooterDate: true
+      addonPdfFont: "times",
+      addonPdfAccent: true,
+      addonPdfAccentColor: ACCENT,
+      addonPdfHeaderText: siteTitle,
+      addonPdfFooterText: FOOTER,
+      addonPdfFooterDate: true
     });
 
     await page.goto(editorUrl());
-    await expect(page.locator("#wp-sjs-pro-pdf-font")).toHaveValue("times");
+    await expect(page.locator("#wp-sjs-addon-pdf-font")).toHaveValue("times");
     await expect(color).toHaveValue(ACCENT);
-    await expect(page.locator("#wp-sjs-pro-pdf-footer-text")).toHaveValue(FOOTER);
-    await expect(page.locator('input[data-setting="proPdfFooterDate"]')).toBeChecked();
+    await expect(page.locator("#wp-sjs-addon-pdf-footer-text")).toHaveValue(FOOTER);
+    await expect(page.locator('input[data-setting="addonPdfFooterDate"]')).toBeChecked();
   });
 
   test("invalid theme values fall back to the defaults", () => {
     expect(fixture("sanitize", JSON.stringify({
-      proPdfOrientation: "sideways",
-      proPdfFont: "comic-sans",
-      proPdfAccentColor: "red; background: url(x)",
-      proPdfFooterText: `<b>${"x".repeat(150)}</b>`
-    }))).toMatchObject({ proPdfOrientation: "portrait", proPdfFont: "helvetica", proPdfAccentColor: "#19b394", proPdfFooterText: "x".repeat(100) });
-    expect(fixture("sanitize", JSON.stringify({ proPdfAccentColor: "#ABC" })).proPdfAccentColor).toBe("#aabbcc");
-    expect(fixture("sanitize", JSON.stringify({ proPdfOrientation: "landscape" })).proPdfOrientation).toBe("landscape");
+      addonPdfOrientation: "sideways",
+      addonPdfFont: "comic-sans",
+      addonPdfAccentColor: "red; background: url(x)",
+      addonPdfFooterText: `<b>${"x".repeat(150)}</b>`
+    }))).toMatchObject({ addonPdfOrientation: "portrait", addonPdfFont: "helvetica", addonPdfAccentColor: "#19b394", addonPdfFooterText: "x".repeat(100) });
+    expect(fixture("sanitize", JSON.stringify({ addonPdfAccentColor: "#ABC" })).addonPdfAccentColor).toBe("#aabbcc");
+    expect(fixture("sanitize", JSON.stringify({ addonPdfOrientation: "landscape" })).addonPdfOrientation).toBe("landscape");
   });
 
   test("the entry PDF and the live preview use the theme", async ({ page }) => {
@@ -170,9 +170,9 @@ test.describe("PDF theme", () => {
     expect(pdf.content).toContain(`(${FOOTER}`);
 
     await page.goto(editorUrl());
-    await expect(page.locator("#wp-sjs-pro-pdf-live")).toHaveAttribute("src", /^blob:/);
+    await expect(page.locator("#wp-sjs-addon-pdf-live")).toHaveAttribute("src", /^blob:/);
     const preview = await page.evaluate(async () => {
-      const response = await fetch(document.getElementById("wp-sjs-pro-pdf-live").src);
+      const response = await fetch(document.getElementById("wp-sjs-addon-pdf-live").src);
       return Array.from(new Uint8Array(await response.arrayBuffer()));
     });
     const live = inspect(Buffer.from(preview));
@@ -182,7 +182,7 @@ test.describe("PDF theme", () => {
 
   test("a form with Cyrillic text still gets a font that has its letters", async ({ page }) => {
     await page.goto(editorUrl());
-    await page.locator("#wp-sjs-pro-pdf-footer-text").fill("ООО «Ромашка»");
+    await page.locator("#wp-sjs-addon-pdf-footer-text").fill("ООО «Ромашка»");
     await save(page);
     const pdf = inspect((await entryPdf(page, form.id)).data);
     expect(pdf.usesFont("Times-Roman")).toBe(false);
@@ -199,7 +199,7 @@ test.describe("PDF theme", () => {
     const saved = page.waitForResponse((r) => r.url().includes("action=SurveyJS_SaveResult"));
     await page.getByRole("button", { name: "Complete" }).click();
     expect((await saved).ok()).toBe(true);
-    await expect(page.locator(".wp-sjs-pro-pdf-download button")).toBeVisible();
+    await expect(page.locator(".wp-sjs-addon-pdf-download button")).toBeVisible();
     await context.close();
 
     const attachment = await mailPdf(request, `to:owner@example.test "${name}"`);
@@ -212,18 +212,18 @@ test.describe("PDF theme", () => {
 
   test("Landscape page orientation turns the live preview and the entry PDF", async ({ page }) => {
     await page.goto(editorUrl());
-    const live = page.locator("#wp-sjs-pro-pdf-live");
+    const live = page.locator("#wp-sjs-addon-pdf-live");
     await expect(live).toHaveAttribute("src", /^blob:/);
     const portraitSrc = await live.getAttribute("src");
-    await page.locator("#wp-sjs-pro-pdf-orientation").selectOption("landscape");
+    await page.locator("#wp-sjs-addon-pdf-orientation").selectOption("landscape");
     await expect(live).not.toHaveAttribute("src", portraitSrc);
     const preview = await page.evaluate(async () => {
-      const response = await fetch(document.getElementById("wp-sjs-pro-pdf-live").src);
+      const response = await fetch(document.getElementById("wp-sjs-addon-pdf-live").src);
       return Array.from(new Uint8Array(await response.arrayBuffer()));
     });
     expect(inspect(Buffer.from(preview)).landscape).toBe(true);
     await save(page);
-    expect(fixture("settings", form.id).proPdfOrientation).toBe("landscape");
+    expect(fixture("settings", form.id).addonPdfOrientation).toBe("landscape");
 
     const pdf = inspect((await entryPdf(page, form.id)).data);
     expect(pdf.landscape).toBe(true);

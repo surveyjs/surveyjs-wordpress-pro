@@ -7,25 +7,25 @@ Version: 3.2.4
 Requires at least: 6.5
 Requires PHP: 8.2
 Requires Plugins: surveyjs
-Update URI: https://surveyjs.io/wordpress-pro
+Update URI: https://surveyjs.io/wordpress-addon
 Author: Devsoft Baltic OÜ
 Author URI: https://surveyjs.io/
 License: See LICENSE.md
-Text Domain: surveyjs-pro
+Text Domain: surveyjs-forms-addon
 Domain Path: /languages
 */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // A second copy of the add-on (another folder name) would redeclare every class.
-if ( defined( 'SURVEYJS_PRO_VERSION' ) ) {
+if ( defined( 'SURVEYJS_ADDON_VERSION' ) ) {
     return;
 }
 
-define( 'SURVEYJS_PRO_VERSION', '3.2.4' );
-define( 'SURVEYJS_PRO_DB_VERSION', '1' );
-define( 'SURVEYJS_PRO_MIN_BASE_VERSION', '3.2.4' );
-define( 'SURVEYJS_PRO_LIBRARY_VERSION', '3.2.4' );
-define( 'SURVEYJS_PRO_FILE', __FILE__ );
+define( 'SURVEYJS_ADDON_VERSION', '3.2.4' );
+define( 'SURVEYJS_ADDON_DB_VERSION', '1' );
+define( 'SURVEYJS_ADDON_MIN_BASE_VERSION', '3.2.4' );
+define( 'SURVEYJS_ADDON_LIBRARY_VERSION', '3.2.4' );
+define( 'SURVEYJS_ADDON_FILE', __FILE__ );
 
 require_once __DIR__ . '/includes/plugin.php';
 require_once __DIR__ . '/includes/install.php';
@@ -43,6 +43,6 @@ require_once __DIR__ . '/includes/pdf-encryptor.php';
 require_once __DIR__ . '/includes/pdf-password.php';
 require_once __DIR__ . '/includes/ai.php';
 
-add_action( 'init', array( 'SurveyJS_Pro', 'load_textdomain' ) );
-// Pro sorts before Base in the active plugins list, so Base is checked only after every plugin has loaded.
-add_action( 'plugins_loaded', array( 'SurveyJS_Pro', 'boot' ) );
+add_action( 'init', array( 'SurveyJS_Addon', 'load_textdomain' ) );
+// The add-on sorts before SurveyJS Forms in the active plugins list, so SurveyJS Forms is checked only after every plugin has loaded.
+add_action( 'plugins_loaded', array( 'SurveyJS_Addon', 'boot' ) );

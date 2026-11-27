@@ -1,7 +1,7 @@
 (function () {
-    var config = window.surveyjsProAdminThemeConfig || {};
-    var DARK_CLASS = "wp-sjs-pro-dark";
-    var EVENT = "surveyjs-pro:admin-theme";
+    var config = window.surveyjsAddonAdminThemeConfig || {};
+    var DARK_CLASS = "wp-sjs-addon-dark";
+    var EVENT = "surveyjs-forms-addon:admin-theme";
     var systemDark = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
     var listeners = [];
     var dark = null;
@@ -9,50 +9,50 @@
     var pixel = null;
 
     var SURVEYJS_VARIABLES = {
-        "--sjs2-color-project-brand-600": "var(--wp-sjs-pro-accent)",
-        "--sjs2-color-project-brand-700": "var(--wp-sjs-pro-accent-dim)",
-        "--sjs2-color-bg-brand-primary-dim": "var(--wp-sjs-pro-accent-dim)",
-        "--sjs2-color-fg-brand-primary": "var(--wp-sjs-pro-accent)",
-        "--sjs2-color-fg-brand-primary-dim": "var(--wp-sjs-pro-accent-dim)",
-        "--sjs2-color-fg-brand-on-primary": "var(--wp-sjs-pro-on-accent)",
-        "--sjs2-color-bg-basic-primary": "var(--wp-sjs-pro-surface)",
-        "--sjs2-color-bg-basic-primary-dim": "var(--wp-sjs-pro-surface-2)",
-        "--sjs2-color-bg-basic-primary-disabled": "var(--wp-sjs-pro-surface-2)",
-        "--sjs2-color-bg-basic-secondary": "var(--wp-sjs-pro-surface-2)",
-        "--sjs2-color-bg-basic-secondary-dim": "var(--wp-sjs-pro-surface-3)",
-        "--sjs2-color-bg-basic-tertiary": "var(--wp-sjs-pro-surface-3)",
-        "--sjs2-color-bg-basic-tertiary-dim": "var(--wp-sjs-pro-border-2)",
-        "--sjs2-color-bg-neutral-primary": "var(--wp-sjs-pro-text)",
-        "--sjs2-color-bg-neutral-primary-dim": "var(--wp-sjs-pro-text-2)",
-        "--sjs2-color-bg-neutral-secondary": "var(--wp-sjs-pro-surface-2)",
-        "--sjs2-color-bg-neutral-secondary-dim": "var(--wp-sjs-pro-surface-3)",
-        "--sjs2-color-fg-basic-primary": "var(--wp-sjs-pro-text)",
-        "--sjs2-color-fg-basic-primary-dim": "var(--wp-sjs-pro-text-2)",
-        "--sjs2-color-fg-basic-primary-muted": "var(--wp-sjs-pro-text-2)",
-        "--sjs2-color-fg-neutral-on-primary": "var(--wp-sjs-pro-surface)",
-        "--sjs2-color-border-basic-primary": "var(--wp-sjs-pro-text)",
-        "--sjs2-color-border-basic-secondary": "var(--wp-sjs-pro-border-2)",
-        "--sjs2-color-border-basic-secondary-disabled": "var(--wp-sjs-pro-surface-3)",
-        "--sjs2-color-border-neutral-primary": "var(--wp-sjs-pro-surface)",
-        "--sjs2-color-utility-body": "var(--wp-sjs-pro-page)",
-        "--sjs2-color-utility-sheet": "var(--wp-sjs-pro-surface)",
-        "--sjs2-color-utility-toolbox": "var(--wp-sjs-pro-surface)",
-        "--sjs2-color-utility-property-grid": "var(--wp-sjs-pro-surface)",
-        "--sjs2-color-utility-tabs": "var(--wp-sjs-pro-surface)",
-        "--sjs2-color-utility-surface-survey": "var(--wp-sjs-pro-canvas)",
-        "--sjs2-color-utility-surface-designer": "var(--wp-sjs-pro-canvas)",
-        "--sjs2-color-utility-surface-presets-manager": "var(--wp-sjs-pro-canvas)",
-        "--sjs2-color-utility-surface-json-editor": "var(--wp-sjs-pro-surface)",
-        "--sjs2-color-utility-scrollbar": "rgba(from var(--wp-sjs-pro-text) r g b / 0.2)",
-        "--sjs2-color-utility-shadow-surface-default": "var(--wp-sjs-pro-border-2)",
-        "--sjs2-color-utility-shadow-floating-default": "var(--wp-sjs-pro-shadow-floating)",
-        "--sjs2-typography-font-family-text": "var(--wp-sjs-pro-font)",
-        "--sjs2-color-data-chart-bg-color-0": "var(--wp-sjs-pro-chart-1)",
-        "--sjs2-color-data-chart-fg-on-color-0": "var(--wp-sjs-pro-chart-1-text)"
+        "--sjs2-color-project-brand-600": "var(--wp-sjs-addon-accent)",
+        "--sjs2-color-project-brand-700": "var(--wp-sjs-addon-accent-dim)",
+        "--sjs2-color-bg-brand-primary-dim": "var(--wp-sjs-addon-accent-dim)",
+        "--sjs2-color-fg-brand-primary": "var(--wp-sjs-addon-accent)",
+        "--sjs2-color-fg-brand-primary-dim": "var(--wp-sjs-addon-accent-dim)",
+        "--sjs2-color-fg-brand-on-primary": "var(--wp-sjs-addon-on-accent)",
+        "--sjs2-color-bg-basic-primary": "var(--wp-sjs-addon-surface)",
+        "--sjs2-color-bg-basic-primary-dim": "var(--wp-sjs-addon-surface-2)",
+        "--sjs2-color-bg-basic-primary-disabled": "var(--wp-sjs-addon-surface-2)",
+        "--sjs2-color-bg-basic-secondary": "var(--wp-sjs-addon-surface-2)",
+        "--sjs2-color-bg-basic-secondary-dim": "var(--wp-sjs-addon-surface-3)",
+        "--sjs2-color-bg-basic-tertiary": "var(--wp-sjs-addon-surface-3)",
+        "--sjs2-color-bg-basic-tertiary-dim": "var(--wp-sjs-addon-border-2)",
+        "--sjs2-color-bg-neutral-primary": "var(--wp-sjs-addon-text)",
+        "--sjs2-color-bg-neutral-primary-dim": "var(--wp-sjs-addon-text-2)",
+        "--sjs2-color-bg-neutral-secondary": "var(--wp-sjs-addon-surface-2)",
+        "--sjs2-color-bg-neutral-secondary-dim": "var(--wp-sjs-addon-surface-3)",
+        "--sjs2-color-fg-basic-primary": "var(--wp-sjs-addon-text)",
+        "--sjs2-color-fg-basic-primary-dim": "var(--wp-sjs-addon-text-2)",
+        "--sjs2-color-fg-basic-primary-muted": "var(--wp-sjs-addon-text-2)",
+        "--sjs2-color-fg-neutral-on-primary": "var(--wp-sjs-addon-surface)",
+        "--sjs2-color-border-basic-primary": "var(--wp-sjs-addon-text)",
+        "--sjs2-color-border-basic-secondary": "var(--wp-sjs-addon-border-2)",
+        "--sjs2-color-border-basic-secondary-disabled": "var(--wp-sjs-addon-surface-3)",
+        "--sjs2-color-border-neutral-primary": "var(--wp-sjs-addon-surface)",
+        "--sjs2-color-utility-body": "var(--wp-sjs-addon-page)",
+        "--sjs2-color-utility-sheet": "var(--wp-sjs-addon-surface)",
+        "--sjs2-color-utility-toolbox": "var(--wp-sjs-addon-surface)",
+        "--sjs2-color-utility-property-grid": "var(--wp-sjs-addon-surface)",
+        "--sjs2-color-utility-tabs": "var(--wp-sjs-addon-surface)",
+        "--sjs2-color-utility-surface-survey": "var(--wp-sjs-addon-canvas)",
+        "--sjs2-color-utility-surface-designer": "var(--wp-sjs-addon-canvas)",
+        "--sjs2-color-utility-surface-presets-manager": "var(--wp-sjs-addon-canvas)",
+        "--sjs2-color-utility-surface-json-editor": "var(--wp-sjs-addon-surface)",
+        "--sjs2-color-utility-scrollbar": "rgba(from var(--wp-sjs-addon-text) r g b / 0.2)",
+        "--sjs2-color-utility-shadow-surface-default": "var(--wp-sjs-addon-border-2)",
+        "--sjs2-color-utility-shadow-floating-default": "var(--wp-sjs-addon-shadow-floating)",
+        "--sjs2-typography-font-family-text": "var(--wp-sjs-addon-font)",
+        "--sjs2-color-data-chart-bg-color-0": "var(--wp-sjs-addon-chart-1)",
+        "--sjs2-color-data-chart-fg-on-color-0": "var(--wp-sjs-addon-chart-1-text)"
     };
     for (var i = 1; i <= 10; i++) {
-        SURVEYJS_VARIABLES["--sjs2-color-data-chart-bg-color-" + i] = "var(--wp-sjs-pro-chart-" + i + ")";
-        SURVEYJS_VARIABLES["--sjs2-color-data-chart-fg-on-color-" + i] = "var(--wp-sjs-pro-chart-" + i + "-text, var(--wp-sjs-pro-chart-text))";
+        SURVEYJS_VARIABLES["--sjs2-color-data-chart-bg-color-" + i] = "var(--wp-sjs-addon-chart-" + i + ")";
+        SURVEYJS_VARIABLES["--sjs2-color-data-chart-fg-on-color-" + i] = "var(--wp-sjs-addon-chart-" + i + "-text, var(--wp-sjs-addon-chart-text))";
     }
 
     function luminance(color) {
@@ -108,8 +108,8 @@
     // Dark accents keep the admin color's hue and chroma but are lightened to stay readable on dark surfaces.
     function setDarkLightness() {
         var admin = oklabLightness(resolve("var(--wp-admin-theme-color, #2271b1)"));
-        setLightness("--wp-sjs-pro-dark-accent-l", Math.max(admin, 0.72));
-        setLightness("--wp-sjs-pro-dark-chart-1-l", Math.min(Math.max(admin, 0.55), 0.62));
+        setLightness("--wp-sjs-addon-dark-accent-l", Math.max(admin, 0.72));
+        setLightness("--wp-sjs-addon-dark-chart-1-l", Math.min(Math.max(admin, 0.55), 0.62));
     }
 
     function detect() {
@@ -161,7 +161,7 @@
     }
 
     function color(name) {
-        return resolve("var(--wp-sjs-pro-" + name + ")");
+        return resolve("var(--wp-sjs-addon-" + name + ")");
     }
 
     // Charts are drawn on canvas from colors read once, so chart colors are handed over resolved.
@@ -197,7 +197,7 @@
         }
     }
 
-    window.surveyjsProAdminTheme = {
+    window.surveyjsAddonAdminTheme = {
         mode: config.mode || "auto",
         isDark: update,
         color: color,

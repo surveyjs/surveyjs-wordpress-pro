@@ -2,7 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Made for the plain structure jsPDF writes; anything else throws instead of being rewritten into a damaged file.
-class SurveyJS_Pro_Pdf_Encryptor {
+class SurveyJS_Addon_Pdf_Encryptor {
 
     const WHITESPACE = "\0\t\n\f\r ";
     const DELIMITERS = '()<>[]{}/%';
@@ -46,7 +46,7 @@ class SurveyJS_Pro_Pdf_Encryptor {
             throw self::error( 'The trailer has no valid /Root or /Info.' );
         }
         $id = $this->file_id( self::get( $trailer, 'ID' ) );
-        $this->encrypt = new SurveyJS_Pro_Pdf_Aes256( $password, bin2hex( random_bytes( 32 ) ) );
+        $this->encrypt = new SurveyJS_Addon_Pdf_Aes256( $password, bin2hex( random_bytes( 32 ) ) );
 
         ksort( $this->offsets );
         $size = max( (int) self::number( self::get( $trailer, 'Size' ) ), array_key_last( $this->offsets ) + 1 );

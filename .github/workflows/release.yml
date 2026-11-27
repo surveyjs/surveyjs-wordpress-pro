@@ -7,7 +7,7 @@ on:
         description: Version to release, x.y.z (the tag is created after the checks)
         required: true
       base-ref:
-        description: Base ref to build and test against; empty = Base tag with the same version (required to publish)
+        description: SurveyJS Forms ref to build and test against; empty = SurveyJS Forms tag with the same version (required to publish)
         required: false
       publish:
         description: Publish the GitHub release (creates the tag, Packagist picks it up) and upload the zips to cdn.surveyjs.io; each step waits for approval
@@ -27,8 +27,8 @@ env:
 
 jobs:
   verify:
-    name: Release fields and Base tag
-    if: github.repository == 'surveyjs/surveyjs-wordpress-pro'
+    name: Release fields and SurveyJS Forms tag
+    if: github.repository == 'surveyjs/surveyjs-wordpress-addon'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -43,19 +43,19 @@ jobs:
         run: |
           fail=0
           need() { grep -qF -- "$2" "$1" || { echo "::error file=$1::\"$2\" not found"; fail=1; }; }
-          need surveyjs-pro.php "'SURVEYJS_PRO_MIN_BASE_VERSION', '$VERSION'"
-          need surveyjs-pro.php "'SURVEYJS_PRO_LIBRARY_VERSION', '$VERSION'"
+          need surveyjs-forms-addon.php "'SURVEYJS_ADDON_MIN_BASE_VERSION', '$VERSION'"
+          need surveyjs-forms-addon.php "'SURVEYJS_ADDON_LIBRARY_VERSION', '$VERSION'"
           need composer.json "\"wp-plugin/surveyjs\": \"$VERSION\""
           for package in survey-core survey-creator-core survey-creator-js survey-js-ui; do
             need package.json "\"$package\": \"$VERSION\""
           done
           need readme.txt "= $VERSION ="
           if [ "$BASE_REF" != "$VERSION" ] && [ "$PUBLISH" = true ]; then
-            echo "::error::Publishing needs Pro built against Base tag $VERSION, not $BASE_REF"
+            echo "::error::Publishing needs the add-on built against SurveyJS Forms tag $VERSION, not $BASE_REF"
             fail=1
           fi
           if [ "$BASE_REF" = "$VERSION" ] && ! git ls-remote --exit-code --tags https://github.com/surveyjs/surveyjs-wordpress.git "refs/tags/$VERSION" > /dev/null; then
-            echo "::error::Base tag $VERSION does not exist yet: release Base first, or pass base-ref for a dry run"
+            echo "::error::SurveyJS Forms tag $VERSION does not exist yet: release SurveyJS Forms first, or pass base-ref for a dry run"
             fail=1
           fi
           echo "base-ref=$BASE_REF" >> "$GITHUB_OUTPUT"
@@ -89,7 +89,7 @@ jobs:
       id-token: write
     environment:
       name: cdn
-      url: https://cdn.surveyjs.io/${{ vars.AZURE_BLOB_CONTAINER || 'wordpress' }}/surveyjs-pro.zip
+      url: https://cdn.surveyjs.io/${{ vars.AZURE_BLOB_CONTAINER || 'wordpress' }}/surveyjs-forms-addon.zip
     env:
       STORAGE_ACCOUNT: ${{ vars.AZURE_STORAGE_ACCOUNT || 'surveyjsdocsstorage' }}
       CONTAINER: ${{ vars.AZURE_BLOB_CONTAINER || 'wordpress' }}
@@ -109,9 +109,9 @@ jobs:
             az storage blob upload --auth-mode login --account-name "$STORAGE_ACCOUNT" --container-name "$CONTAINER" \
               --file "$1" --name "$2" --content-type application/zip --overwrite --only-show-errors
           }
-          upload "surveyjs-pro-$VERSION.zip" "surveyjs-pro-$VERSION.zip"
+          upload "surveyjs-forms-addon-$VERSION.zip" "surveyjs-forms-addon-$VERSION.zip"
           upload "surveyjs-forms-vip-$VERSION.zip" "surveyjs-forms-vip-$VERSION.zip"
-          upload "surveyjs-pro-$VERSION.zip" surveyjs-pro.zip
+          upload "surveyjs-forms-addon-$VERSION.zip" surveyjs-forms-addon.zip
           upload "surveyjs-forms-vip-$VERSION.zip" surveyjs-forms-vip.zip
       - run: |
           az afd endpoint purge \
@@ -119,7 +119,7 @@ jobs:
             --profile-name "${{ vars.AZURE_FRONT_DOOR_PROFILE || 'surveyjs-docs' }}" \
             --endpoint-name "${{ vars.AZURE_FRONT_DOOR_ENDPOINT || 'surveyjs-docs-cdn' }}" \
             --domains cdn.surveyjs.io \
-            --content-paths "/$CONTAINER/surveyjs-pro.zip" "/$CONTAINER/surveyjs-forms-vip.zip"
+            --content-paths "/$CONTAINER/surveyjs-forms-addon.zip" "/$CONTAINER/surveyjs-forms-vip.zip"
 
   packagist:
     name: Packagist
@@ -139,11 +139,11 @@ jobs:
               -d "{\"repository\":{\"url\":\"https://github.com/$GITHUB_REPOSITORY\"}}" || echo "::warning::update-package failed, waiting for the GitHub webhook"
           fi
           for attempt in $(seq 40); do
-            if curl -fsS "https://repo.packagist.org/p2/surveyjs/surveyjs-pro.json?t=$attempt" | grep -qF "\"version\":\"$VERSION\""; then
-              echo "surveyjs/surveyjs-pro $VERSION is on Packagist"
+            if curl -fsS "https://repo.packagist.org/p2/surveyjs/surveyjs-forms-addon.json?t=$attempt" | grep -qF "\"version\":\"$VERSION\""; then
+              echo "surveyjs/surveyjs-forms-addon $VERSION is on Packagist"
               exit 0
             fi
             sleep 30
           done
-          echo "::error::surveyjs/surveyjs-pro $VERSION did not appear on Packagist within 20 minutes"
+          echo "::error::surveyjs/surveyjs-forms-addon $VERSION did not appear on Packagist within 20 minutes"
           exit 1

@@ -1,84 +1,84 @@
 /*
- * The one palette of Pro's admin pages: Creator, Charts and Dashboard read only these tokens
+ * The one palette of the add-on's admin pages: Creator, Charts and Dashboard read only these tokens
  * (admin-theme.js maps SurveyJS --sjs2-* variables onto them). Declared on body because WordPress sets
- * --wp-admin-theme-color there for the user's admin color scheme; html.wp-sjs-pro-dark switches to dark.
+ * --wp-admin-theme-color there for the user's admin color scheme; html.wp-sjs-addon-dark switches to dark.
  */
 body {
-    --wp-sjs-pro-accent: var(--wp-admin-theme-color, #2271b1);
-    --wp-sjs-pro-accent-dim: var(--wp-admin-theme-color-darker-10, #135e96);
-    --wp-sjs-pro-on-accent: #fff;
+    --wp-sjs-addon-accent: var(--wp-admin-theme-color, #2271b1);
+    --wp-sjs-addon-accent-dim: var(--wp-admin-theme-color-darker-10, #135e96);
+    --wp-sjs-addon-on-accent: #fff;
 
-    --wp-sjs-pro-page: #f0f0f1;
-    --wp-sjs-pro-surface: #fff;
-    --wp-sjs-pro-surface-2: #f6f7f7;
-    --wp-sjs-pro-surface-3: #f0f0f1;
-    --wp-sjs-pro-canvas: #f6f7f7;
+    --wp-sjs-addon-page: #f0f0f1;
+    --wp-sjs-addon-surface: #fff;
+    --wp-sjs-addon-surface-2: #f6f7f7;
+    --wp-sjs-addon-surface-3: #f0f0f1;
+    --wp-sjs-addon-canvas: #f6f7f7;
 
-    --wp-sjs-pro-text: #1d2327;
-    --wp-sjs-pro-text-2: #50575e;
-    --wp-sjs-pro-text-3: #646970;
-    --wp-sjs-pro-border: #c3c4c7;
-    --wp-sjs-pro-border-2: #dcdcde;
-    --wp-sjs-pro-grid: #f0f0f1;
-    --wp-sjs-pro-input-bg: #fff;
-    --wp-sjs-pro-input-border: #8c8f94;
-    --wp-sjs-pro-shadow: rgba(0, 0, 0, 0.04);
-    --wp-sjs-pro-shadow-floating: rgba(0, 0, 0, 0.15);
+    --wp-sjs-addon-text: #1d2327;
+    --wp-sjs-addon-text-2: #50575e;
+    --wp-sjs-addon-text-3: #646970;
+    --wp-sjs-addon-border: #c3c4c7;
+    --wp-sjs-addon-border-2: #dcdcde;
+    --wp-sjs-addon-grid: #f0f0f1;
+    --wp-sjs-addon-input-bg: #fff;
+    --wp-sjs-addon-input-border: #8c8f94;
+    --wp-sjs-addon-shadow: rgba(0, 0, 0, 0.04);
+    --wp-sjs-addon-shadow-floating: rgba(0, 0, 0, 0.15);
 
-    --wp-sjs-pro-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    --wp-sjs-addon-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 
-    --wp-sjs-pro-chart-1: var(--wp-sjs-pro-accent);
-    --wp-sjs-pro-chart-2: #eb6834;
-    --wp-sjs-pro-chart-3: #1baf7a;
-    --wp-sjs-pro-chart-4: #eda100;
-    --wp-sjs-pro-chart-5: #e87ba4;
-    --wp-sjs-pro-chart-6: #008300;
-    --wp-sjs-pro-chart-7: #6250d6;
-    --wp-sjs-pro-chart-8: #e34948;
-    --wp-sjs-pro-chart-9: #1192a8;
-    --wp-sjs-pro-chart-10: #a0662c;
-    --wp-sjs-pro-chart-text: #fff;
-    --wp-sjs-pro-chart-1-text: var(--wp-sjs-pro-on-accent);
-    --wp-sjs-pro-chart-4-text: #1d2327;
+    --wp-sjs-addon-chart-1: var(--wp-sjs-addon-accent);
+    --wp-sjs-addon-chart-2: #eb6834;
+    --wp-sjs-addon-chart-3: #1baf7a;
+    --wp-sjs-addon-chart-4: #eda100;
+    --wp-sjs-addon-chart-5: #e87ba4;
+    --wp-sjs-addon-chart-6: #008300;
+    --wp-sjs-addon-chart-7: #6250d6;
+    --wp-sjs-addon-chart-8: #e34948;
+    --wp-sjs-addon-chart-9: #1192a8;
+    --wp-sjs-addon-chart-10: #a0662c;
+    --wp-sjs-addon-chart-text: #fff;
+    --wp-sjs-addon-chart-1-text: var(--wp-sjs-addon-on-accent);
+    --wp-sjs-addon-chart-4-text: #1d2327;
 }
 
 /*
  * Chromium up to at least 130 crashes the tab on min()/max()/clamp() over a relative color's channels, even inside @supports,
  * so admin-theme.js clamps the admin color's lightness and sets it on html; the fallbacks fit the default blue scheme.
  */
-html.wp-sjs-pro-dark body {
-    --wp-sjs-pro-accent: oklch(from var(--wp-admin-theme-color, #2271b1) var(--wp-sjs-pro-dark-accent-l, 0.72) c h);
-    --wp-sjs-pro-accent-dim: oklch(from var(--wp-admin-theme-color, #2271b1) calc(var(--wp-sjs-pro-dark-accent-l, 0.72) - 0.06) c h);
-    --wp-sjs-pro-on-accent: #1d2327;
+html.wp-sjs-addon-dark body {
+    --wp-sjs-addon-accent: oklch(from var(--wp-admin-theme-color, #2271b1) var(--wp-sjs-addon-dark-accent-l, 0.72) c h);
+    --wp-sjs-addon-accent-dim: oklch(from var(--wp-admin-theme-color, #2271b1) calc(var(--wp-sjs-addon-dark-accent-l, 0.72) - 0.06) c h);
+    --wp-sjs-addon-on-accent: #1d2327;
 
-    --wp-sjs-pro-page: #1d2327;
-    --wp-sjs-pro-surface: #2c3338;
-    --wp-sjs-pro-surface-2: #252b30;
-    --wp-sjs-pro-surface-3: #3c434a;
-    --wp-sjs-pro-canvas: #1d2327;
+    --wp-sjs-addon-page: #1d2327;
+    --wp-sjs-addon-surface: #2c3338;
+    --wp-sjs-addon-surface-2: #252b30;
+    --wp-sjs-addon-surface-3: #3c434a;
+    --wp-sjs-addon-canvas: #1d2327;
 
-    --wp-sjs-pro-text: #f0f0f1;
-    --wp-sjs-pro-text-2: #c3c4c7;
-    --wp-sjs-pro-text-3: #a7aaad;
-    --wp-sjs-pro-border: #50575e;
-    --wp-sjs-pro-border-2: #3c434a;
-    --wp-sjs-pro-grid: #3c434a;
-    --wp-sjs-pro-input-bg: #1d2327;
-    --wp-sjs-pro-input-border: #646970;
-    --wp-sjs-pro-shadow: rgba(0, 0, 0, 0.3);
-    --wp-sjs-pro-shadow-floating: rgba(0, 0, 0, 0.6);
+    --wp-sjs-addon-text: #f0f0f1;
+    --wp-sjs-addon-text-2: #c3c4c7;
+    --wp-sjs-addon-text-3: #a7aaad;
+    --wp-sjs-addon-border: #50575e;
+    --wp-sjs-addon-border-2: #3c434a;
+    --wp-sjs-addon-grid: #3c434a;
+    --wp-sjs-addon-input-bg: #1d2327;
+    --wp-sjs-addon-input-border: #646970;
+    --wp-sjs-addon-shadow: rgba(0, 0, 0, 0.3);
+    --wp-sjs-addon-shadow-floating: rgba(0, 0, 0, 0.6);
 
-    --wp-sjs-pro-chart-1: oklch(from var(--wp-admin-theme-color, #2271b1) var(--wp-sjs-pro-dark-chart-1-l, 0.55) c h);
-    --wp-sjs-pro-chart-1-text: #fff;
-    --wp-sjs-pro-chart-2: #d95926;
-    --wp-sjs-pro-chart-3: #199e70;
-    --wp-sjs-pro-chart-4: #c98500;
-    --wp-sjs-pro-chart-5: #d55181;
-    --wp-sjs-pro-chart-6: #008300;
-    --wp-sjs-pro-chart-7: #9085e9;
-    --wp-sjs-pro-chart-8: #e66767;
-    --wp-sjs-pro-chart-9: #1aa3b8;
-    --wp-sjs-pro-chart-10: #b67a3c;
+    --wp-sjs-addon-chart-1: oklch(from var(--wp-admin-theme-color, #2271b1) var(--wp-sjs-addon-dark-chart-1-l, 0.55) c h);
+    --wp-sjs-addon-chart-1-text: #fff;
+    --wp-sjs-addon-chart-2: #d95926;
+    --wp-sjs-addon-chart-3: #199e70;
+    --wp-sjs-addon-chart-4: #c98500;
+    --wp-sjs-addon-chart-5: #d55181;
+    --wp-sjs-addon-chart-6: #008300;
+    --wp-sjs-addon-chart-7: #9085e9;
+    --wp-sjs-addon-chart-8: #e66767;
+    --wp-sjs-addon-chart-9: #1aa3b8;
+    --wp-sjs-addon-chart-10: #b67a3c;
 
     color-scheme: dark;
 }

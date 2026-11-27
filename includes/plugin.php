@@ -1,26 +1,26 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class SurveyJS_Pro {
+class SurveyJS_Addon {
 
     private static $disabled = array();
 
     public static function boot() {
         if ( ! self::base_compatible() ) {
             if ( self::base_active() ) {
-                SurveyJS_Pro_Updater::init();
+                SurveyJS_Addon_Updater::init();
             } else {
                 add_action( 'admin_notices', array( __CLASS__, 'base_notice' ) );
             }
             return;
         }
-        SurveyJS_Pro_Install::init();
-        SurveyJS_Pro_Settings::init();
-        do_action( 'surveyjs_pro_loaded' );
+        SurveyJS_Addon_Install::init();
+        SurveyJS_Addon_Settings::init();
+        do_action( 'surveyjs_addon_loaded' );
     }
 
     public static function load_textdomain() {
-        load_plugin_textdomain( 'surveyjs-pro', false, dirname( plugin_basename( SURVEYJS_PRO_FILE ) ) . '/languages' );
+        load_plugin_textdomain( 'surveyjs-forms-addon', false, dirname( plugin_basename( SURVEYJS_ADDON_FILE ) ) . '/languages' );
     }
 
     public static function base_version() {
@@ -33,7 +33,7 @@ class SurveyJS_Pro {
 
     public static function base_compatible() {
         $version = self::base_version();
-        return '' !== $version && version_compare( $version, SURVEYJS_PRO_MIN_BASE_VERSION, '>=' );
+        return '' !== $version && version_compare( $version, SURVEYJS_ADDON_MIN_BASE_VERSION, '>=' );
     }
 
     // A newer or older SurveyJS Forms may lack a class, method or constant a feature uses; the feature is then
@@ -77,13 +77,13 @@ class SurveyJS_Pro {
 
     private static function feature_label( $feature ) {
         $labels = array(
-            'SurveyJS_Pro_Creator'        => __( 'Survey Creator', 'surveyjs-pro' ),
-            'SurveyJS_Pro_Analytics'      => __( 'Charts', 'surveyjs-pro' ),
-            'SurveyJS_Pro_Dashboard'      => __( 'Dashboard', 'surveyjs-pro' ),
-            'SurveyJS_Pro_Pdf'            => __( 'PDF export', 'surveyjs-pro' ),
-            'SurveyJS_Pro_Pdf_Respondent' => __( 'PDF for respondents and emails', 'surveyjs-pro' ),
-            'SurveyJS_Pro_Pdf_Password'   => __( 'PDF passwords', 'surveyjs-pro' ),
-            'SurveyJS_Pro_AI'             => __( 'AI abilities', 'surveyjs-pro' ),
+            'SurveyJS_Addon_Creator'        => __( 'Survey Creator', 'surveyjs-forms-addon' ),
+            'SurveyJS_Addon_Analytics'      => __( 'Charts', 'surveyjs-forms-addon' ),
+            'SurveyJS_Addon_Dashboard'      => __( 'Dashboard', 'surveyjs-forms-addon' ),
+            'SurveyJS_Addon_Pdf'            => __( 'PDF export', 'surveyjs-forms-addon' ),
+            'SurveyJS_Addon_Pdf_Respondent' => __( 'PDF for respondents and emails', 'surveyjs-forms-addon' ),
+            'SurveyJS_Addon_Pdf_Password'   => __( 'PDF passwords', 'surveyjs-forms-addon' ),
+            'SurveyJS_Addon_AI'             => __( 'AI abilities', 'surveyjs-forms-addon' ),
         );
         return $labels[ $feature ] ?? $feature;
     }
@@ -94,13 +94,13 @@ class SurveyJS_Pro {
         }
         $message = sprintf(
             /* translators: 1: list of features, 2: installed SurveyJS Forms version */
-            __( 'SurveyJS Forms Add-on turned off %1$s: SurveyJS Forms %2$s does not have what they need. Update SurveyJS Forms and SurveyJS Forms Add-on to their latest versions.', 'surveyjs-pro' ),
+            __( 'SurveyJS Forms Add-on turned off %1$s: SurveyJS Forms %2$s does not have what they need. Update SurveyJS Forms and SurveyJS Forms Add-on to their latest versions.', 'surveyjs-forms-addon' ),
             implode( ', ', array_map( array( __CLASS__, 'feature_label' ), array_keys( self::$disabled ) ) ),
             self::base_version()
         );
         ?>
-        <div class="notice notice-warning surveyjs-pro-disabled-notice">
-            <p><?php echo esc_html( $message ); ?> <a href="<?php echo esc_url( self_admin_url( 'plugins.php' ) ); ?>"><?php esc_html_e( 'Go to Plugins', 'surveyjs-pro' ); ?></a></p>
+        <div class="notice notice-warning surveyjs-forms-addon-disabled-notice">
+            <p><?php echo esc_html( $message ); ?> <a href="<?php echo esc_url( self_admin_url( 'plugins.php' ) ); ?>"><?php esc_html_e( 'Go to Plugins', 'surveyjs-forms-addon' ); ?></a></p>
             <p class="description"><?php echo esc_html( implode( ', ', array_unique( array_merge( ...array_values( self::$disabled ) ) ) ) ); ?></p>
         </div>
         <?php
@@ -111,18 +111,18 @@ class SurveyJS_Pro {
             return;
         }
         if ( file_exists( WP_PLUGIN_DIR . '/surveyjs/surveyjs.php' ) ) {
-            $message = __( 'SurveyJS Forms Add-on needs the SurveyJS Forms plugin. Activate SurveyJS Forms to use the add-on.', 'surveyjs-pro' );
-            $link = array( admin_url( 'plugins.php' ), __( 'Go to Plugins', 'surveyjs-pro' ) );
+            $message = __( 'SurveyJS Forms Add-on needs the SurveyJS Forms plugin. Activate SurveyJS Forms to use the add-on.', 'surveyjs-forms-addon' );
+            $link = array( admin_url( 'plugins.php' ), __( 'Go to Plugins', 'surveyjs-forms-addon' ) );
         } else {
             $message = sprintf(
                 /* translators: %s: minimum SurveyJS Forms version */
-                __( 'SurveyJS Forms Add-on needs the SurveyJS Forms plugin %s or later. Install and activate SurveyJS Forms to use the add-on.', 'surveyjs-pro' ),
-                SURVEYJS_PRO_MIN_BASE_VERSION
+                __( 'SurveyJS Forms Add-on needs the SurveyJS Forms plugin %s or later. Install and activate SurveyJS Forms to use the add-on.', 'surveyjs-forms-addon' ),
+                SURVEYJS_ADDON_MIN_BASE_VERSION
             );
-            $link = array( admin_url( 'plugin-install.php?s=surveyjs&tab=search&type=term' ), __( 'Install SurveyJS Forms', 'surveyjs-pro' ) );
+            $link = array( admin_url( 'plugin-install.php?s=surveyjs&tab=search&type=term' ), __( 'Install SurveyJS Forms', 'surveyjs-forms-addon' ) );
         }
         ?>
-        <div class="notice notice-error surveyjs-pro-base-notice">
+        <div class="notice notice-error surveyjs-forms-addon-base-notice">
             <p><?php echo esc_html( $message ); ?> <a href="<?php echo esc_url( $link[0] ); ?>"><?php echo esc_html( $link[1] ); ?></a></p>
         </div>
         <?php

@@ -1,13 +1,13 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class SurveyJS_Pro_Creator {
+class SurveyJS_Addon_Creator {
 
     const TAB = 'creator';
-    const HANDLE = 'surveyjs-pro-creator-editor';
-    const LOCALE_HANDLE = 'surveyjs-pro-creator-i18n';
-    const FULLSCREEN_HANDLE = 'surveyjs-pro-creator-fullscreen';
-    const FULLSCREEN_KEY = 'surveyjs-pro-editor-fullscreen';
+    const HANDLE = 'surveyjs-forms-addon-creator-editor';
+    const LOCALE_HANDLE = 'surveyjs-forms-addon-creator-i18n';
+    const FULLSCREEN_HANDLE = 'surveyjs-forms-addon-creator-fullscreen';
+    const FULLSCREEN_KEY = 'surveyjs-forms-addon-editor-fullscreen';
 
     // WordPress language or locale => array( file name in libs/survey-creator-core/i18n, Creator locale code ).
     const LOCALES = array(
@@ -61,7 +61,7 @@ class SurveyJS_Pro_Creator {
     );
 
     public static function init() {
-        if ( ! SurveyJS_Pro::requires( __CLASS__, self::BASE_REQUIRES ) ) {
+        if ( ! SurveyJS_Addon::requires( __CLASS__, self::BASE_REQUIRES ) ) {
             return;
         }
         add_filter( 'surveyjs_editor_tabs', array( __CLASS__, 'tabs' ) );
@@ -71,7 +71,7 @@ class SurveyJS_Pro_Creator {
     }
 
     public static function enabled() {
-        return apply_filters( 'surveyjs_pro_creator_enabled', SurveyJS_Pro_Settings::feature( 'creator' ) );
+        return apply_filters( 'surveyjs_addon_creator_enabled', SurveyJS_Addon_Settings::feature( 'creator' ) );
     }
 
     public static function tabs( $tabs ) {
@@ -79,7 +79,7 @@ class SurveyJS_Pro_Creator {
             return $tabs;
         }
         unset( $tabs['survey'] );
-        return array( self::TAB => __( 'Config', 'surveyjs-pro' ) ) + $tabs;
+        return array( self::TAB => __( 'Config', 'surveyjs-forms-addon' ) ) + $tabs;
     }
 
     public static function render( $survey = null, $initial_tab = null ) {
@@ -87,38 +87,38 @@ class SurveyJS_Pro_Creator {
             return;
         }
         ?>
-        <div class="wp-sjs-pro-creator" data-panel="<?php echo esc_attr( self::TAB ); ?>"<?php echo self::TAB === $initial_tab ? '' : ' hidden'; ?>>
-            <div id="wp-sjs-pro-creator" class="wp-sjs-pro-creator__host"><p class="wp-sjs-pro-creator__loading"><?php esc_html_e( 'Loading Creator…', 'surveyjs-pro' ); ?></p></div>
+        <div class="wp-sjs-addon-creator" data-panel="<?php echo esc_attr( self::TAB ); ?>"<?php echo self::TAB === $initial_tab ? '' : ' hidden'; ?>>
+            <div id="wp-sjs-addon-creator" class="wp-sjs-addon-creator__host"><p class="wp-sjs-addon-creator__loading"><?php esc_html_e( 'Loading Creator…', 'surveyjs-forms-addon' ); ?></p></div>
         </div>
         <?php
     }
 
     public static function enqueue( $page ) {
-        if ( 'surveyjs_editor' !== $page || ! self::enabled() || ! SurveyJS_Pro_Libs::enqueue( 'creator' ) ) {
+        if ( 'surveyjs_editor' !== $page || ! self::enabled() || ! SurveyJS_Addon_Libs::enqueue( 'creator' ) ) {
             return;
         }
-        SurveyJS_Pro_Admin_Theme::enqueue();
+        SurveyJS_Addon_Admin_Theme::enqueue();
         // Full screen is set in <head> so the page is never painted with the admin menu first.
-        wp_register_script( self::FULLSCREEN_HANDLE, false, array(), SURVEYJS_PRO_VERSION, false );
+        wp_register_script( self::FULLSCREEN_HANDLE, false, array(), SURVEYJS_ADDON_VERSION, false );
         wp_enqueue_script( self::FULLSCREEN_HANDLE );
-        wp_add_inline_script( self::FULLSCREEN_HANDLE, '(function(){try{if(window.localStorage.getItem(' . wp_json_encode( self::FULLSCREEN_KEY ) . ')==="0")return;}catch(e){}document.documentElement.classList.add("wp-sjs-pro-fullscreen-mode");})();' );
-        wp_enqueue_style( self::HANDLE, self::asset_url( 'creator.css' ), array( SurveyJS_Pro_Libs::handle( 'creator' ), SurveyJS_Pro_Admin_Theme::HANDLE, 'dashicons' ), self::asset_version( 'creator.css' ) );
-        $deps = array( SurveyJS_Pro_Libs::handle( 'creator' ), SurveyJS_SurveyJS::EDITOR_SCRIPT, SurveyJS_Pro_Admin_Theme::HANDLE, 'wp-api-fetch' );
+        wp_add_inline_script( self::FULLSCREEN_HANDLE, '(function(){try{if(window.localStorage.getItem(' . wp_json_encode( self::FULLSCREEN_KEY ) . ')==="0")return;}catch(e){}document.documentElement.classList.add("wp-sjs-addon-fullscreen-mode");})();' );
+        wp_enqueue_style( self::HANDLE, self::asset_url( 'creator.css' ), array( SurveyJS_Addon_Libs::handle( 'creator' ), SurveyJS_Addon_Admin_Theme::HANDLE, 'dashicons' ), self::asset_version( 'creator.css' ) );
+        $deps = array( SurveyJS_Addon_Libs::handle( 'creator' ), SurveyJS_SurveyJS::EDITOR_SCRIPT, SurveyJS_Addon_Admin_Theme::HANDLE, 'wp-api-fetch' );
         $locale = self::locale();
         if ( $locale ) {
-            wp_enqueue_script( self::LOCALE_HANDLE, plugins_url( 'libs/survey-creator-core/i18n/' . $locale[0] . '.min.js', SURVEYJS_PRO_FILE ), array( SurveyJS_Pro_Libs::handle( 'creator-core' ) ), SURVEYJS_PRO_VERSION, true );
+            wp_enqueue_script( self::LOCALE_HANDLE, plugins_url( 'libs/survey-creator-core/i18n/' . $locale[0] . '.min.js', SURVEYJS_ADDON_FILE ), array( SurveyJS_Addon_Libs::handle( 'creator-core' ) ), SURVEYJS_ADDON_VERSION, true );
             $deps[] = self::LOCALE_HANDLE;
         }
         wp_enqueue_script( self::HANDLE, self::asset_url( 'creator.js' ), $deps, self::asset_version( 'creator.js' ), true );
-        wp_add_inline_script( self::HANDLE, 'window.surveyjsProCreator = ' . wp_json_encode( self::config( $locale ? $locale[1] : '' ) ) . ';', 'before' );
+        wp_add_inline_script( self::HANDLE, 'window.surveyjsAddonCreator = ' . wp_json_encode( self::config( $locale ? $locale[1] : '' ) ) . ';', 'before' );
     }
 
     private static function asset_url( $file ) {
-        return plugins_url( 'assets/' . $file, SURVEYJS_PRO_FILE );
+        return plugins_url( 'assets/' . $file, SURVEYJS_ADDON_FILE );
     }
 
     private static function asset_version( $file ) {
-        return SURVEYJS_PRO_VERSION . '.' . filemtime( dirname( SURVEYJS_PRO_FILE ) . '/assets/' . $file );
+        return SURVEYJS_ADDON_VERSION . '.' . filemtime( dirname( SURVEYJS_ADDON_FILE ) . '/assets/' . $file );
     }
 
     private static function locale() {
@@ -127,25 +127,25 @@ class SurveyJS_Pro_Creator {
     }
 
     private static function config( $locale ) {
-        $admin_style = SurveyJS_Pro_Settings::feature( 'admin_style' );
+        $admin_style = SurveyJS_Addon_Settings::feature( 'admin_style' );
         return array(
             'tab'        => self::TAB,
             'locale'     => $locale,
             'adminStyle' => $admin_style,
-            // Creator ships only its default light theme; its default dark look is Base's "default-dark" preset.
+            // Creator ships only its default light theme; its default dark look is SurveyJS Forms' "default-dark" preset.
             'darkTheme'  => $admin_style ? null : ( SurveyJS_Themes::presets()['default-dark'] ?? null ),
             'labels'     => array(
-                'gdprAgreement'    => __( 'GDPR Agreement', 'surveyjs-pro' ),
-                'gdprHelp'         => __( 'A required consent checkbox with a link to your Privacy Policy page.', 'surveyjs-pro' ),
-                'adaptiveTheme'    => __( 'Adaptive is on in the Theme tab of the form editor, so the form on your site uses your site\'s theme styles instead of this theme. Turn Adaptive off there to use this theme.', 'surveyjs-pro' ),
-                'fullscreen'       => __( 'Full screen', 'surveyjs-pro' ),
-                'exitFullscreen'   => __( 'Exit full screen', 'surveyjs-pro' ),
-                'mediaTitle'       => __( 'Choose a file', 'surveyjs-pro' ),
-                'mediaButton'      => __( 'Use this file', 'surveyjs-pro' ),
-                'uploadFailed'     => __( 'The file was not uploaded to the Media Library.', 'surveyjs-pro' ),
+                'gdprAgreement'    => __( 'GDPR Agreement', 'surveyjs-forms-addon' ),
+                'gdprHelp'         => __( 'A required consent checkbox with a link to your Privacy Policy page.', 'surveyjs-forms-addon' ),
+                'adaptiveTheme'    => __( 'Adaptive is on in the Theme tab of the form editor, so the form on your site uses your site\'s theme styles instead of this theme. Turn Adaptive off there to use this theme.', 'surveyjs-forms-addon' ),
+                'fullscreen'       => __( 'Full screen', 'surveyjs-forms-addon' ),
+                'exitFullscreen'   => __( 'Exit full screen', 'surveyjs-forms-addon' ),
+                'mediaTitle'       => __( 'Choose a file', 'surveyjs-forms-addon' ),
+                'mediaButton'      => __( 'Use this file', 'surveyjs-forms-addon' ),
+                'uploadFailed'     => __( 'The file was not uploaded to the Media Library.', 'surveyjs-forms-addon' ),
             ),
         );
     }
 }
 
-add_action( 'surveyjs_pro_loaded', array( 'SurveyJS_Pro_Creator', 'init' ) );
+add_action( 'surveyjs_addon_loaded', array( 'SurveyJS_Addon_Creator', 'init' ) );

@@ -30,10 +30,10 @@ test.describe("analytics on the results page", () => {
     await page.goto(`/wp-admin/admin.php?page=surveyjs_results&id=${formId}`);
     await page.locator(".wp-sjs-results__views").getByRole("link", { name: "Charts" }).click();
     await expect(page).toHaveURL(/view=chart/);
-    const view = page.locator("#wp-sjs-pro-analytics");
+    const view = page.locator("#wp-sjs-addon-analytics");
     await expect(view.locator(".sa-question__title", { hasText: "Favorite color" })).toBeVisible();
     await expect(view.locator("canvas").first()).toBeVisible();
-    await expect(view.locator(".wp-sjs-pro-analytics__progress")).toBeHidden();
+    await expect(view.locator(".wp-sjs-addon-analytics__progress")).toBeHidden();
   });
 
 
@@ -43,7 +43,7 @@ test.describe("analytics on the results page", () => {
       const response = await fetch(window.ajaxurl, {
         method: "POST",
         credentials: "same-origin",
-        body: new URLSearchParams({ action: "surveyjs_pro_analytics_entries", form: id, _ajax_nonce: "wrong" })
+        body: new URLSearchParams({ action: "surveyjs_addon_analytics_entries", form: id, _ajax_nonce: "wrong" })
       });
       return response.status;
     }, formId);

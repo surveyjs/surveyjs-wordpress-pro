@@ -1,6 +1,6 @@
 (function () {
-    var data = window.surveyjsProDashboard;
-    var adminTheme = window.surveyjsProAdminTheme;
+    var data = window.surveyjsAddonDashboard;
+    var adminTheme = window.surveyjsAddonAdminTheme;
     if (!data || !window.Chart || !adminTheme) {
         return;
     }
@@ -73,7 +73,7 @@
         charts.forEach(recolor);
     });
 
-    var timeline = document.getElementById("wp-sjs-pro-dashboard-timeline");
+    var timeline = document.getElementById("wp-sjs-addon-dashboard-timeline");
     if (timeline) {
         charts.push(new Chart(timeline, {
             type: "bar",
@@ -99,7 +99,7 @@
         }));
     }
 
-    var views = document.getElementById("wp-sjs-pro-dashboard-views");
+    var views = document.getElementById("wp-sjs-addon-dashboard-views");
     if (views && data.views) {
         charts.push(new Chart(views, {
             type: "bar",
@@ -134,7 +134,7 @@
         }));
     }
 
-    var forms = document.getElementById("wp-sjs-pro-dashboard-forms");
+    var forms = document.getElementById("wp-sjs-addon-dashboard-forms");
     if (forms) {
         var urlAt = function (elements) {
             return elements.length ? data.forms.urls[elements[0].index] : "";

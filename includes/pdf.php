@@ -1,12 +1,12 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class SurveyJS_Pro_Pdf {
+class SurveyJS_Addon_Pdf {
 
     const TAB = 'pdf';
-    const BULK_ACTION = 'pro_pdf';
-    const AJAX_ACTION = 'surveyjs_pro_pdf_entries';
-    const SCRIPT = 'surveyjs-pro-pdf-admin';
+    const BULK_ACTION = 'addon_pdf';
+    const AJAX_ACTION = 'surveyjs_addon_pdf_entries';
+    const SCRIPT = 'surveyjs-forms-addon-pdf-admin';
     const MAX_ENTRIES = 500;
     const DEFAULT_ACCENT = '#19b394';
     const LETTER_LOCALES = array( 'en_US', 'en_CA', 'fr_CA', 'es_MX', 'es_CL', 'es_CO', 'es_VE', 'es_GT', 'es_CR', 'es_PR', 'es_US' );
@@ -29,7 +29,7 @@ class SurveyJS_Pro_Pdf {
     );
 
     public static function init() {
-        if ( ! SurveyJS_Pro::requires( __CLASS__, self::BASE_REQUIRES ) ) {
+        if ( ! SurveyJS_Addon::requires( __CLASS__, self::BASE_REQUIRES ) ) {
             return;
         }
         add_filter( 'surveyjs_form_settings_defaults', array( __CLASS__, 'defaults' ) );
@@ -45,64 +45,64 @@ class SurveyJS_Pro_Pdf {
     }
 
     public static function page_format() {
-        return (string) apply_filters( 'surveyjs_pro_pdf_page_format', in_array( get_locale(), self::LETTER_LOCALES, true ) ? 'letter' : 'a4' );
+        return (string) apply_filters( 'surveyjs_addon_pdf_page_format', in_array( get_locale(), self::LETTER_LOCALES, true ) ? 'letter' : 'a4' );
     }
 
     public static function formats() {
         $sizes = array(
-            'a4'     => __( 'A4', 'surveyjs-pro' ),
-            'letter' => __( 'Letter', 'surveyjs-pro' ),
-            'legal'  => __( 'Legal', 'surveyjs-pro' ),
-            'a3'     => __( 'A3', 'surveyjs-pro' ),
-            'a5'     => __( 'A5', 'surveyjs-pro' ),
+            'a4'     => __( 'A4', 'surveyjs-forms-addon' ),
+            'letter' => __( 'Letter', 'surveyjs-forms-addon' ),
+            'legal'  => __( 'Legal', 'surveyjs-forms-addon' ),
+            'a3'     => __( 'A3', 'surveyjs-forms-addon' ),
+            'a5'     => __( 'A5', 'surveyjs-forms-addon' ),
         );
         $auto = $sizes[ self::page_format() ] ?? self::page_format();
         /* translators: %s: page size picked from the site language, e.g. "A4" */
-        return array( 'auto' => sprintf( __( 'Automatic: %s, from the site language', 'surveyjs-pro' ), $auto ) ) + $sizes;
+        return array( 'auto' => sprintf( __( 'Automatic: %s, from the site language', 'surveyjs-forms-addon' ), $auto ) ) + $sizes;
     }
 
     public static function orientations() {
         return array(
-            'portrait'  => __( 'Portrait', 'surveyjs-pro' ),
-            'landscape' => __( 'Landscape', 'surveyjs-pro' ),
+            'portrait'  => __( 'Portrait', 'surveyjs-forms-addon' ),
+            'landscape' => __( 'Landscape', 'surveyjs-forms-addon' ),
         );
     }
 
     public static function layouts() {
         return array(
-            'compact'  => __( 'Compact', 'surveyjs-pro' ),
-            'spacious' => __( 'Spacious', 'surveyjs-pro' ),
+            'compact'  => __( 'Compact', 'surveyjs-forms-addon' ),
+            'spacious' => __( 'Spacious', 'surveyjs-forms-addon' ),
         );
     }
 
     public static function fonts() {
         return array(
-            'helvetica' => __( 'Sans-serif (Helvetica)', 'surveyjs-pro' ),
-            'times'     => __( 'Serif (Times)', 'surveyjs-pro' ),
-            'courier'   => __( 'Monospace (Courier)', 'surveyjs-pro' ),
+            'helvetica' => __( 'Sans-serif (Helvetica)', 'surveyjs-forms-addon' ),
+            'times'     => __( 'Serif (Times)', 'surveyjs-forms-addon' ),
+            'courier'   => __( 'Monospace (Courier)', 'surveyjs-forms-addon' ),
         );
     }
 
     public static function pdf_defaults() {
         return array(
-            'proPdfFormat'      => 'auto',
-            'proPdfOrientation' => 'portrait',
-            'proPdfFontSize'    => 14,
-            'proPdfLabelFontSize' => 14,
-            'proPdfLayout'      => 'compact',
-            'proPdfFont'        => 'helvetica',
-            'proPdfThemeColors' => false,
-            'proPdfAccent'      => false,
-            'proPdfAccentColor' => self::DEFAULT_ACCENT,
-            'proPdfFillable'    => true,
-            'proPdfEntryHeader' => true,
-            'proPdfPageNumbers' => true,
-            'proPdfLogo'        => 0,
-            'proPdfHeaderText'  => '',
-            'proPdfFooterText'  => '',
-            'proPdfFooterDate'  => false,
-            'proPdfWatermark'   => '',
-            'proPdfHideEmpty'   => false,
+            'addonPdfFormat'      => 'auto',
+            'addonPdfOrientation' => 'portrait',
+            'addonPdfFontSize'    => 14,
+            'addonPdfLabelFontSize' => 14,
+            'addonPdfLayout'      => 'compact',
+            'addonPdfFont'        => 'helvetica',
+            'addonPdfThemeColors' => false,
+            'addonPdfAccent'      => false,
+            'addonPdfAccentColor' => self::DEFAULT_ACCENT,
+            'addonPdfFillable'    => true,
+            'addonPdfEntryHeader' => true,
+            'addonPdfPageNumbers' => true,
+            'addonPdfLogo'        => 0,
+            'addonPdfHeaderText'  => '',
+            'addonPdfFooterText'  => '',
+            'addonPdfFooterDate'  => false,
+            'addonPdfWatermark'   => '',
+            'addonPdfHideEmpty'   => false,
         );
     }
 
@@ -111,23 +111,23 @@ class SurveyJS_Pro_Pdf {
     }
 
     public static function sanitize( $sanitized, $input ) {
-        $format = (string) $input['proPdfFormat'];
-        $sanitized['proPdfFormat'] = isset( self::formats()[ $format ] ) ? $format : self::pdf_defaults()['proPdfFormat'];
-        $orientation = (string) ( $input['proPdfOrientation'] ?? '' );
-        $sanitized['proPdfOrientation'] = isset( self::orientations()[ $orientation ] ) ? $orientation : self::pdf_defaults()['proPdfOrientation'];
-        $layout = (string) $input['proPdfLayout'];
-        $sanitized['proPdfLayout'] = isset( self::layouts()[ $layout ] ) ? $layout : self::pdf_defaults()['proPdfLayout'];
-        $font = (string) ( $input['proPdfFont'] ?? '' );
-        $sanitized['proPdfFont'] = isset( self::fonts()[ $font ] ) ? $font : self::pdf_defaults()['proPdfFont'];
-        $sanitized['proPdfAccentColor'] = self::sanitize_color( $input['proPdfAccentColor'] ?? '' );
-        $sanitized['proPdfFontSize'] = min( 24, max( 8, (int) $input['proPdfFontSize'] ) );
-        $sanitized['proPdfLabelFontSize'] = isset( $input['proPdfLabelFontSize'] ) ? min( 24, max( 8, (int) $input['proPdfLabelFontSize'] ) ) : $sanitized['proPdfFontSize'];
-        $logo = absint( $input['proPdfLogo'] );
-        $sanitized['proPdfLogo'] = $logo && wp_attachment_is_image( $logo ) ? $logo : 0;
-        $sanitized['proPdfHeaderText'] = mb_substr( sanitize_text_field( $input['proPdfHeaderText'] ), 0, 100 );
-        $sanitized['proPdfFooterText'] = mb_substr( sanitize_text_field( $input['proPdfFooterText'] ?? '' ), 0, 100 );
-        $sanitized['proPdfWatermark'] = mb_substr( sanitize_text_field( $input['proPdfWatermark'] ), 0, 40 );
-        foreach ( array( 'proPdfThemeColors', 'proPdfAccent', 'proPdfFillable', 'proPdfEntryHeader', 'proPdfPageNumbers', 'proPdfFooterDate', 'proPdfHideEmpty' ) as $key ) {
+        $format = (string) $input['addonPdfFormat'];
+        $sanitized['addonPdfFormat'] = isset( self::formats()[ $format ] ) ? $format : self::pdf_defaults()['addonPdfFormat'];
+        $orientation = (string) ( $input['addonPdfOrientation'] ?? '' );
+        $sanitized['addonPdfOrientation'] = isset( self::orientations()[ $orientation ] ) ? $orientation : self::pdf_defaults()['addonPdfOrientation'];
+        $layout = (string) $input['addonPdfLayout'];
+        $sanitized['addonPdfLayout'] = isset( self::layouts()[ $layout ] ) ? $layout : self::pdf_defaults()['addonPdfLayout'];
+        $font = (string) ( $input['addonPdfFont'] ?? '' );
+        $sanitized['addonPdfFont'] = isset( self::fonts()[ $font ] ) ? $font : self::pdf_defaults()['addonPdfFont'];
+        $sanitized['addonPdfAccentColor'] = self::sanitize_color( $input['addonPdfAccentColor'] ?? '' );
+        $sanitized['addonPdfFontSize'] = min( 24, max( 8, (int) $input['addonPdfFontSize'] ) );
+        $sanitized['addonPdfLabelFontSize'] = isset( $input['addonPdfLabelFontSize'] ) ? min( 24, max( 8, (int) $input['addonPdfLabelFontSize'] ) ) : $sanitized['addonPdfFontSize'];
+        $logo = absint( $input['addonPdfLogo'] );
+        $sanitized['addonPdfLogo'] = $logo && wp_attachment_is_image( $logo ) ? $logo : 0;
+        $sanitized['addonPdfHeaderText'] = mb_substr( sanitize_text_field( $input['addonPdfHeaderText'] ), 0, 100 );
+        $sanitized['addonPdfFooterText'] = mb_substr( sanitize_text_field( $input['addonPdfFooterText'] ?? '' ), 0, 100 );
+        $sanitized['addonPdfWatermark'] = mb_substr( sanitize_text_field( $input['addonPdfWatermark'] ), 0, 40 );
+        foreach ( array( 'addonPdfThemeColors', 'addonPdfAccent', 'addonPdfFillable', 'addonPdfEntryHeader', 'addonPdfPageNumbers', 'addonPdfFooterDate', 'addonPdfHideEmpty' ) as $key ) {
             $sanitized[ $key ] = ! empty( $input[ $key ] );
         }
         return $sanitized;
@@ -171,13 +171,13 @@ class SurveyJS_Pro_Pdf {
     }
 
     public static function logo( $survey ) {
-        $id = (int) SurveyJS_Form_Settings::get( $survey )['proPdfLogo'];
+        $id = (int) SurveyJS_Form_Settings::get( $survey )['addonPdfLogo'];
         $url = $id ? wp_get_attachment_image_url( $id, 'large' ) : '';
         return array( 'id' => $id, 'url' => $url ? $url : '' );
     }
 
     public static function editor_tabs( $tabs ) {
-        return $tabs + array( self::TAB => __( 'PDF', 'surveyjs-pro' ) );
+        return $tabs + array( self::TAB => __( 'PDF', 'surveyjs-forms-addon' ) );
     }
 
     private static function render_select( $id, $setting, $options ) {
@@ -191,142 +191,142 @@ class SurveyJS_Pro_Pdf {
     public static function render_editor_panel( $survey, $initial_tab = null ) {
         $branding = self::site_branding();
         ?>
-        <div class="wp-sjs-editor__settings wp-sjs-pro-pdf" data-panel="<?php echo esc_attr( self::TAB ); ?>"<?php echo self::TAB === $initial_tab ? '' : ' hidden'; ?>>
-            <div class="wp-sjs-pro-pdf__settings">
+        <div class="wp-sjs-editor__settings wp-sjs-addon-pdf" data-panel="<?php echo esc_attr( self::TAB ); ?>"<?php echo self::TAB === $initial_tab ? '' : ' hidden'; ?>>
+            <div class="wp-sjs-addon-pdf__settings">
             <table class="form-table" role="presentation">
                 <tr>
-                    <th scope="row"><label for="wp-sjs-pro-pdf-format"><?php esc_html_e( 'Page size', 'surveyjs-pro' ); ?></label></th>
+                    <th scope="row"><label for="wp-sjs-addon-pdf-format"><?php esc_html_e( 'Page size', 'surveyjs-forms-addon' ); ?></label></th>
                     <td>
-                        <?php self::render_select( 'wp-sjs-pro-pdf-format', 'proPdfFormat', self::formats() ); ?>
-                        <p class="description"><?php esc_html_e( 'Automatic: Letter for US, Canada and Latin America site languages, A4 for others.', 'surveyjs-pro' ); ?></p>
+                        <?php self::render_select( 'wp-sjs-addon-pdf-format', 'addonPdfFormat', self::formats() ); ?>
+                        <p class="description"><?php esc_html_e( 'Automatic: Letter for US, Canada and Latin America site languages, A4 for others.', 'surveyjs-forms-addon' ); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="wp-sjs-pro-pdf-orientation"><?php esc_html_e( 'Page orientation', 'surveyjs-pro' ); ?></label></th>
-                    <td><?php self::render_select( 'wp-sjs-pro-pdf-orientation', 'proPdfOrientation', self::orientations() ); ?></td>
+                    <th scope="row"><label for="wp-sjs-addon-pdf-orientation"><?php esc_html_e( 'Page orientation', 'surveyjs-forms-addon' ); ?></label></th>
+                    <td><?php self::render_select( 'wp-sjs-addon-pdf-orientation', 'addonPdfOrientation', self::orientations() ); ?></td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="wp-sjs-pro-pdf-font-size"><?php esc_html_e( 'Font size', 'surveyjs-pro' ); ?></label></th>
+                    <th scope="row"><label for="wp-sjs-addon-pdf-font-size"><?php esc_html_e( 'Font size', 'surveyjs-forms-addon' ); ?></label></th>
                     <td>
-                        <input type="number" id="wp-sjs-pro-pdf-font-size" class="small-text" min="8" max="24" step="1" data-setting="proPdfFontSize" /> <?php esc_html_e( 'pt', 'surveyjs-pro' ); ?>
-                        <p class="description"><?php esc_html_e( 'Size of answers. Headings and spacing scale with it.', 'surveyjs-pro' ); ?></p>
+                        <input type="number" id="wp-sjs-addon-pdf-font-size" class="small-text" min="8" max="24" step="1" data-setting="addonPdfFontSize" /> <?php esc_html_e( 'pt', 'surveyjs-forms-addon' ); ?>
+                        <p class="description"><?php esc_html_e( 'Size of answers. Headings and spacing scale with it.', 'surveyjs-forms-addon' ); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="wp-sjs-pro-pdf-label-font-size"><?php esc_html_e( 'Label font size', 'surveyjs-pro' ); ?></label></th>
+                    <th scope="row"><label for="wp-sjs-addon-pdf-label-font-size"><?php esc_html_e( 'Label font size', 'surveyjs-forms-addon' ); ?></label></th>
                     <td>
-                        <input type="number" id="wp-sjs-pro-pdf-label-font-size" class="small-text" min="8" max="24" step="1" data-setting="proPdfLabelFontSize" /> <?php esc_html_e( 'pt', 'surveyjs-pro' ); ?>
-                        <p class="description"><?php esc_html_e( 'Size of question titles. Keep it equal to Font size for the default proportions.', 'surveyjs-pro' ); ?></p>
+                        <input type="number" id="wp-sjs-addon-pdf-label-font-size" class="small-text" min="8" max="24" step="1" data-setting="addonPdfLabelFontSize" /> <?php esc_html_e( 'pt', 'surveyjs-forms-addon' ); ?>
+                        <p class="description"><?php esc_html_e( 'Size of question titles. Keep it equal to Font size for the default proportions.', 'surveyjs-forms-addon' ); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="wp-sjs-pro-pdf-font"><?php esc_html_e( 'Font', 'surveyjs-pro' ); ?></label></th>
+                    <th scope="row"><label for="wp-sjs-addon-pdf-font"><?php esc_html_e( 'Font', 'surveyjs-forms-addon' ); ?></label></th>
                     <td>
-                        <?php self::render_select( 'wp-sjs-pro-pdf-font', 'proPdfFont', self::fonts() ); ?>
-                        <p class="description"><?php esc_html_e( 'For Cyrillic, Greek, Hebrew and other letters these fonts lack, a suitable font is used instead.', 'surveyjs-pro' ); ?></p>
+                        <?php self::render_select( 'wp-sjs-addon-pdf-font', 'addonPdfFont', self::fonts() ); ?>
+                        <p class="description"><?php esc_html_e( 'For Cyrillic, Greek, Hebrew and other letters these fonts lack, a suitable font is used instead.', 'surveyjs-forms-addon' ); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="wp-sjs-pro-pdf-layout"><?php esc_html_e( 'Layout', 'surveyjs-pro' ); ?></label></th>
+                    <th scope="row"><label for="wp-sjs-addon-pdf-layout"><?php esc_html_e( 'Layout', 'surveyjs-forms-addon' ); ?></label></th>
                     <td>
-                        <?php self::render_select( 'wp-sjs-pro-pdf-layout', 'proPdfLayout', self::layouts() ); ?>
-                        <p class="description"><?php esc_html_e( 'Compact fits more questions on a page. Spacious adds room between questions and is easier to read.', 'surveyjs-pro' ); ?></p>
+                        <?php self::render_select( 'wp-sjs-addon-pdf-layout', 'addonPdfLayout', self::layouts() ); ?>
+                        <p class="description"><?php esc_html_e( 'Compact fits more questions on a page. Spacious adds room between questions and is easier to read.', 'surveyjs-forms-addon' ); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><?php esc_html_e( 'Colors', 'surveyjs-pro' ); ?></th>
+                    <th scope="row"><?php esc_html_e( 'Colors', 'surveyjs-forms-addon' ); ?></th>
                     <td>
-                        <label><input type="checkbox" data-setting="proPdfThemeColors" /> <?php esc_html_e( 'Use the colors of the form theme', 'surveyjs-pro' ); ?></label>
-                        <p class="description"><?php esc_html_e( 'Only for a light theme with Adaptive off; otherwise the default SurveyJS colors are used.', 'surveyjs-pro' ); ?></p>
+                        <label><input type="checkbox" data-setting="addonPdfThemeColors" /> <?php esc_html_e( 'Use the colors of the form theme', 'surveyjs-forms-addon' ); ?></label>
+                        <p class="description"><?php esc_html_e( 'Only for a light theme with Adaptive off; otherwise the default SurveyJS colors are used.', 'surveyjs-forms-addon' ); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><?php esc_html_e( 'Accent color', 'surveyjs-pro' ); ?></th>
+                    <th scope="row"><?php esc_html_e( 'Accent color', 'surveyjs-forms-addon' ); ?></th>
                     <td>
-                        <label><input type="checkbox" data-setting="proPdfAccent" /> <?php esc_html_e( 'Use an accent color', 'surveyjs-pro' ); ?></label>
-                        <span data-enabled-by="proPdfAccent"><input type="color" id="wp-sjs-pro-pdf-accent-color" data-setting="proPdfAccentColor" aria-label="<?php esc_attr_e( 'Accent color', 'surveyjs-pro' ); ?>" /></span>
-                        <p class="description"><?php esc_html_e( 'Colors titles, selected choices and a line under the header (light colors skip titles to keep them readable). Overrides the main color of the theme.', 'surveyjs-pro' ); ?></p>
+                        <label><input type="checkbox" data-setting="addonPdfAccent" /> <?php esc_html_e( 'Use an accent color', 'surveyjs-forms-addon' ); ?></label>
+                        <span data-enabled-by="addonPdfAccent"><input type="color" id="wp-sjs-addon-pdf-accent-color" data-setting="addonPdfAccentColor" aria-label="<?php esc_attr_e( 'Accent color', 'surveyjs-forms-addon' ); ?>" /></span>
+                        <p class="description"><?php esc_html_e( 'Colors titles, selected choices and a line under the header (light colors skip titles to keep them readable). Overrides the main color of the theme.', 'surveyjs-forms-addon' ); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><?php esc_html_e( 'Logo', 'surveyjs-pro' ); ?></th>
+                    <th scope="row"><?php esc_html_e( 'Logo', 'surveyjs-forms-addon' ); ?></th>
                     <td>
-                        <input type="hidden" id="wp-sjs-pro-pdf-logo" data-setting="proPdfLogo" />
-                        <img id="wp-sjs-pro-pdf-logo-preview" alt="" style="max-width: 200px; max-height: 48px; margin-right: 8px; vertical-align: middle;" hidden />
-                        <button type="button" class="button" id="wp-sjs-pro-pdf-logo-choose" data-frame-title="<?php esc_attr_e( 'Choose a logo for the PDF', 'surveyjs-pro' ); ?>" data-frame-button="<?php esc_attr_e( 'Use this image', 'surveyjs-pro' ); ?>"><?php esc_html_e( 'Choose image', 'surveyjs-pro' ); ?></button>
+                        <input type="hidden" id="wp-sjs-addon-pdf-logo" data-setting="addonPdfLogo" />
+                        <img id="wp-sjs-addon-pdf-logo-preview" alt="" style="max-width: 200px; max-height: 48px; margin-right: 8px; vertical-align: middle;" hidden />
+                        <button type="button" class="button" id="wp-sjs-addon-pdf-logo-choose" data-frame-title="<?php esc_attr_e( 'Choose a logo for the PDF', 'surveyjs-forms-addon' ); ?>" data-frame-button="<?php esc_attr_e( 'Use this image', 'surveyjs-forms-addon' ); ?>"><?php esc_html_e( 'Choose image', 'surveyjs-forms-addon' ); ?></button>
                         <?php if ( $branding['logo'] ) : ?>
-                            <button type="button" class="button" id="wp-sjs-pro-pdf-logo-site"><?php esc_html_e( 'Use site logo', 'surveyjs-pro' ); ?></button>
+                            <button type="button" class="button" id="wp-sjs-addon-pdf-logo-site"><?php esc_html_e( 'Use site logo', 'surveyjs-forms-addon' ); ?></button>
                         <?php endif; ?>
-                        <button type="button" class="button-link button-link-delete" id="wp-sjs-pro-pdf-logo-remove" hidden><?php esc_html_e( 'Remove', 'surveyjs-pro' ); ?></button>
-                        <p class="description"><?php esc_html_e( 'Shown at the top left of every page, up to 12 mm high and 50 mm wide.', 'surveyjs-pro' ); ?></p>
+                        <button type="button" class="button-link button-link-delete" id="wp-sjs-addon-pdf-logo-remove" hidden><?php esc_html_e( 'Remove', 'surveyjs-forms-addon' ); ?></button>
+                        <p class="description"><?php esc_html_e( 'Shown at the top left of every page, up to 12 mm high and 50 mm wide.', 'surveyjs-forms-addon' ); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="wp-sjs-pro-pdf-header-text"><?php esc_html_e( 'Header text', 'surveyjs-pro' ); ?></label></th>
+                    <th scope="row"><label for="wp-sjs-addon-pdf-header-text"><?php esc_html_e( 'Header text', 'surveyjs-forms-addon' ); ?></label></th>
                     <td>
-                        <input type="text" id="wp-sjs-pro-pdf-header-text" class="regular-text" maxlength="100" data-setting="proPdfHeaderText" />
+                        <input type="text" id="wp-sjs-addon-pdf-header-text" class="regular-text" maxlength="100" data-setting="addonPdfHeaderText" />
                         <?php if ( '' !== $branding['title'] ) : ?>
-                            <button type="button" class="button" id="wp-sjs-pro-pdf-header-site"><?php esc_html_e( 'Use site title', 'surveyjs-pro' ); ?></button>
+                            <button type="button" class="button" id="wp-sjs-addon-pdf-header-site"><?php esc_html_e( 'Use site title', 'surveyjs-forms-addon' ); ?></button>
                         <?php endif; ?>
-                        <p class="description"><?php esc_html_e( 'Shown at the top of every page, next to the logo, for example your company name.', 'surveyjs-pro' ); ?></p>
+                        <p class="description"><?php esc_html_e( 'Shown at the top of every page, next to the logo, for example your company name.', 'surveyjs-forms-addon' ); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="wp-sjs-pro-pdf-watermark"><?php esc_html_e( 'Watermark', 'surveyjs-pro' ); ?></label></th>
+                    <th scope="row"><label for="wp-sjs-addon-pdf-watermark"><?php esc_html_e( 'Watermark', 'surveyjs-forms-addon' ); ?></label></th>
                     <td>
-                        <input type="text" id="wp-sjs-pro-pdf-watermark" class="regular-text" maxlength="40" data-setting="proPdfWatermark" />
-                        <p class="description"><?php esc_html_e( 'Printed diagonally in light gray on every page, for example DRAFT or CONFIDENTIAL.', 'surveyjs-pro' ); ?></p>
+                        <input type="text" id="wp-sjs-addon-pdf-watermark" class="regular-text" maxlength="40" data-setting="addonPdfWatermark" />
+                        <p class="description"><?php esc_html_e( 'Printed diagonally in light gray on every page, for example DRAFT or CONFIDENTIAL.', 'surveyjs-forms-addon' ); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><?php esc_html_e( 'Blank form', 'surveyjs-pro' ); ?></th>
+                    <th scope="row"><?php esc_html_e( 'Blank form', 'surveyjs-forms-addon' ); ?></th>
                     <td>
-                        <label><input type="checkbox" data-setting="proPdfFillable" /> <?php esc_html_e( 'Make the blank form a fillable PDF', 'surveyjs-pro' ); ?></label>
-                        <p class="description"><?php esc_html_e( 'Respondents can type their answers into the PDF in a PDF viewer. Turn it off for a form to print and fill in by hand. The blank form shows every question, including the ones shown only under conditions. Entries are always exported read-only.', 'surveyjs-pro' ); ?></p>
+                        <label><input type="checkbox" data-setting="addonPdfFillable" /> <?php esc_html_e( 'Make the blank form a fillable PDF', 'surveyjs-forms-addon' ); ?></label>
+                        <p class="description"><?php esc_html_e( 'Respondents can type their answers into the PDF in a PDF viewer. Turn it off for a form to print and fill in by hand. The blank form shows every question, including the ones shown only under conditions. Entries are always exported read-only.', 'surveyjs-forms-addon' ); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><?php esc_html_e( 'Entries', 'surveyjs-pro' ); ?></th>
+                    <th scope="row"><?php esc_html_e( 'Entries', 'surveyjs-forms-addon' ); ?></th>
                     <td>
-                        <label><input type="checkbox" data-setting="proPdfHideEmpty" /> <?php esc_html_e( 'Leave out questions without an answer', 'surveyjs-pro' ); ?></label>
-                        <p class="description"><?php esc_html_e( 'Entry PDFs show only the answered questions. The blank form still shows every question.', 'surveyjs-pro' ); ?></p>
+                        <label><input type="checkbox" data-setting="addonPdfHideEmpty" /> <?php esc_html_e( 'Leave out questions without an answer', 'surveyjs-forms-addon' ); ?></label>
+                        <p class="description"><?php esc_html_e( 'Entry PDFs show only the answered questions. The blank form still shows every question.', 'surveyjs-forms-addon' ); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="wp-sjs-pro-pdf-footer-text"><?php esc_html_e( 'Footer text', 'surveyjs-pro' ); ?></label></th>
+                    <th scope="row"><label for="wp-sjs-addon-pdf-footer-text"><?php esc_html_e( 'Footer text', 'surveyjs-forms-addon' ); ?></label></th>
                     <td>
-                        <input type="text" id="wp-sjs-pro-pdf-footer-text" class="regular-text" maxlength="100" data-setting="proPdfFooterText" />
-                        <p class="description"><?php esc_html_e( 'Shown at the bottom of every page, for example your address or website.', 'surveyjs-pro' ); ?></p>
+                        <input type="text" id="wp-sjs-addon-pdf-footer-text" class="regular-text" maxlength="100" data-setting="addonPdfFooterText" />
+                        <p class="description"><?php esc_html_e( 'Shown at the bottom of every page, for example your address or website.', 'surveyjs-forms-addon' ); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><?php esc_html_e( 'Header and footer', 'surveyjs-pro' ); ?></th>
+                    <th scope="row"><?php esc_html_e( 'Header and footer', 'surveyjs-forms-addon' ); ?></th>
                     <td>
                         <fieldset>
-                            <label><input type="checkbox" data-setting="proPdfEntryHeader" /> <?php esc_html_e( 'Show the entry number and date at the bottom of each page', 'surveyjs-pro' ); ?></label><br />
-                            <label><input type="checkbox" data-setting="proPdfPageNumbers" /> <?php esc_html_e( 'Show page numbers', 'surveyjs-pro' ); ?></label><br />
-                            <label><input type="checkbox" data-setting="proPdfFooterDate" /> <?php esc_html_e( 'Show the date the PDF was created at the bottom of each page', 'surveyjs-pro' ); ?></label>
+                            <label><input type="checkbox" data-setting="addonPdfEntryHeader" /> <?php esc_html_e( 'Show the entry number and date at the bottom of each page', 'surveyjs-forms-addon' ); ?></label><br />
+                            <label><input type="checkbox" data-setting="addonPdfPageNumbers" /> <?php esc_html_e( 'Show page numbers', 'surveyjs-forms-addon' ); ?></label><br />
+                            <label><input type="checkbox" data-setting="addonPdfFooterDate" /> <?php esc_html_e( 'Show the date the PDF was created at the bottom of each page', 'surveyjs-forms-addon' ); ?></label>
                         </fieldset>
                     </td>
                 </tr>
-                <?php do_action( 'surveyjs_pro_pdf_editor_rows', $survey ); ?>
+                <?php do_action( 'surveyjs_addon_pdf_editor_rows', $survey ); ?>
                 <tr>
-                    <th scope="row"><?php esc_html_e( 'Export', 'surveyjs-pro' ); ?></th>
+                    <th scope="row"><?php esc_html_e( 'Export', 'surveyjs-forms-addon' ); ?></th>
                     <td>
-                        <button type="button" class="button" id="wp-sjs-pro-pdf-preview"><?php esc_html_e( 'Preview PDF', 'surveyjs-pro' ); ?></button>
-                        <button type="button" class="button" id="wp-sjs-pro-pdf-blank"><?php esc_html_e( 'Download blank form', 'surveyjs-pro' ); ?></button>
-                        <span id="wp-sjs-pro-pdf-status" role="status"></span>
-                        <p class="description"><?php esc_html_e( 'Uses the form and the settings above as they are now, including unsaved changes. Export entries as PDF on the Entries page: the PDF link under an entry, or Export PDF in Bulk actions.', 'surveyjs-pro' ); ?></p>
+                        <button type="button" class="button" id="wp-sjs-addon-pdf-preview"><?php esc_html_e( 'Preview PDF', 'surveyjs-forms-addon' ); ?></button>
+                        <button type="button" class="button" id="wp-sjs-addon-pdf-blank"><?php esc_html_e( 'Download blank form', 'surveyjs-forms-addon' ); ?></button>
+                        <span id="wp-sjs-addon-pdf-status" role="status"></span>
+                        <p class="description"><?php esc_html_e( 'Uses the form and the settings above as they are now, including unsaved changes. Export entries as PDF on the Entries page: the PDF link under an entry, or Export PDF in Bulk actions.', 'surveyjs-forms-addon' ); ?></p>
                     </td>
                 </tr>
             </table>
             </div>
-            <div class="wp-sjs-pro-pdf__preview" id="wp-sjs-pro-pdf-preview-panel">
-                <div class="wp-sjs-pro-pdf__preview-bar">
-                    <button type="button" class="button" id="wp-sjs-pro-pdf-full" aria-controls="wp-sjs-pro-pdf-preview-panel" aria-expanded="false"><span class="dashicons dashicons-fullscreen-alt" aria-hidden="true"></span><?php esc_html_e( 'Full screen', 'surveyjs-pro' ); ?></button>
-                    <button type="button" class="button" id="wp-sjs-pro-pdf-full-close" hidden><span class="dashicons dashicons-no-alt" aria-hidden="true"></span><?php esc_html_e( 'Close full screen', 'surveyjs-pro' ); ?></button>
+            <div class="wp-sjs-addon-pdf__preview" id="wp-sjs-addon-pdf-preview-panel">
+                <div class="wp-sjs-addon-pdf__preview-bar">
+                    <button type="button" class="button" id="wp-sjs-addon-pdf-full" aria-controls="wp-sjs-addon-pdf-preview-panel" aria-expanded="false"><span class="dashicons dashicons-fullscreen-alt" aria-hidden="true"></span><?php esc_html_e( 'Full screen', 'surveyjs-forms-addon' ); ?></button>
+                    <button type="button" class="button" id="wp-sjs-addon-pdf-full-close" hidden><span class="dashicons dashicons-no-alt" aria-hidden="true"></span><?php esc_html_e( 'Close full screen', 'surveyjs-forms-addon' ); ?></button>
                 </div>
-                <iframe id="wp-sjs-pro-pdf-live" title="<?php esc_attr_e( 'PDF preview', 'surveyjs-pro' ); ?>"></iframe>
+                <iframe id="wp-sjs-addon-pdf-live" title="<?php esc_attr_e( 'PDF preview', 'surveyjs-forms-addon' ); ?>"></iframe>
             </div>
         </div>
         <?php
@@ -334,29 +334,29 @@ class SurveyJS_Pro_Pdf {
 
     public static function hebrew_font() {
         return array(
-            'normal' => plugins_url( 'assets/fonts/IBMPlexSansHebrew-Regular.ttf', SURVEYJS_PRO_FILE ),
-            'bold'   => plugins_url( 'assets/fonts/IBMPlexSansHebrew-Bold.ttf', SURVEYJS_PRO_FILE ),
+            'normal' => plugins_url( 'assets/fonts/IBMPlexSansHebrew-Regular.ttf', SURVEYJS_ADDON_FILE ),
+            'bold'   => plugins_url( 'assets/fonts/IBMPlexSansHebrew-Bold.ttf', SURVEYJS_ADDON_FILE ),
         );
     }
 
     public static function unicode_font() {
         return array(
-            'normal' => plugins_url( 'assets/fonts/noto-sans/NotoSans-Regular.ttf', SURVEYJS_PRO_FILE ),
-            'bold'   => plugins_url( 'assets/fonts/noto-sans/NotoSans-Bold.ttf', SURVEYJS_PRO_FILE ),
+            'normal' => plugins_url( 'assets/fonts/noto-sans/NotoSans-Regular.ttf', SURVEYJS_ADDON_FILE ),
+            'bold'   => plugins_url( 'assets/fonts/noto-sans/NotoSans-Bold.ttf', SURVEYJS_ADDON_FILE ),
         );
     }
 
     public static function enqueue( $page ) {
         $survey = SurveyJS_Forms::get( absint( $_GET['id'] ?? 0 ) );
-        if ( ! $survey || ! SurveyJS_Pro_Libs::enqueue( 'pdf' ) ) {
+        if ( ! $survey || ! SurveyJS_Addon_Libs::enqueue( 'pdf' ) ) {
             return;
         }
-        $deps = array( SurveyJS_Pro_Libs::handle( 'pdf' ), SurveyJS_Pro_Libs::handle( 'pdf-spacious' ) );
+        $deps = array( SurveyJS_Addon_Libs::handle( 'pdf' ), SurveyJS_Addon_Libs::handle( 'pdf-spacious' ) );
         if ( 'surveyjs_editor' === $page ) {
             $deps[] = SurveyJS_SurveyJS::EDITOR_SCRIPT;
-            wp_enqueue_style( self::SCRIPT, plugins_url( 'assets/pdf.css', SURVEYJS_PRO_FILE ), array(), SURVEYJS_PRO_VERSION );
+            wp_enqueue_style( self::SCRIPT, plugins_url( 'assets/pdf.css', SURVEYJS_ADDON_FILE ), array(), SURVEYJS_ADDON_VERSION );
         }
-        wp_enqueue_script( self::SCRIPT, plugins_url( 'assets/pdf.js', SURVEYJS_PRO_FILE ), $deps, SURVEYJS_PRO_VERSION, true );
+        wp_enqueue_script( self::SCRIPT, plugins_url( 'assets/pdf.js', SURVEYJS_ADDON_FILE ), $deps, SURVEYJS_ADDON_VERSION, true );
 
         $config = array(
             'page'     => 'surveyjs_editor' === $page ? 'editor' : 'results',
@@ -372,21 +372,21 @@ class SurveyJS_Pro_Pdf {
             'locale'   => self::date_locale(),
             'i18n'     => array(
                 /* translators: 1: entry ID, 2: entry date */
-                'entryHeader' => __( 'Entry #%1$s, %2$s', 'surveyjs-pro' ),
+                'entryHeader' => __( 'Entry #%1$s, %2$s', 'surveyjs-forms-addon' ),
                 /* translators: 1: page number, 2: number of pages */
-                'page'        => __( 'Page %1$s of %2$s', 'surveyjs-pro' ),
-                'generating'  => __( 'Generating PDF…', 'surveyjs-pro' ),
+                'page'        => __( 'Page %1$s of %2$s', 'surveyjs-forms-addon' ),
+                'generating'  => __( 'Generating PDF…', 'surveyjs-forms-addon' ),
                 /* translators: 1: number of the PDF being generated, 2: number of PDFs */
-                'progress'    => __( 'Generating PDF %1$s of %2$s…', 'surveyjs-pro' ),
-                'done'        => __( 'PDF is ready.', 'surveyjs-pro' ),
+                'progress'    => __( 'Generating PDF %1$s of %2$s…', 'surveyjs-forms-addon' ),
+                'done'        => __( 'PDF is ready.', 'surveyjs-forms-addon' ),
                 /* translators: %1$s: error message */
-                'error'       => __( 'Could not create the PDF: %1$s', 'surveyjs-pro' ),
-                'loadError'   => __( 'the entries could not be loaded. Reload the page and try again.', 'surveyjs-pro' ),
-                'fontError'   => __( 'the font could not be loaded.', 'surveyjs-pro' ),
-                'logoError'   => __( 'the logo image could not be loaded.', 'surveyjs-pro' ),
-                'noEntries'   => __( 'the selected entries were not found.', 'surveyjs-pro' ),
-                'invalidJson' => __( 'the form JSON has errors. Fix them on the Config tab first.', 'surveyjs-pro' ),
-                'popupBlocked' => __( 'the browser blocked the preview window. Allow pop-ups for this site.', 'surveyjs-pro' ),
+                'error'       => __( 'Could not create the PDF: %1$s', 'surveyjs-forms-addon' ),
+                'loadError'   => __( 'the entries could not be loaded. Reload the page and try again.', 'surveyjs-forms-addon' ),
+                'fontError'   => __( 'the font could not be loaded.', 'surveyjs-forms-addon' ),
+                'logoError'   => __( 'the logo image could not be loaded.', 'surveyjs-forms-addon' ),
+                'noEntries'   => __( 'the selected entries were not found.', 'surveyjs-forms-addon' ),
+                'invalidJson' => __( 'the form JSON has errors. Fix them on the Config tab first.', 'surveyjs-forms-addon' ),
+                'popupBlocked' => __( 'the browser blocked the preview window. Allow pop-ups for this site.', 'surveyjs-forms-addon' ),
             ),
         );
         if ( 'surveyjs_editor' === $page ) {
@@ -397,22 +397,22 @@ class SurveyJS_Pro_Pdf {
             $config['json'] = empty( $json ) ? new stdClass() : $json;
             $config['theme'] = SurveyJS_Themes::decode( $survey->theme );
             $config['settings'] = self::client_settings( SurveyJS_Form_Settings::get( $survey ) );
-            $config['autoExport'] = array_values( array_filter( array_map( 'absint', explode( ',', sanitize_text_field( wp_unslash( $_GET['pro_pdf'] ?? '' ) ) ) ) ) );
+            $config['autoExport'] = array_values( array_filter( array_map( 'absint', explode( ',', sanitize_text_field( wp_unslash( $_GET['addon_pdf'] ?? '' ) ) ) ) ) );
         }
-        $config = SurveyJS_Pro_Pdf_Password::client_config( $config, $survey );
-        wp_add_inline_script( self::SCRIPT, 'window.surveyjsProPdf = ' . wp_json_encode( $config, JSON_HEX_TAG | JSON_HEX_AMP ) . ';', 'before' );
+        $config = SurveyJS_Addon_Pdf_Password::client_config( $config, $survey );
+        wp_add_inline_script( self::SCRIPT, 'window.surveyjsAddonPdf = ' . wp_json_encode( $config, JSON_HEX_TAG | JSON_HEX_AMP ) . ';', 'before' );
     }
 
     public static function nonce_action( $form_id ) {
-        return 'surveyjs-pro-pdf_' . (int) $form_id;
+        return 'surveyjs-forms-addon-pdf_' . (int) $form_id;
     }
 
     public static function render_title_actions() {
-        echo '<a href="#" class="page-title-action wp-sjs-pro-pdf-blank">' . esc_html__( 'Blank Form PDF', 'surveyjs-pro' ) . '</a>';
+        echo '<a href="#" class="page-title-action wp-sjs-addon-pdf-blank">' . esc_html__( 'Blank Form PDF', 'surveyjs-forms-addon' ) . '</a>';
     }
 
     public static function entry_row_actions( $actions, $item ) {
-        $link = sprintf( '<a href="#" class="wp-sjs-pro-pdf-entry" data-entry="%d">%s</a>', (int) $item->id, esc_html__( 'PDF', 'surveyjs-pro' ) );
+        $link = sprintf( '<a href="#" class="wp-sjs-addon-pdf-entry" data-entry="%d">%s</a>', (int) $item->id, esc_html__( 'PDF', 'surveyjs-forms-addon' ) );
         $position = array_search( 'view', array_keys( $actions ), true );
         $position = false === $position ? 0 : $position + 1;
         return array_slice( $actions, 0, $position, true ) + array( 'pdf' => $link ) + array_slice( $actions, $position, null, true );
@@ -420,13 +420,13 @@ class SurveyJS_Pro_Pdf {
 
     public static function bulk_actions( $actions ) {
         $delete = isset( $actions['delete'] ) ? array( 'delete' => $actions['delete'] ) : array();
-        return array_diff_key( $actions, $delete ) + array( self::BULK_ACTION => __( 'Export PDF', 'surveyjs-pro' ) ) + $delete;
+        return array_diff_key( $actions, $delete ) + array( self::BULK_ACTION => __( 'Export PDF', 'surveyjs-forms-addon' ) ) + $delete;
     }
 
     // The PDF is built in the browser, so without the results page's script intercepting the form,
     // the request comes back to the results page, which starts the export on load.
     public static function handle_bulk_action( $ids, $survey, $results_url ) {
-        wp_safe_redirect( add_query_arg( 'pro_pdf', implode( ',', array_slice( $ids, 0, self::MAX_ENTRIES ) ), $results_url ) );
+        wp_safe_redirect( add_query_arg( 'addon_pdf', implode( ',', array_slice( $ids, 0, self::MAX_ENTRIES ) ), $results_url ) );
         exit;
     }
 
@@ -456,4 +456,4 @@ class SurveyJS_Pro_Pdf {
     }
 }
 
-add_action( 'surveyjs_pro_loaded', array( 'SurveyJS_Pro_Pdf', 'init' ) );
+add_action( 'surveyjs_addon_loaded', array( 'SurveyJS_Addon_Pdf', 'init' ) );

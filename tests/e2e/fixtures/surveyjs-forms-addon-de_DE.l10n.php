@@ -1,6 +1,6 @@
 <?php
 return array(
-    'domain'       => 'surveyjs-pro',
+    'domain'       => 'surveyjs-forms-addon',
     'plural-forms' => 'nplurals=2; plural=(n != 1);',
     'language'     => 'de_DE',
     'messages'     => array(

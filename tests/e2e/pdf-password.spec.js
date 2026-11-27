@@ -44,7 +44,7 @@ function unzip(buffer) {
 async function clickEntryPdf(page) {
   const row = page.locator("#the-list tr").first();
   await row.hover();
-  await row.locator(".wp-sjs-pro-pdf-entry").click();
+  await row.locator(".wp-sjs-addon-pdf-entry").click();
 }
 
 async function download(page, click) {
@@ -90,13 +90,13 @@ test.describe("PDF password", () => {
 
   test("the PDF tab saves the password without printing it back", async ({ page }) => {
     await page.goto(editorUrl());
-    const toggle = page.locator('input[data-setting="proPdfPassword"]');
-    const input = page.locator("#wp-sjs-pro-pdf-password");
+    const toggle = page.locator('input[data-setting="addonPdfPassword"]');
+    const input = page.locator("#wp-sjs-addon-pdf-password");
     await expect(input).toBeDisabled();
     await toggle.check();
     await input.fill(PASSWORD);
     await save(page);
-    await expect(page.locator("#wp-sjs-pro-pdf-status")).toHaveText("PDF password saved.");
+    await expect(page.locator("#wp-sjs-addon-pdf-status")).toHaveText("PDF password saved.");
     await expect(input).toHaveValue("********");
 
     const stored = fixture("password", form.id, PASSWORD);
@@ -110,12 +110,12 @@ test.describe("PDF password", () => {
 
   test("the editor encrypts the blank form download but not the preview", async ({ page }) => {
     await page.goto(editorUrl());
-    const blank = await download(page, () => page.locator("#wp-sjs-pro-pdf-blank").click());
+    const blank = await download(page, () => page.locator("#wp-sjs-addon-pdf-blank").click());
     expect(encryption(blank.data)).toEqual(ENCRYPTED);
 
-    await expect(page.locator("#wp-sjs-pro-pdf-live")).toHaveAttribute("src", /^blob:/);
+    await expect(page.locator("#wp-sjs-addon-pdf-live")).toHaveAttribute("src", /^blob:/);
     const preview = await page.evaluate(async () => {
-      const response = await fetch(document.getElementById("wp-sjs-pro-pdf-live").src);
+      const response = await fetch(document.getElementById("wp-sjs-addon-pdf-live").src);
       return Array.from(new Uint8Array(await response.arrayBuffer()));
     });
     expect(encryption(Buffer.from(preview))).toEqual(PLAIN);
@@ -127,11 +127,11 @@ test.describe("PDF password", () => {
     expect(entry.name).toMatch(/-entry-\d+\.pdf$/);
     expect(encryption(entry.data)).toEqual(ENCRYPTED);
 
-    const blank = await download(page, () => page.locator(".wp-sjs-pro-pdf-blank").click());
+    const blank = await download(page, () => page.locator(".wp-sjs-addon-pdf-blank").click());
     expect(encryption(blank.data)).toEqual(ENCRYPTED);
 
     await page.locator("#cb-select-all-1").check();
-    await page.locator("#bulk-action-selector-top").selectOption("pro_pdf");
+    await page.locator("#bulk-action-selector-top").selectOption("addon_pdf");
     const archive = await download(page, () => page.locator("#doaction").click());
     expect(archive.name).toMatch(/-entries\.zip$/);
     const files = unzip(archive.data);
@@ -142,7 +142,7 @@ test.describe("PDF password", () => {
   test("the encrypt endpoint checks the nonce and the body", async ({ page }) => {
     await page.goto(resultsUrl());
     const statuses = await page.evaluate(async () => {
-      const url = new URL(window.surveyjsProPdf.password.encryptUrl, window.location.href);
+      const url = new URL(window.surveyjsAddonPdf.password.encryptUrl, window.location.href);
       const post = (target, body) => fetch(target, { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/pdf" }, body }).then((r) => r.status);
       const wrongNonce = new URL(url);
       wrongNonce.searchParams.set("_ajax_nonce", "wrong");
@@ -174,9 +174,9 @@ test.describe("PDF password", () => {
 
   test("turning the option off removes the password", async ({ page }) => {
     await page.goto(editorUrl());
-    await page.locator('input[data-setting="proPdfPassword"]').uncheck();
+    await page.locator('input[data-setting="addonPdfPassword"]').uncheck();
     await save(page);
-    await expect(page.locator("#wp-sjs-pro-pdf-status")).toContainText("PDF password removed.");
+    await expect(page.locator("#wp-sjs-addon-pdf-status")).toContainText("PDF password removed.");
     expect(fixture("password", form.id, PASSWORD)).toEqual({ stored: false, readable: false, password: "", enabled: false });
 
     await page.goto(resultsUrl());

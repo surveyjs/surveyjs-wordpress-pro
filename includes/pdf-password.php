@@ -1,12 +1,12 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class SurveyJS_Pro_Pdf_Password {
+class SurveyJS_Addon_Pdf_Password {
 
-    const SETTING = 'proPdfPassword';
-    const META = '_surveyjs_pro_pdf_password';
-    const ENCRYPT_ACTION = 'surveyjs_pro_pdf_encrypt';
-    const SAVE_ACTION = 'surveyjs_pro_pdf_password';
+    const SETTING = 'addonPdfPassword';
+    const META = '_surveyjs_addon_pdf_password';
+    const ENCRYPT_ACTION = 'surveyjs_addon_pdf_encrypt';
+    const SAVE_ACTION = 'surveyjs_addon_pdf_password';
     const CIPHER = 'aes-256-gcm';
     const IV_LENGTH = 12;
     const TAG_LENGTH = 16;
@@ -21,12 +21,12 @@ class SurveyJS_Pro_Pdf_Password {
     );
 
     public static function init() {
-        if ( ! SurveyJS_Pro::requires( __CLASS__, self::BASE_REQUIRES ) ) {
+        if ( ! SurveyJS_Addon::requires( __CLASS__, self::BASE_REQUIRES ) ) {
             return;
         }
         add_filter( 'surveyjs_form_settings_defaults', array( __CLASS__, 'defaults' ) );
         add_filter( 'surveyjs_form_settings_sanitize', array( __CLASS__, 'sanitize' ), 10, 2 );
-        add_action( 'surveyjs_pro_pdf_editor_rows', array( __CLASS__, 'render_editor_rows' ), 20 );
+        add_action( 'surveyjs_addon_pdf_editor_rows', array( __CLASS__, 'render_editor_rows' ), 20 );
         add_action( 'wp_ajax_' . self::ENCRYPT_ACTION, array( __CLASS__, 'ajax_encrypt' ) );
         add_action( 'wp_ajax_' . self::SAVE_ACTION, array( __CLASS__, 'ajax_save' ) );
     }
@@ -49,11 +49,11 @@ class SurveyJS_Pro_Pdf_Password {
     }
 
     public static function max_size() {
-        return (int) apply_filters( 'surveyjs_pro_pdf_encrypt_max_size', 32 * MB_IN_BYTES );
+        return (int) apply_filters( 'surveyjs_addon_pdf_encrypt_max_size', 32 * MB_IN_BYTES );
     }
 
     private static function key() {
-        return hash_hmac( 'sha256', 'surveyjs-pro-pdf-password', wp_salt( 'auth' ), true );
+        return hash_hmac( 'sha256', 'surveyjs-forms-addon-pdf-password', wp_salt( 'auth' ), true );
     }
 
     // Kept encrypted with a key from the site's salts, so a database dump alone does not reveal it;
@@ -102,7 +102,7 @@ class SurveyJS_Pro_Pdf_Password {
         if ( '' === $password ) {
             throw new UnexpectedValueException( 'No password is set.' );
         }
-        return SurveyJS_Pro_Pdf_Encryptor::encrypt( $pdf, $password );
+        return SurveyJS_Addon_Pdf_Encryptor::encrypt( $pdf, $password );
     }
 
     public static function encrypted_copy( $survey, $path ) {
@@ -111,11 +111,11 @@ class SurveyJS_Pro_Pdf_Password {
         } catch ( Throwable $error ) {
             return false;
         }
-        $filesystem = SurveyJS_Pro_Pdf_Respondent::temp_filesystem();
+        $filesystem = SurveyJS_Addon_Pdf_Respondent::temp_filesystem();
         if ( ! $filesystem ) {
             return false;
         }
-        $copy = SurveyJS_Pro_Pdf_Respondent::temp_pdf_path();
+        $copy = SurveyJS_Addon_Pdf_Respondent::temp_pdf_path();
         return $filesystem->put_contents( $copy, $pdf, FS_CHMOD_FILE ) ? $copy : false;
     }
 
@@ -134,14 +134,14 @@ class SurveyJS_Pro_Pdf_Password {
             ), admin_url( 'admin-ajax.php' ) ),
         );
         $config['i18n'] += array(
-            'encryptError'      => __( 'the PDF could not be protected with the password, so it was not downloaded.', 'surveyjs-pro' ),
-            'passwordSaved'     => __( 'PDF password saved.', 'surveyjs-pro' ),
-            'passwordRemoved'   => __( 'PDF password removed. PDFs of this form are no longer protected.', 'surveyjs-pro' ),
-            'passwordMissing'   => __( 'Enter a PDF password and save the form. Until then, PDFs of this form cannot be downloaded and are not attached to the email notification.', 'surveyjs-pro' ),
-            'passwordUnsaved'   => __( 'save the form first to use the new password.', 'surveyjs-pro' ),
+            'encryptError'      => __( 'the PDF could not be protected with the password, so it was not downloaded.', 'surveyjs-forms-addon' ),
+            'passwordSaved'     => __( 'PDF password saved.', 'surveyjs-forms-addon' ),
+            'passwordRemoved'   => __( 'PDF password removed. PDFs of this form are no longer protected.', 'surveyjs-forms-addon' ),
+            'passwordMissing'   => __( 'Enter a PDF password and save the form. Until then, PDFs of this form cannot be downloaded and are not attached to the email notification.', 'surveyjs-forms-addon' ),
+            'passwordUnsaved'   => __( 'save the form first to use the new password.', 'surveyjs-forms-addon' ),
             /* translators: %1$s: error message */
-            'passwordSaveError' => __( 'The PDF password was not saved: %1$s', 'surveyjs-pro' ),
-            'requestError'      => __( 'the server did not respond. Try again.', 'surveyjs-pro' ),
+            'passwordSaveError' => __( 'The PDF password was not saved: %1$s', 'surveyjs-forms-addon' ),
+            'requestError'      => __( 'the server did not respond. Try again.', 'surveyjs-forms-addon' ),
         );
         return $config;
     }
@@ -151,20 +151,20 @@ class SurveyJS_Pro_Pdf_Password {
         $is_set = $available && $survey && '' !== self::password( $survey->id );
         ?>
         <tr>
-            <th scope="row"><?php esc_html_e( 'Password', 'surveyjs-pro' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'Password', 'surveyjs-forms-addon' ); ?></th>
             <td>
-                <label><input type="checkbox" data-setting="<?php echo esc_attr( self::SETTING ); ?>" <?php disabled( ! $available ); ?> /> <?php esc_html_e( 'Password protect PDF', 'surveyjs-pro' ); ?></label>
-                <p class="description"><?php esc_html_e( 'Encrypts with AES-256 the PDFs you download from Entries or this tab and the PDF attached to the email notification. Not protected: this preview, the respondent\'s Download PDF button, the auto-reply attachment and the {pdf_link} page. Old PDF viewers without AES-256 cannot open them.', 'surveyjs-pro' ); ?></p>
+                <label><input type="checkbox" data-setting="<?php echo esc_attr( self::SETTING ); ?>" <?php disabled( ! $available ); ?> /> <?php esc_html_e( 'Password protect PDF', 'surveyjs-forms-addon' ); ?></label>
+                <p class="description"><?php esc_html_e( 'Encrypts with AES-256 the PDFs you download from Entries or this tab and the PDF attached to the email notification. Not protected: this preview, the respondent\'s Download PDF button, the auto-reply attachment and the {pdf_link} page. Old PDF viewers without AES-256 cannot open them.', 'surveyjs-forms-addon' ); ?></p>
                 <?php if ( ! $available ) : ?>
-                    <p class="description"><?php esc_html_e( 'Not available on this site: it needs PHP 8.2 or later with the OpenSSL and ctype extensions.', 'surveyjs-pro' ); ?></p>
+                    <p class="description"><?php esc_html_e( 'Not available on this site: it needs PHP 8.2 or later with the OpenSSL and ctype extensions.', 'surveyjs-forms-addon' ); ?></p>
                 <?php endif; ?>
             </td>
         </tr>
         <tr data-enabled-by="<?php echo esc_attr( self::SETTING ); ?>">
-            <th scope="row"><label for="wp-sjs-pro-pdf-password"><?php esc_html_e( 'PDF password', 'surveyjs-pro' ); ?></label></th>
+            <th scope="row"><label for="wp-sjs-addon-pdf-password"><?php esc_html_e( 'PDF password', 'surveyjs-forms-addon' ); ?></label></th>
             <td>
-                <input type="password" id="wp-sjs-pro-pdf-password" class="regular-text" autocomplete="new-password" spellcheck="false" />
-                <p class="description"><?php esc_html_e( 'One password for all PDFs of this form. To change it, type a new one; to remove it, turn off Password protect PDF and save the form.', 'surveyjs-pro' ); ?></p>
+                <input type="password" id="wp-sjs-addon-pdf-password" class="regular-text" autocomplete="new-password" spellcheck="false" />
+                <p class="description"><?php esc_html_e( 'One password for all PDFs of this form. To change it, type a new one; to remove it, turn off Password protect PDF and save the form.', 'surveyjs-forms-addon' ); ?></p>
             </td>
         </tr>
         <?php
@@ -187,40 +187,40 @@ class SurveyJS_Pro_Pdf_Password {
 
     public static function ajax_save() {
         $form_id = absint( $_POST['form'] ?? 0 );
-        check_ajax_referer( SurveyJS_Pro_Pdf::nonce_action( $form_id ) );
+        check_ajax_referer( SurveyJS_Addon_Pdf::nonce_action( $form_id ) );
         $survey = self::form_for_request( $form_id );
         if ( ! empty( $_POST['remove'] ) ) {
             delete_post_meta( $survey->id, self::META );
             wp_send_json_success( array( 'set' => false ) );
         }
         if ( ! self::available() ) {
-            self::fail( __( 'password protection needs PHP 8.2 or later with the OpenSSL and ctype extensions.', 'surveyjs-pro' ), 500 );
+            self::fail( __( 'password protection needs PHP 8.2 or later with the OpenSSL and ctype extensions.', 'surveyjs-forms-addon' ), 500 );
         }
         $password = self::normalize( (string) wp_unslash( $_POST['password'] ?? '' ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- checked by normalize(), kept as typed.
         if ( '' === $password ) {
             /* translators: %d: maximum password length in bytes */
-            self::fail( sprintf( __( 'the password must be 1 to %d bytes long and must not contain control characters.', 'surveyjs-pro' ), self::MAX_BYTES ), 400 );
+            self::fail( sprintf( __( 'the password must be 1 to %d bytes long and must not contain control characters.', 'surveyjs-forms-addon' ), self::MAX_BYTES ), 400 );
         }
         if ( ! self::store( $survey->id, $password ) ) {
-            self::fail( __( 'the password could not be stored.', 'surveyjs-pro' ), 500 );
+            self::fail( __( 'the password could not be stored.', 'surveyjs-forms-addon' ), 500 );
         }
         wp_send_json_success( array( 'set' => true ) );
     }
 
     public static function ajax_encrypt() {
         $form_id = absint( $_GET['form'] ?? 0 );
-        check_ajax_referer( SurveyJS_Pro_Pdf::nonce_action( $form_id ) );
+        check_ajax_referer( SurveyJS_Addon_Pdf::nonce_action( $form_id ) );
         $survey = self::form_for_request( $form_id );
         if ( ! self::available() ) {
-            self::fail( __( 'password protection needs PHP 8.2 or later with the OpenSSL and ctype extensions.', 'surveyjs-pro' ), 500 );
+            self::fail( __( 'password protection needs PHP 8.2 or later with the OpenSSL and ctype extensions.', 'surveyjs-forms-addon' ), 500 );
         }
         if ( '' === self::password( $survey->id ) ) {
-            self::fail( __( 'no PDF password is set for this form. Enter it on the PDF tab of the form editor.', 'surveyjs-pro' ), 409 );
+            self::fail( __( 'no PDF password is set for this form. Enter it on the PDF tab of the form editor.', 'surveyjs-forms-addon' ), 409 );
         }
         $max = self::max_size();
         $too_large = sprintf(
             /* translators: %s: maximum file size, e.g. "32 MB" */
-            __( 'the PDF is larger than %s.', 'surveyjs-pro' ),
+            __( 'the PDF is larger than %s.', 'surveyjs-forms-addon' ),
             size_format( $max )
         );
         if ( absint( wp_unslash( $_SERVER['CONTENT_LENGTH'] ?? 0 ) ) > $max ) {
@@ -231,12 +231,12 @@ class SurveyJS_Pro_Pdf_Password {
             self::fail( $too_large, 413 );
         }
         if ( 0 !== strncmp( $pdf, '%PDF-', 5 ) ) {
-            self::fail( __( 'the request did not contain a PDF.', 'surveyjs-pro' ), 400 );
+            self::fail( __( 'the request did not contain a PDF.', 'surveyjs-forms-addon' ), 400 );
         }
         try {
             $pdf = self::encrypt( $survey->id, $pdf );
         } catch ( Throwable $error ) {
-            self::fail( __( 'the PDF could not be protected with the password, so it was not downloaded.', 'surveyjs-pro' ), 422 );
+            self::fail( __( 'the PDF could not be protected with the password, so it was not downloaded.', 'surveyjs-forms-addon' ), 422 );
         }
         nocache_headers();
         header( 'Content-Type: application/pdf' );
@@ -247,4 +247,4 @@ class SurveyJS_Pro_Pdf_Password {
     }
 }
 
-add_action( 'surveyjs_pro_loaded', array( 'SurveyJS_Pro_Pdf_Password', 'init' ) );
+add_action( 'surveyjs_addon_loaded', array( 'SurveyJS_Addon_Pdf_Password', 'init' ) );

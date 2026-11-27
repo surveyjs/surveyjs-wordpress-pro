@@ -1,10 +1,10 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class SurveyJS_Pro_Libs {
+class SurveyJS_Addon_Libs {
 
-    const PREFIX = 'surveyjs-pro-';
-    const LICENSE_HANDLE = 'surveyjs-pro-license';
+    const PREFIX = 'surveyjs-forms-addon-';
+    const LICENSE_HANDLE = 'surveyjs-forms-addon-license';
 
     private static $registered = false;
 
@@ -44,19 +44,19 @@ class SurveyJS_Pro_Libs {
         if ( self::$registered ) {
             return true;
         }
-        if ( ! SurveyJS_Pro::base_provides( array( 'SurveyJS_SurveyJS::CORE_SCRIPT', 'SurveyJS_SurveyJS::UI_SCRIPT', 'SurveyJS_SurveyJS::CORE_STYLE' ) ) ) {
+        if ( ! SurveyJS_Addon::base_provides( array( 'SurveyJS_SurveyJS::CORE_SCRIPT', 'SurveyJS_SurveyJS::UI_SCRIPT', 'SurveyJS_SurveyJS::CORE_STYLE' ) ) ) {
             return false;
         }
-        wp_register_script( self::LICENSE_HANDLE, false, array( SurveyJS_SurveyJS::CORE_SCRIPT ), SURVEYJS_PRO_VERSION );
-        $license_key = SurveyJS_Pro_Settings::license_key();
+        wp_register_script( self::LICENSE_HANDLE, false, array( SurveyJS_SurveyJS::CORE_SCRIPT ), SURVEYJS_ADDON_VERSION );
+        $license_key = SurveyJS_Addon_Settings::license_key();
         if ( '' !== $license_key ) {
             wp_add_inline_script( self::LICENSE_HANDLE, 'Survey.setLicenseKey(' . wp_json_encode( $license_key ) . ');' );
         }
         foreach ( self::scripts() as $name => $script ) {
-            wp_register_script( self::handle( $name ), self::url( $script[0] ), $script[1], SURVEYJS_PRO_VERSION );
+            wp_register_script( self::handle( $name ), self::url( $script[0] ), $script[1], SURVEYJS_ADDON_VERSION );
         }
         foreach ( self::styles() as $name => $file ) {
-            wp_register_style( self::handle( $name ), self::url( $file ), array( SurveyJS_SurveyJS::CORE_STYLE ), SURVEYJS_PRO_VERSION );
+            wp_register_style( self::handle( $name ), self::url( $file ), array( SurveyJS_SurveyJS::CORE_STYLE ), SURVEYJS_ADDON_VERSION );
         }
         self::$registered = true;
         return true;
@@ -81,10 +81,10 @@ class SurveyJS_Pro_Libs {
             return '';
         }
         $scripts = self::scripts();
-        return isset( $scripts[ $name ] ) ? add_query_arg( 'ver', SURVEYJS_PRO_VERSION, self::url( $scripts[ $name ][0] ) ) : '';
+        return isset( $scripts[ $name ] ) ? add_query_arg( 'ver', SURVEYJS_ADDON_VERSION, self::url( $scripts[ $name ][0] ) ) : '';
     }
 
     private static function url( $file ) {
-        return plugins_url( 'libs/' . $file, SURVEYJS_PRO_FILE );
+        return plugins_url( 'libs/' . $file, SURVEYJS_ADDON_FILE );
     }
 }

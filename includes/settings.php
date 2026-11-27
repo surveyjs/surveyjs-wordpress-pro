@@ -1,10 +1,10 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class SurveyJS_Pro_Settings {
+class SurveyJS_Addon_Settings {
 
-    const OPTION = 'surveyjs_pro_settings';
-    const SECTION = 'sjs-pro-section';
+    const OPTION = 'surveyjs_addon_settings';
+    const SECTION = 'sjs-addon-section';
 
     public static function init() {
         add_action( 'surveyjs_register_settings', array( __CLASS__, 'register' ), 10, 2 );
@@ -42,9 +42,9 @@ class SurveyJS_Pro_Settings {
             'sanitize_callback' => array( __CLASS__, 'sanitize' ),
             'default'           => self::defaults(),
         ) );
-        add_settings_section( self::SECTION, esc_html__( 'SurveyJS Forms Add-on', 'surveyjs-pro' ), array( __CLASS__, 'render_section' ), $page );
-        add_settings_field( 'surveyjs_pro_creator', esc_html__( 'Form editor', 'surveyjs-pro' ), array( __CLASS__, 'render_creator' ), $page, self::SECTION );
-        add_settings_field( 'surveyjs_pro_license_key', esc_html__( 'SurveyJS License Key', 'surveyjs-pro' ), array( __CLASS__, 'render_license_key' ), $page, self::SECTION, array( 'label_for' => 'sjs-pro-license-key' ) );
+        add_settings_section( self::SECTION, esc_html__( 'SurveyJS Forms Add-on', 'surveyjs-forms-addon' ), array( __CLASS__, 'render_section' ), $page );
+        add_settings_field( 'surveyjs_addon_creator', esc_html__( 'Form editor', 'surveyjs-forms-addon' ), array( __CLASS__, 'render_creator' ), $page, self::SECTION );
+        add_settings_field( 'surveyjs_addon_license_key', esc_html__( 'SurveyJS License Key', 'surveyjs-forms-addon' ), array( __CLASS__, 'render_license_key' ), $page, self::SECTION, array( 'label_for' => 'sjs-addon-license-key' ) );
     }
 
     public static function sanitize( $input ) {
@@ -55,14 +55,14 @@ class SurveyJS_Pro_Settings {
         }
         $sanitized['creator'] = ! empty( $input['creator'] );
         $sanitized['admin_style'] = ! empty( $input['admin_style'] );
-        if ( isset( $input['admin_theme'] ) && in_array( $input['admin_theme'], SurveyJS_Pro_Admin_Theme::MODES, true ) ) {
+        if ( isset( $input['admin_theme'] ) && in_array( $input['admin_theme'], SurveyJS_Addon_Admin_Theme::MODES, true ) ) {
             $sanitized['admin_theme'] = $input['admin_theme'];
         }
         return array_intersect_key( $sanitized, self::defaults() );
     }
 
     public static function render_section() {
-        echo '<p>' . esc_html__( 'One SurveyJS license key covers Survey Creator, PDF Generator and Dashboard used by this plugin.', 'surveyjs-pro' ) . '</p>';
+        echo '<p>' . esc_html__( 'One SurveyJS license key covers Survey Creator, PDF Generator and Dashboard used by this plugin.', 'surveyjs-forms-addon' ) . '</p>';
     }
 
     public static function render_creator() {
@@ -70,14 +70,14 @@ class SurveyJS_Pro_Settings {
             '<label><input type="checkbox" name="%1$s[creator]" value="1" %2$s /> %3$s</label><p class="description">%4$s</p>',
             esc_attr( self::OPTION ),
             checked( self::feature( 'creator' ), true, false ),
-            esc_html__( 'Edit forms in Survey Creator', 'surveyjs-pro' ),
-            esc_html__( 'Turn off to edit forms the classic way, as in the free version: the Config tab (JSON editor) comes back instead of Survey Creator. Your forms stay as they are, and you can turn Creator on again at any time.', 'surveyjs-pro' )
+            esc_html__( 'Edit forms in Survey Creator', 'surveyjs-forms-addon' ),
+            esc_html__( 'Turn off to edit forms the classic way, as in the free version: the Config tab (JSON editor) comes back instead of Survey Creator. Your forms stay as they are, and you can turn Creator on again at any time.', 'surveyjs-forms-addon' )
         );
     }
 
     public static function render_license_key() {
         printf(
-            '<input type="text" name="%1$s[license_key]" id="sjs-pro-license-key" class="regular-text code" value="%2$s" autocomplete="off" spellcheck="false" />',
+            '<input type="text" name="%1$s[license_key]" id="sjs-addon-license-key" class="regular-text code" value="%2$s" autocomplete="off" spellcheck="false" />',
             esc_attr( self::OPTION ),
             esc_attr( self::license_key() )
         );

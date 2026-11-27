@@ -4,7 +4,7 @@ const { test, expect } = require("@playwright/test");
 
 const root = path.join(__dirname, "../..");
 const php = process.env.PHP_BIN || "php";
-const MODULES = ["SurveyJS_Pro_Creator", "SurveyJS_Pro_Analytics", "SurveyJS_Pro_Dashboard", "SurveyJS_Pro_Pdf", "SurveyJS_Pro_Pdf_Respondent", "SurveyJS_Pro_Pdf_Password", "SurveyJS_Pro_AI"];
+const MODULES = ["SurveyJS_Addon_Creator", "SurveyJS_Addon_Analytics", "SurveyJS_Addon_Dashboard", "SurveyJS_Addon_Pdf", "SurveyJS_Addon_Pdf_Respondent", "SurveyJS_Addon_Pdf_Password", "SurveyJS_Addon_AI"];
 
 function run(name) {
   const output = execSync(`${php} tests/unit/php/requirements-cases.php ${name}`, { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
@@ -29,7 +29,7 @@ test("every feature loads when SurveyJS Forms has everything it needs", () => {
 
 test("a removed method turns off only the feature that uses it", () => {
   const { result } = run("base-without-a-method");
-  expect(result.disabled).toEqual({ SurveyJS_Pro_Creator: ["SurveyJS_Themes::presets"] });
+  expect(result.disabled).toEqual({ SurveyJS_Addon_Creator: ["SurveyJS_Themes::presets"] });
   expect(result.creator).toBe(false);
   expect(result.pdf).toBe(10);
   expect(result.views).toBe(false);

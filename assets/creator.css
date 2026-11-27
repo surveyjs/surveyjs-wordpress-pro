@@ -1,12 +1,12 @@
 /* Creator derives every size from these units (8px each by default); these give WordPress admin sizes: 13px text, 2px corners. */
 body {
-    --wp-sjs-pro-creator-unit-size: 6.5px;
-    --wp-sjs-pro-creator-unit-spacing: 6px;
-    --wp-sjs-pro-creator-unit-font-size: 6.5px;
-    --wp-sjs-pro-creator-unit-line-height: 6.67px;
-    --wp-sjs-pro-creator-unit-radius: 2px;
-    --wp-sjs-pro-creator-font-size-small: 12px;
-    --wp-sjs-pro-creator-line-height-small: 16px;
+    --wp-sjs-addon-creator-unit-size: 6.5px;
+    --wp-sjs-addon-creator-unit-spacing: 6px;
+    --wp-sjs-addon-creator-unit-font-size: 6.5px;
+    --wp-sjs-addon-creator-unit-line-height: 6.67px;
+    --wp-sjs-addon-creator-unit-radius: 2px;
+    --wp-sjs-addon-creator-font-size-small: 12px;
+    --wp-sjs-addon-creator-line-height-small: 16px;
 }
 
 .wp-sjs-editor[data-active-tab="creator"] .wp-sjs-editor__columns {
@@ -17,61 +17,61 @@ body {
     display: none;
 }
 
-.wp-sjs-editor[data-active-tab="creator"].wp-sjs-pro-site-preview .wp-sjs-editor__columns {
+.wp-sjs-editor[data-active-tab="creator"].wp-sjs-addon-site-preview .wp-sjs-editor__columns {
     position: relative;
 }
 
-.wp-sjs-editor[data-active-tab="creator"].wp-sjs-pro-site-preview .wp-sjs-editor__preview {
+.wp-sjs-editor[data-active-tab="creator"].wp-sjs-addon-site-preview .wp-sjs-editor__preview {
     display: flex;
     position: absolute;
     z-index: 1;
     border: 0;
 }
 
-.wp-sjs-pro-site-preview .svc-test-tab__content {
+.wp-sjs-addon-site-preview .svc-test-tab__content {
     visibility: hidden;
 }
 
-.wp-sjs-pro-site-preview .svc-test-tab__content .svd-simulator-wrapper {
+.wp-sjs-addon-site-preview .svc-test-tab__content .svd-simulator-wrapper {
     visibility: visible;
 }
 
-.wp-sjs-pro-site-preview .svc-test-tab__content .svd-simulator-content {
+.wp-sjs-addon-site-preview .svc-test-tab__content .svd-simulator-content {
     visibility: hidden;
 }
 
-.wp-sjs-pro-creator {
+.wp-sjs-addon-creator {
     height: calc(100vh - var(--wp-admin--admin-bar--height, 32px) - 150px);
     min-height: 560px;
-    border: 1px solid var(--wp-sjs-pro-border);
-    background: var(--wp-sjs-pro-surface);
+    border: 1px solid var(--wp-sjs-addon-border);
+    background: var(--wp-sjs-addon-surface);
 }
 
-.wp-sjs-pro-creator__host {
+.wp-sjs-addon-creator__host {
     height: 100%;
 }
 
-.wp-sjs-pro-creator__loading {
+.wp-sjs-addon-creator__loading {
     margin: 0;
     padding: 12px;
-    color: var(--wp-sjs-pro-text-3);
+    color: var(--wp-sjs-addon-text-3);
 }
 
-/* Toolbar buttons go into Base's .wp-sjs-editor__actions row; the icon and label layout comes from Base's
+/* Toolbar buttons go into SurveyJS Forms' .wp-sjs-editor__actions row; the icon and label layout comes from SurveyJS Forms'
    .wp-sjs-button-icon (admin.css), the spacing from the row's gap. */
 
-.wp-sjs-pro-fullscreen-mode body {
+.wp-sjs-addon-fullscreen-mode body {
     overflow: hidden;
 }
 
-.wp-sjs-pro-fullscreen-mode #wpadminbar,
-.wp-sjs-pro-fullscreen-mode #adminmenumain,
-.wp-sjs-pro-fullscreen-mode #wpfooter {
+.wp-sjs-addon-fullscreen-mode #wpadminbar,
+.wp-sjs-addon-fullscreen-mode #adminmenumain,
+.wp-sjs-addon-fullscreen-mode #wpfooter {
     display: none;
 }
 
 /* Below SurveyJS popups (z-index 2000), which Creator mounts in <body>. */
-.wp-sjs-pro-fullscreen-mode .wp-sjs-editor {
+.wp-sjs-addon-fullscreen-mode .wp-sjs-editor {
     position: fixed;
     inset: 0;
     z-index: 1000;
@@ -79,49 +79,49 @@ body {
     flex-direction: column;
     margin: 0;
     padding: 8px 16px 16px;
-    background: var(--wp-sjs-pro-page);
-    color: var(--wp-sjs-pro-text);
+    background: var(--wp-sjs-addon-page);
+    color: var(--wp-sjs-addon-text);
     overflow: hidden;
 }
 
-.wp-sjs-pro-fullscreen-mode .wp-sjs-editor h1 {
+.wp-sjs-addon-fullscreen-mode .wp-sjs-editor h1 {
     color: inherit;
 }
 
-/* Base's header bar stays edge to edge inside the full-screen editor, which has 8px 16px of padding. */
-.wp-sjs-pro-fullscreen-mode .wp-sjs-editor__header {
+/* SurveyJS Forms' header bar stays edge to edge inside the full-screen editor, which has 8px 16px of padding. */
+.wp-sjs-addon-fullscreen-mode .wp-sjs-editor__header {
     margin: -8px -16px 0;
     padding-inline: 16px;
 }
 
-/* Base's full preview is fixed inside this container, which sets the stacking level it can reach. */
-.wp-sjs-pro-fullscreen-mode .wp-sjs-editor.wp-sjs-editor--full-preview {
+/* SurveyJS Forms' full preview is fixed inside this container, which sets the stacking level it can reach. */
+.wp-sjs-addon-fullscreen-mode .wp-sjs-editor.wp-sjs-editor--full-preview {
     z-index: 100000;
 }
 
-.wp-sjs-pro-fullscreen-mode .wp-sjs-editor__columns {
+.wp-sjs-addon-fullscreen-mode .wp-sjs-editor__columns {
     flex: 1 1 auto;
     min-height: 0;
     overflow: auto;
 }
 
-.wp-sjs-pro-fullscreen-mode .wp-sjs-editor[data-active-tab="creator"] .wp-sjs-editor__columns {
+.wp-sjs-addon-fullscreen-mode .wp-sjs-editor[data-active-tab="creator"] .wp-sjs-editor__columns {
     grid-template-rows: minmax(0, 1fr);
     overflow: hidden;
 }
 
-.wp-sjs-pro-fullscreen-mode .wp-sjs-pro-creator {
+.wp-sjs-addon-fullscreen-mode .wp-sjs-addon-creator {
     height: 100%;
     min-height: 0;
 }
 
-.wp-sjs-pro-fullscreen-mode .wp-sjs-editor__preview {
+.wp-sjs-addon-fullscreen-mode .wp-sjs-editor__preview {
     top: 0;
     height: calc(100vh - 140px);
 }
 
 /* WordPress admin styles every input[type="text"], checkbox and li, and its rules outrank the
-   single-class survey-core ones. Same reset as Base's survey.css, for Creator and its popups. */
+   single-class survey-core ones. Same reset as SurveyJS Forms' survey.css, for Creator and its popups. */
 :where(.svc-creator, .sv-popup) li {
     margin-bottom: 0;
 }

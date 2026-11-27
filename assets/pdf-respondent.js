@@ -1,7 +1,7 @@
 (function () {
     "use strict";
 
-    const config = window.surveyjsProPdfRespondent;
+    const config = window.surveyjsAddonPdfRespondent;
     if (!config) return;
 
     const i18n = config.i18n;
@@ -25,15 +25,15 @@
     }
 
     function loadLibraries() {
-        if (window.SurveyJSProPdf) return Promise.resolve(window.SurveyJSProPdf);
-        window.surveyjsProPdf = window.surveyjsProPdf || config.pdf;
+        if (window.SurveyJSAddonPdf) return Promise.resolve(window.SurveyJSAddonPdf);
+        window.surveyjsAddonPdf = window.surveyjsAddonPdf || config.pdf;
         libraries ||= (window.jspdf ? Promise.resolve() : loadScript(config.scripts.jspdf))
             .then(() => window.SurveyPDF || loadScript(config.scripts.pdf))
             .then(() => (window.DocLayout && window.DocLayout.Spacious) || loadScript(config.scripts.spacious))
             .then(() => loadScript(config.scripts.pdfJs))
             .then(() => {
-                if (!window.SurveyJSProPdf) throw new Error(i18n.loadError);
-                return window.SurveyJSProPdf;
+                if (!window.SurveyJSAddonPdf) throw new Error(i18n.loadError);
+                return window.SurveyJSAddonPdf;
             })
             .catch((error) => {
                 libraries = null;
@@ -45,7 +45,7 @@
     function buildPdf(form, entry) {
         return loadLibraries().then((api) => {
             const settings = Object.assign({}, form.settings);
-            if (!entry.id) settings.proPdfEntryHeader = false;
+            if (!entry.id) settings.addonPdfEntryHeader = false;
             return api.createPdf({ json: form.json, theme: form.theme, logoUrl: form.logoUrl }, settings, entry);
         });
     }
@@ -55,7 +55,7 @@
     }
 
     function formOf(detail) {
-        return { json: detail.config.json, theme: detail.config.theme, settings: detail.config.proPdf.settings, logoUrl: detail.config.proPdf.logoUrl };
+        return { json: detail.config.json, theme: detail.config.theme, settings: detail.config.addonPdf.settings, logoUrl: detail.config.addonPdf.logoUrl };
     }
 
     function withTimeout(promise, ms) {
@@ -64,7 +64,7 @@
 
     document.addEventListener("surveyjs:before-submit", (event) => {
         const detail = event.detail;
-        const options = detail.config.proPdf;
+        const options = detail.config.addonPdf;
         if (!options || !options.attach) return;
         const answersSize = new Blob([JSON.stringify(detail.data)]).size;
         detail.waitUntil(withTimeout(buildPdf(formOf(detail), { id: "", date: "", data: detail.data }), config.timeout)
@@ -81,7 +81,7 @@
 
     function addDownloadButton(detail, entry) {
         const wrapper = document.createElement("div");
-        wrapper.className = "wp-sjs-pro-pdf-download";
+        wrapper.className = "wp-sjs-addon-pdf-download";
         wrapper.style.cssText = "margin: 16px 0; text-align: center;";
         const button = document.createElement("button");
         button.type = "button";
@@ -98,7 +98,7 @@
             (pdf ? Promise.resolve(pdf) : buildPdf(formOf(detail), entry))
                 .then((blob) => {
                     pdf = blob;
-                    window.SurveyJSProPdf.download(blob, fileName(window.SurveyJSProPdf, detail.survey.title, entry));
+                    window.SurveyJSAddonPdf.download(blob, fileName(window.SurveyJSAddonPdf, detail.survey.title, entry));
                     status.textContent = "";
                 })
                 .catch((error) => {
@@ -116,9 +116,9 @@
 
     document.addEventListener("surveyjs:submitted", (event) => {
         const detail = event.detail;
-        const options = detail.config.proPdf;
+        const options = detail.config.addonPdf;
         if (!options || !options.download) return;
-        const saved = (detail.response && detail.response.proPdf) || {};
+        const saved = (detail.response && detail.response.addonPdf) || {};
         const entry = { id: saved.id || "", date: saved.date || "", data: detail.data };
         let shown = false;
         const show = () => {
@@ -135,15 +135,15 @@
     });
 
     function initEntryPage(page) {
-        const status = document.getElementById("wp-sjs-pro-pdf-status");
-        const link = document.getElementById("wp-sjs-pro-pdf-download");
-        const frame = document.getElementById("wp-sjs-pro-pdf-frame");
+        const status = document.getElementById("wp-sjs-addon-pdf-status");
+        const link = document.getElementById("wp-sjs-addon-pdf-download");
+        const frame = document.getElementById("wp-sjs-addon-pdf-frame");
         if (!status || !link || !frame) return;
         buildPdf(page, page.entry).then(
             (blob) => {
                 const url = URL.createObjectURL(blob);
                 link.href = url;
-                link.download = fileName(window.SurveyJSProPdf, page.formName, page.entry);
+                link.download = fileName(window.SurveyJSAddonPdf, page.formName, page.entry);
                 link.hidden = false;
                 frame.src = url;
                 frame.hidden = false;

@@ -19,8 +19,8 @@ if ( 'create' === $command ) {
         'notificationTo'           => 'owner@example.test',
         'notificationReplyTo'      => 'email',
         'autoReplyEnabled'         => true,
-        'proPdfAttachNotification' => true,
-        'proPdfAttachAutoReply'    => true,
+        'addonPdfAttachNotification' => true,
+        'addonPdfAttachAutoReply'    => true,
     ) );
     $form_id = SurveyJS_Forms::create( array(
         'name'     => $name,
@@ -44,12 +44,12 @@ if ( 'create' === $command ) {
     echo wp_json_encode( array( 'id' => $form_id, 'entries' => $ids, 'page' => $page_id, 'url' => get_permalink( $page_id ) ) ), "\n";
 } elseif ( 'password' === $command ) {
     $form_id = absint( $argv[2] ?? 0 );
-    $stored = (string) get_post_meta( $form_id, SurveyJS_Pro_Pdf_Password::META, true );
+    $stored = (string) get_post_meta( $form_id, SurveyJS_Addon_Pdf_Password::META, true );
     echo wp_json_encode( array(
         'stored'   => '' !== $stored,
         'readable' => '' !== $stored && false !== strpos( $stored, (string) ( $argv[3] ?? '' ) ),
-        'password' => SurveyJS_Pro_Pdf_Password::password( $form_id ),
-        'enabled'  => SurveyJS_Pro_Pdf_Password::enabled( SurveyJS_Form_Settings::get( SurveyJS_Forms::find( $form_id ) ) ),
+        'password' => SurveyJS_Addon_Pdf_Password::password( $form_id ),
+        'enabled'  => SurveyJS_Addon_Pdf_Password::enabled( SurveyJS_Form_Settings::get( SurveyJS_Forms::find( $form_id ) ) ),
     ) ), "\n";
 } elseif ( 'cleanup' === $command ) {
     $form_id = absint( $argv[2] ?? 0 );

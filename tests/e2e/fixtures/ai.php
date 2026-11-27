@@ -12,22 +12,22 @@ if ( 'setup' === $command ) {
     $result['wasWrite'] = get_option( SurveyJS_AI::WRITE_OPTION );
     update_option( SurveyJS_AI::WRITE_OPTION, '1' );
     $result['adapter'] = SurveyJS_AI::adapter_state();
-    $result['proSettings'] = SurveyJS_Pro_Settings::all();
+    $result['addonSettings'] = SurveyJS_Addon_Settings::all();
     $result['form'] = SurveyJS_Forms::create( array(
-        'name' => 'E2E Pro AI ' . time(),
+        'name' => 'E2E Add-on AI ' . time(),
         'json' => wp_json_encode( array( 'elements' => array( array( 'type' => 'text', 'name' => 'q1' ) ) ) ),
     ) );
     if ( wp_is_application_passwords_supported() ) {
         $created = WP_Application_Passwords::create_new_application_password( $user->ID, array(
-            'name'   => 'E2E Pro AI',
+            'name'   => 'E2E Add-on AI',
             'app_id' => SurveyJS_AI::APP_ID,
         ) );
         $result['header'] = 'Basic ' . base64_encode( $user->user_login . ':' . $created[0] ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- builds the HTTP Basic header.
         $result['uuid'] = $created[1]['uuid'];
     }
     $result['endpoint'] = SurveyJS_AI::endpoint_url();
-} elseif ( 'pro-settings' === $command ) {
-    $result = SurveyJS_Pro_Settings::all();
+} elseif ( 'addon-settings' === $command ) {
+    $result = SurveyJS_Addon_Settings::all();
 } elseif ( 'draft' === $command ) {
     $result = SurveyJS_AI_Drafts::get( (int) $argv[3] );
 } elseif ( 'cleanup' === $command ) {
@@ -38,7 +38,7 @@ if ( 'setup' === $command ) {
     if ( ! empty( $state['form'] ) ) {
         SurveyJS_Forms::delete( (int) $state['form'] );
     }
-    SurveyJS_Pro_Settings::update( $state['proSettings'] );
+    SurveyJS_Addon_Settings::update( $state['addonSettings'] );
     update_option( SurveyJS_AI::ENABLED_OPTION, (string) $state['wasEnabled'] );
     update_option( SurveyJS_AI::WRITE_OPTION, (string) $state['wasWrite'] );
 }

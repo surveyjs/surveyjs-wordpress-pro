@@ -9,10 +9,10 @@ execFileSync("docker", [
   "-v", `${root}:/app`,
   "-w", "/app",
   IMAGE,
-  "wp", "i18n", "make-pot", ".", "languages/surveyjs-pro.pot",
-  "--slug=surveyjs-pro",
-  "--domain=surveyjs-pro",
+  "wp", "i18n", "make-pot", ".", "languages/surveyjs-forms-addon.pot",
+  "--slug=surveyjs-forms-addon",
+  "--domain=surveyjs-forms-addon",
   "--exclude=libs,scripts,vip,dist,test-results,playwright-report",
-  "--headers=" + JSON.stringify({ "Report-Msgid-Bugs-To": "https://surveyjs.io/wordpress-pro" }),
-  "--file-comment=Copyright (C) Devsoft Baltic OÜ. This file is distributed under the same license as the SurveyJS Forms Pro plugin."
+  "--headers=" + JSON.stringify({ "Report-Msgid-Bugs-To": "https://surveyjs.io/wordpress-addon" }),
+  "--file-comment=Copyright (C) Devsoft Baltic OÜ. This file is distributed under the same license as the SurveyJS Forms Add-on plugin."
 ], { stdio: "inherit", env: { ...process.env, MSYS_NO_PATHCONV: "1" } });

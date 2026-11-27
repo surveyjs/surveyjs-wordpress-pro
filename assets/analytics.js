@@ -1,14 +1,14 @@
 (function () {
-    var config = window.surveyjsProAnalytics;
-    var root = document.getElementById("wp-sjs-pro-analytics");
+    var config = window.surveyjsAddonAnalytics;
+    var root = document.getElementById("wp-sjs-addon-analytics");
     if (!config || !root) {
         return;
     }
-    var message = root.querySelector(".wp-sjs-pro-analytics__message");
-    var progress = root.querySelector(".wp-sjs-pro-analytics__progress");
-    var notice = root.querySelector(".wp-sjs-pro-analytics__notice");
-    var container = root.querySelector(".wp-sjs-pro-analytics__container");
-    var stateKey = "surveyjs-pro-" + config.view + "-" + config.formId;
+    var message = root.querySelector(".wp-sjs-addon-analytics__message");
+    var progress = root.querySelector(".wp-sjs-addon-analytics__progress");
+    var notice = root.querySelector(".wp-sjs-addon-analytics__notice");
+    var container = root.querySelector(".wp-sjs-addon-analytics__container");
+    var stateKey = "surveyjs-forms-addon-" + config.view + "-" + config.formId;
 
     function format(text, values) {
         return text.replace(/%(\d+)\$s/g, function (match, index) {
@@ -96,7 +96,7 @@
     }
 
     function applyAdminTheme(visualizer) {
-        var adminTheme = window.surveyjsProAdminTheme;
+        var adminTheme = window.surveyjsAddonAdminTheme;
         if (!adminTheme || typeof visualizer.applyTheme !== "function") {
             return;
         }

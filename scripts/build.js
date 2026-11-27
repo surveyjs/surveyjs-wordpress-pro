@@ -7,22 +7,22 @@ const { execFileSync } = require("child_process");
 
 const root = path.resolve(__dirname, "..");
 const LOADER = "vip/client-mu-plugins/surveyjs-forms.php";
-const NOT_IN_PRO_ZIP = [".github/", "vip/", "scripts/", "tests/", "node_modules/", "dist/", "README.md", "DEVELOPMENT.md", "composer.json", "package.json", "package-lock.json", "playwright.config.js", ".gitattributes", ".gitignore"];
+const NOT_IN_ADDON_ZIP = [".github/", "vip/", "scripts/", "tests/", "node_modules/", "dist/", "README.md", "DEVELOPMENT.md", "composer.json", "package.json", "package-lock.json", "playwright.config.js", ".gitattributes", ".gitignore"];
 
 function usage(message) {
   if (message) console.error(message);
   console.error(`Usage: node scripts/build.js [options]
 
-  --ref <rev>          Pro commit or tag to build (default HEAD).
-  --worktree           Build Pro from the working tree (tracked and untracked files, minus .gitignore) instead of --ref.
+  --ref <rev>          Add-on commit or tag to build (default HEAD).
+  --worktree           Build the add-on from the working tree (tracked and untracked files, minus .gitignore) instead of --ref.
   --out <dir>          Output folder (default dist/).
 
-Base (SurveyJS Forms) for the VIP archive, one of:
-  (default)            https://downloads.wordpress.org/plugin/surveyjs.<Pro version>.zip
+SurveyJS Forms for the VIP archive, one of:
+  (default)            https://downloads.wordpress.org/plugin/surveyjs.<add-on version>.zip
   --base-zip <file|url> A zip with one top folder surveyjs/, as on wordpress.org.
-  --base-ref <rev>     src/trunk of the Base repo at <rev>.
-  --base-worktree      src/trunk of the Base repo working tree.
-  --base-repo <dir>    Base repo for --base-ref/--base-worktree (default ../surveyjs-wordpress).`);
+  --base-ref <rev>     src/trunk of the SurveyJS Forms repo at <rev>.
+  --base-worktree      src/trunk of the SurveyJS Forms repo working tree.
+  --base-repo <dir>    SurveyJS Forms repo for --base-ref/--base-worktree (default ../surveyjs-wordpress).`);
   process.exit(1);
 }
 
@@ -241,7 +241,7 @@ async function baseEntries(options, version) {
   try {
     zip = /^https?:\/\//.test(zipSource) ? await download(zipSource) : fs.readFileSync(zipSource);
   } catch (error) {
-    const hint = options.baseZip ? "" : ` SurveyJS Forms ${version} may not be on wordpress.org yet: pass --base-ref <rev> (Base repo ${options.baseRepo}) or --base-zip <file>.`;
+    const hint = options.baseZip ? "" : ` SurveyJS Forms ${version} may not be on wordpress.org yet: pass --base-ref <rev> (SurveyJS Forms repo ${options.baseRepo}) or --base-zip <file>.`;
     throw new Error(`${error.message}${hint}`);
   }
   const entries = readZip(zip);
@@ -261,50 +261,50 @@ function report(file) {
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
-  const pro = source(root, options.ref, options.worktree);
-  const proZip = archive(root, ["--prefix=surveyjs-pro/", pro.treeish]);
-  const proEntries = readZip(proZip);
+  const addonSource = source(root, options.ref, options.worktree);
+  const addonZip = archive(root, ["--prefix=surveyjs-forms-addon/", addonSource.treeish]);
+  const addonEntries = readZip(addonZip);
 
-  const main = text(proEntries, "surveyjs-pro/surveyjs-pro.php");
-  const version = match(main, /^\s*Version:\s*(.+)$/m, "Version header in surveyjs-pro.php");
-  const stable = match(text(proEntries, "surveyjs-pro/readme.txt"), /^Stable tag:\s*(.+)$/m, "Stable tag in readme.txt");
-  if (version !== constant(main, "SURVEYJS_PRO_VERSION") || version !== stable) {
-    throw new Error(`Version mismatch: header ${version}, SURVEYJS_PRO_VERSION ${constant(main, "SURVEYJS_PRO_VERSION")}, readme.txt Stable tag ${stable}.`);
+  const main = text(addonEntries, "surveyjs-forms-addon/surveyjs-forms-addon.php");
+  const version = match(main, /^\s*Version:\s*(.+)$/m, "Version header in surveyjs-forms-addon.php");
+  const stable = match(text(addonEntries, "surveyjs-forms-addon/readme.txt"), /^Stable tag:\s*(.+)$/m, "Stable tag in readme.txt");
+  if (version !== constant(main, "SURVEYJS_ADDON_VERSION") || version !== stable) {
+    throw new Error(`Version mismatch: header ${version}, SURVEYJS_ADDON_VERSION ${constant(main, "SURVEYJS_ADDON_VERSION")}, readme.txt Stable tag ${stable}.`);
   }
-  const leaked = proEntries.find((entry) => NOT_IN_PRO_ZIP.some((name) => entry.name === `surveyjs-pro/${name}` || (name.endsWith("/") && entry.name.startsWith(`surveyjs-pro/${name}`))));
-  if (leaked) throw new Error(`${leaked.name} must not be in the Pro zip (add it to .gitattributes export-ignore).`);
-  console.log(`SurveyJS Forms Pro ${version} (${pro.label})`);
+  const leaked = addonEntries.find((entry) => NOT_IN_ADDON_ZIP.some((name) => entry.name === `surveyjs-forms-addon/${name}` || (name.endsWith("/") && entry.name.startsWith(`surveyjs-forms-addon/${name}`))));
+  if (leaked) throw new Error(`${leaked.name} must not be in the add-on zip (add it to .gitattributes export-ignore).`);
+  console.log(`SurveyJS Forms Add-on ${version} (${addonSource.label})`);
 
   const base = await baseEntries(options, version);
   const baseMain = text(base.entries, "plugins/surveyjs/surveyjs.php");
   const baseVersion = match(baseMain, /^\s*Version:\s*(.+)$/m, "Version header in surveyjs.php");
-  const minBase = constant(main, "SURVEYJS_PRO_MIN_BASE_VERSION");
-  const library = constant(main, "SURVEYJS_PRO_LIBRARY_VERSION");
+  const minBase = constant(main, "SURVEYJS_ADDON_MIN_BASE_VERSION");
+  const library = constant(main, "SURVEYJS_ADDON_LIBRARY_VERSION");
   console.log(`SurveyJS Forms ${baseVersion} (${base.label})`);
-  if (compareVersions(baseVersion, minBase) < 0) throw new Error(`SurveyJS Forms ${baseVersion} is older than SURVEYJS_PRO_MIN_BASE_VERSION ${minBase}.`);
-  const baseLibrary = match(text(base.entries, "plugins/surveyjs/libs/library/survey.core.min.js").slice(0, 300), / v(\d+\.\d+\.\d+\S*)/, "SurveyJS library version in Base");
-  if (baseLibrary !== library) throw new Error(`SurveyJS Forms ${baseVersion} ships SurveyJS ${baseLibrary}, Pro is built for ${library}.`);
+  if (compareVersions(baseVersion, minBase) < 0) throw new Error(`SurveyJS Forms ${baseVersion} is older than SURVEYJS_ADDON_MIN_BASE_VERSION ${minBase}.`);
+  const baseLibrary = match(text(base.entries, "plugins/surveyjs/libs/library/survey.core.min.js").slice(0, 300), / v(\d+\.\d+\.\d+\S*)/, "SurveyJS library version in SurveyJS Forms");
+  if (baseLibrary !== library) throw new Error(`SurveyJS Forms ${baseVersion} ships SurveyJS ${baseLibrary}, the add-on is built for ${library}.`);
 
-  const proStamp = proEntries.find((entry) => entry.name === "surveyjs-pro/surveyjs-pro.php");
+  const addonStamp = addonEntries.find((entry) => entry.name === "surveyjs-forms-addon/surveyjs-forms-addon.php");
   let loader;
   try {
-    loader = git(root, ["show", `${pro.treeish}:${LOADER}`]);
+    loader = git(root, ["show", `${addonSource.treeish}:${LOADER}`]);
   } catch {
-    throw new Error(`${LOADER} is not in ${pro.label}.`);
+    throw new Error(`${LOADER} is not in ${addonSource.label}.`);
   }
   fs.mkdirSync(options.out, { recursive: true });
-  const proFile = path.join(options.out, `surveyjs-pro-${version}.zip`);
+  const addonFile = path.join(options.out, `surveyjs-forms-addon-${version}.zip`);
   const vipFile = path.join(options.out, `surveyjs-forms-vip-${version}.zip`);
-  fs.writeFileSync(proFile, proZip);
+  fs.writeFileSync(addonFile, addonZip);
   writeZip(withDirectories([
     ...base.entries,
-    ...moved(proEntries, "", "plugins/"),
-    newEntry("client-mu-plugins/surveyjs-forms.php", loader, proStamp)
-  ], proStamp), vipFile);
+    ...moved(addonEntries, "", "plugins/"),
+    newEntry("client-mu-plugins/surveyjs-forms.php", loader, addonStamp)
+  ], addonStamp), vipFile);
 
-  const sums = [proFile, vipFile].map((file) => `${sha256(file)}  ${path.basename(file)}`).join("\n") + "\n";
+  const sums = [addonFile, vipFile].map((file) => `${sha256(file)}  ${path.basename(file)}`).join("\n") + "\n";
   fs.writeFileSync(path.join(options.out, "SHA256SUMS"), sums);
-  report(proFile);
+  report(addonFile);
   report(vipFile);
 }
 

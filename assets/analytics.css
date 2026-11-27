@@ -1,28 +1,28 @@
-.wp-sjs-pro-analytics {
+.wp-sjs-addon-analytics {
     margin-top: 16px;
 }
 
-.wp-sjs-pro-analytics [hidden] {
+.wp-sjs-addon-analytics [hidden] {
     display: none;
 }
 
 /* survey-analytics keeps both date editors on one row (max-width: min-content, inputs min-width: max-content), wider than a phone screen. */
-.wp-sjs-pro-analytics .sa-date-range-container {
+.wp-sjs-addon-analytics .sa-date-range-container {
     max-width: 100%;
 }
 
-.wp-sjs-pro-analytics .sa-date-range_editors {
+.wp-sjs-addon-analytics .sa-date-range_editors {
     flex-wrap: wrap;
 }
 
-.wp-sjs-pro-analytics__progress {
+.wp-sjs-addon-analytics__progress {
     width: 100%;
     max-width: 320px;
 }
 
 /* WordPress admin styles input[type=date] with a higher specificity than the Dashboard's own class. */
-.wp-sjs-pro-analytics .sa-date-range_editor-input,
-.wp-sjs-pro-analytics .sa-date-range_editor-input:focus {
+.wp-sjs-addon-analytics .sa-date-range_editor-input,
+.wp-sjs-addon-analytics .sa-date-range_editor-input:focus {
     min-height: 0;
     padding: 0;
     border: none;

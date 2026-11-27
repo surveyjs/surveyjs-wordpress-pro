@@ -33,7 +33,7 @@ async function creatorStyles(page) {
     const tab = getComputedStyle(document.querySelector(".svc-tabbed-menu-item__text"));
     const input = getComputedStyle(document.querySelector(".svc-side-bar .sd-formbox"));
     const probe = document.createElement("span");
-    probe.style.color = "var(--wp-sjs-pro-input-border)";
+    probe.style.color = "var(--wp-sjs-addon-input-border)";
     document.body.appendChild(probe);
     const border = getComputedStyle(probe).color;
     probe.remove();

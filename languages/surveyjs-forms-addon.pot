@@ -1,38 +1,38 @@
-# Copyright (C) Devsoft Baltic OÜ. This file is distributed under the same license as the SurveyJS Forms Pro plugin.
+# Copyright (C) Devsoft Baltic OÜ. This file is distributed under the same license as the SurveyJS Forms Add-on plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: SurveyJS Forms Pro 3.2.4\n"
-"Report-Msgid-Bugs-To: https://surveyjs.io/wordpress-pro\n"
+"Project-Id-Version: SurveyJS Forms Add-on 3.2.4\n"
+"Report-Msgid-Bugs-To: https://surveyjs.io/wordpress-addon\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-18T09:50:26+00:00\n"
+"POT-Creation-Date: 2026-11-27T16:07:14+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
-"X-Domain: surveyjs-pro\n"
+"X-Domain: surveyjs-forms-addon\n"
 
 #. Plugin Name of the plugin
-#: surveyjs-pro.php
+#: surveyjs-forms-addon.php
 #: includes/settings.php:45
-msgid "SurveyJS Forms Pro"
+msgid "SurveyJS Forms Add-on"
 msgstr ""
 
 #. Plugin URI of the plugin
 #. Author URI of the plugin
-#: surveyjs-pro.php
+#: surveyjs-forms-addon.php
 msgid "https://surveyjs.io/"
 msgstr ""
 
 #. Description of the plugin
-#: surveyjs-pro.php
+#: surveyjs-forms-addon.php
 #: includes/updater.php:64
 msgid "Adds Survey Creator with the AI assistant, PDF export and analytics to SurveyJS Forms."
 msgstr ""
 
 #. Author of the plugin
-#: surveyjs-pro.php
+#: surveyjs-forms-addon.php
 msgid "Devsoft Baltic OÜ"
 msgstr ""
 
@@ -72,137 +72,146 @@ msgstr ""
 msgid "Survey Creator takes the admin color scheme, font size, input fields and compact sizes of the WordPress admin. Turn off to use the default SurveyJS look. Color mode applies either way."
 msgstr ""
 
-#: includes/analytics.php:22
+#: includes/ai.php:45
+msgid "Get SurveyJS Forms Add-on settings"
+msgstr ""
+
+#: includes/ai.php:51
+msgid "Update SurveyJS Forms Add-on settings"
+msgstr ""
+
+#: includes/analytics.php:39
+#: includes/plugin.php:81
 msgid "Charts"
 msgstr ""
 
 #. translators: 1: number of loaded entries, 2: number of entries to load
-#: includes/analytics.php:82
+#: includes/analytics.php:99
 #, php-format
 msgid "Loading entries: %1$s of %2$s…"
 msgstr ""
 
 #. translators: 1: number of shown entries, 2: number of all submitted entries
-#: includes/analytics.php:84
+#: includes/analytics.php:101
 #, php-format
 msgid "Showing the latest %1$s of %2$s entries. Export CSV includes all of them."
 msgstr ""
 
-#: includes/analytics.php:85
-#: includes/dashboard.php:472
+#: includes/analytics.php:102
+#: includes/dashboard.php:476
 msgid "No entries yet."
 msgstr ""
 
-#: includes/analytics.php:86
+#: includes/analytics.php:103
 msgid "This form has no questions yet."
 msgstr ""
 
-#: includes/analytics.php:87
+#: includes/analytics.php:104
 msgid "Could not load the entries. Reload the page to try again."
 msgstr ""
 
-#: includes/analytics.php:111
+#: includes/analytics.php:128
 msgid "Analytics libraries are not available."
 msgstr ""
 
-#: includes/creator.php:69
+#: includes/creator.php:82
 msgid "Config"
 msgstr ""
 
-#: includes/creator.php:78
+#: includes/creator.php:91
 msgid "Loading Creator…"
 msgstr ""
 
-#: includes/creator.php:121
+#: includes/creator.php:138
 msgid "GDPR Agreement"
 msgstr ""
 
-#: includes/creator.php:122
+#: includes/creator.php:139
 msgid "A required consent checkbox with a link to your Privacy Policy page."
 msgstr ""
 
-#: includes/creator.php:123
+#: includes/creator.php:140
 msgid "Adaptive is on in the Theme tab of the form editor, so the form on your site uses your site's theme styles instead of this theme. Turn Adaptive off there to use this theme."
 msgstr ""
 
-#: includes/creator.php:124
-#: includes/pdf.php:306
+#: includes/creator.php:141
+#: includes/pdf.php:326
 msgid "Full screen"
 msgstr ""
 
-#: includes/creator.php:125
+#: includes/creator.php:142
 msgid "Exit full screen"
 msgstr ""
 
-#: includes/creator.php:126
+#: includes/creator.php:143
 msgid "Choose a file"
 msgstr ""
 
-#: includes/creator.php:127
+#: includes/creator.php:144
 msgid "Use this file"
 msgstr ""
 
-#: includes/creator.php:128
+#: includes/creator.php:145
 msgid "The file was not uploaded to the Media Library."
 msgstr ""
 
-#: includes/dashboard.php:30
-#: includes/dashboard.php:36
-#: includes/dashboard.php:338
+#: includes/dashboard.php:38
+#: includes/dashboard.php:343
+#: includes/plugin.php:82
 msgid "Dashboard"
 msgstr ""
 
-#: includes/dashboard.php:49
+#: includes/dashboard.php:51
 msgid "Last 7 days"
 msgstr ""
 
-#: includes/dashboard.php:50
+#: includes/dashboard.php:52
 msgid "Last 30 days"
 msgstr ""
 
-#: includes/dashboard.php:51
+#: includes/dashboard.php:53
 msgid "Last 90 days"
 msgstr ""
 
-#: includes/dashboard.php:52
+#: includes/dashboard.php:54
 msgid "Last 12 months"
 msgstr ""
 
-#: includes/dashboard.php:88
+#: includes/dashboard.php:90
 msgid "(no title)"
 msgstr ""
 
 #. translators: %s: number of forms
-#: includes/dashboard.php:270
+#: includes/dashboard.php:272
 #, php-format
 msgid "Other (%s form)"
 msgid_plural "Other (%s forms)"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/dashboard.php:284
-#: includes/pdf.php:269
+#: includes/dashboard.php:286
+#: includes/pdf.php:289
 msgid "Entries"
 msgstr ""
 
-#: includes/dashboard.php:285
-#: includes/dashboard.php:389
-#: includes/dashboard.php:487
+#: includes/dashboard.php:287
+#: includes/dashboard.php:393
+#: includes/dashboard.php:491
 msgid "Views"
 msgstr ""
 
-#: includes/dashboard.php:286
+#: includes/dashboard.php:288
 msgid "Submissions"
 msgstr ""
 
 #. translators: %s: conversion rate, e.g. "12.5%"
-#: includes/dashboard.php:288
+#: includes/dashboard.php:290
 #, php-format
 msgid "Conversion: %s"
 msgstr ""
 
 #. translators: %s: number of days or months
-#: includes/dashboard.php:310
+#: includes/dashboard.php:312
 #, php-format
 msgid "previous %s month"
 msgid_plural "previous %s months"
@@ -210,7 +219,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: number of days or months
-#: includes/dashboard.php:310
+#: includes/dashboard.php:312
 #, php-format
 msgid "previous %s day"
 msgid_plural "previous %s days"
@@ -218,640 +227,663 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: 1: signed percentage change, e.g. "+12%", 2: the comparison period, e.g. "previous 30 days"
-#: includes/dashboard.php:315
+#: includes/dashboard.php:317
 #, php-format
 msgid "%1$s vs %2$s"
 msgstr ""
 
 #. translators: 1: number of submissions, 2: number of views
-#: includes/dashboard.php:321
+#: includes/dashboard.php:323
 #, php-format
 msgid "%1$s submission from %2$s views"
 msgid_plural "%1$s submissions from %2$s views"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/dashboard.php:329
+#: includes/dashboard.php:331
 msgid "Sorry, you are not allowed to access this page."
 msgstr ""
 
-#: includes/dashboard.php:343
+#: includes/dashboard.php:347
 msgid "No forms yet. Create a form, add it to a page, and its entries will show up here."
 msgstr ""
 
-#: includes/dashboard.php:344
+#: includes/dashboard.php:348
 msgid "Go to Forms"
 msgstr ""
 
-#: includes/dashboard.php:376
-#: includes/dashboard.php:484
+#: includes/dashboard.php:380
+#: includes/dashboard.php:488
 msgid "All entries"
 msgstr ""
 
-#: includes/dashboard.php:380
-#: includes/dashboard.php:485
+#: includes/dashboard.php:384
+#: includes/dashboard.php:489
 msgid "Unread"
 msgstr ""
 
-#: includes/dashboard.php:384
-#: includes/dashboard.php:477
+#: includes/dashboard.php:388
+#: includes/dashboard.php:481
 msgid "Forms"
 msgstr ""
 
-#: includes/dashboard.php:394
-#: includes/dashboard.php:488
+#: includes/dashboard.php:398
+#: includes/dashboard.php:492
 msgid "Conversion"
 msgstr ""
 
-#: includes/dashboard.php:403
+#: includes/dashboard.php:407
 msgid "Entries over time"
 msgstr ""
 
 #. translators: 1: number of entries, 2: period, e.g. "Last 30 days"
-#: includes/dashboard.php:405
+#: includes/dashboard.php:409
 #, php-format
 msgid "%1$s entries, %2$s"
 msgstr ""
 
-#: includes/dashboard.php:409
+#: includes/dashboard.php:413
 msgid "Entries by form"
 msgstr ""
 
-#: includes/dashboard.php:413
+#: includes/dashboard.php:417
 msgid "Entries by form; the same numbers are in the Forms table below."
 msgstr ""
 
-#: includes/dashboard.php:416
+#: includes/dashboard.php:420
 msgid "No entries in this period."
 msgstr ""
 
-#: includes/dashboard.php:422
+#: includes/dashboard.php:426
 msgid "Views and submissions"
 msgstr ""
 
-#: includes/dashboard.php:425
+#: includes/dashboard.php:429
 msgid "Form views are not counted, so there is no conversion rate."
 msgstr ""
 
-#: includes/dashboard.php:426
+#: includes/dashboard.php:430
 msgid "Turn on Form views in Settings"
 msgstr ""
 
 #. translators: 1: number of views, 2: number of submissions, 3: period, e.g. "Last 30 days"
-#: includes/dashboard.php:430
+#: includes/dashboard.php:434
 #, php-format
 msgid "%1$s views and %2$s submissions, %3$s; the same numbers per form are in the Forms table below."
 msgstr ""
 
-#: includes/dashboard.php:432
+#: includes/dashboard.php:436
 msgid "Conversion is submissions divided by views. A view is counted when a visitor sees the form on the site; logged-in users who can edit posts and bots are not counted."
 msgstr ""
 
-#: includes/dashboard.php:434
+#: includes/dashboard.php:438
 msgid "No views in this period. A view is counted when a visitor sees a form on the site; logged-in users who can edit posts are not counted."
 msgstr ""
 
-#: includes/dashboard.php:440
+#: includes/dashboard.php:444
 msgid "Latest entries"
 msgstr ""
 
-#: includes/dashboard.php:445
+#: includes/dashboard.php:449
 msgid "Entry"
 msgstr ""
 
-#: includes/dashboard.php:446
-#: includes/dashboard.php:482
+#: includes/dashboard.php:450
+#: includes/dashboard.php:486
 msgid "Form"
 msgstr ""
 
-#: includes/dashboard.php:447
+#: includes/dashboard.php:451
 msgid "Submitted by"
 msgstr ""
 
-#: includes/dashboard.php:448
+#: includes/dashboard.php:452
 msgid "Date"
 msgstr ""
 
-#: includes/dashboard.php:465
+#: includes/dashboard.php:469
 msgid "Guest"
 msgstr ""
 
-#: includes/dashboard.php:490
+#: includes/dashboard.php:494
 msgid "Last entry"
 msgstr ""
 
-#: includes/dashboard.php:517
+#: includes/dashboard.php:521
 msgid "Total"
 msgstr ""
 
 #. translators: %s: number of forms
-#: includes/dashboard.php:535
+#: includes/dashboard.php:539
 #, php-format
 msgid "%s form has no entries yet."
 msgid_plural "%s forms have no entries yet."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/dashboard.php:537
+#: includes/dashboard.php:541
 msgid "All forms"
 msgstr ""
 
-#: includes/pdf-password.php:127
-#: includes/pdf-password.php:229
+#: includes/pdf-password.php:137
+#: includes/pdf-password.php:239
 msgid "the PDF could not be protected with the password, so it was not downloaded."
 msgstr ""
 
-#: includes/pdf-password.php:128
+#: includes/pdf-password.php:138
 msgid "PDF password saved."
 msgstr ""
 
-#: includes/pdf-password.php:129
+#: includes/pdf-password.php:139
 msgid "PDF password removed. PDFs of this form are no longer protected."
 msgstr ""
 
-#: includes/pdf-password.php:130
+#: includes/pdf-password.php:140
 msgid "Enter a PDF password and save the form. Until then, PDFs of this form cannot be downloaded and are not attached to the email notification."
 msgstr ""
 
-#: includes/pdf-password.php:131
+#: includes/pdf-password.php:141
 msgid "save the form first to use the new password."
 msgstr ""
 
 #. translators: %1$s: error message
-#: includes/pdf-password.php:133
+#: includes/pdf-password.php:143
 #, php-format
 msgid "The PDF password was not saved: %1$s"
 msgstr ""
 
-#: includes/pdf-password.php:134
+#: includes/pdf-password.php:144
 msgid "the server did not respond. Try again."
 msgstr ""
 
-#: includes/pdf-password.php:144
+#: includes/pdf-password.php:154
 msgid "Password"
 msgstr ""
 
-#: includes/pdf-password.php:146
+#: includes/pdf-password.php:156
 msgid "Password protect PDF"
 msgstr ""
 
-#: includes/pdf-password.php:147
-msgid "Entry PDFs and blank forms you download from the Results page or this tab, and the PDF attached to the email notification, are encrypted with AES-256 and open only with the password. The preview on this tab, the respondent's Download PDF button, the auto-reply attachment and the {pdf_link} page are not protected. Older PDF viewers that do not support AES-256 cannot open protected PDFs."
+#: includes/pdf-password.php:157
+msgid "Encrypts with AES-256 the PDFs you download from Entries or this tab and the PDF attached to the email notification. Not protected: this preview, the respondent's Download PDF button, the auto-reply attachment and the {pdf_link} page. Old PDF viewers without AES-256 cannot open them."
 msgstr ""
 
-#: includes/pdf-password.php:149
+#: includes/pdf-password.php:159
 msgid "Not available on this site: it needs PHP 8.2 or later with the OpenSSL and ctype extensions."
 msgstr ""
 
-#: includes/pdf-password.php:154
+#: includes/pdf-password.php:164
 msgid "PDF password"
 msgstr ""
 
-#: includes/pdf-password.php:157
-msgid "One password for all PDFs of this form, saved with the form. To change it, type a new one. To remove it, turn off Password protect PDF and save the form."
+#: includes/pdf-password.php:167
+msgid "One password for all PDFs of this form. To change it, type a new one; to remove it, turn off Password protect PDF and save the form."
 msgstr ""
 
-#: includes/pdf-password.php:187
-#: includes/pdf-password.php:205
+#: includes/pdf-password.php:197
+#: includes/pdf-password.php:215
 msgid "password protection needs PHP 8.2 or later with the OpenSSL and ctype extensions."
 msgstr ""
 
 #. translators: %d: maximum password length in bytes
-#: includes/pdf-password.php:192
+#: includes/pdf-password.php:202
 #, php-format
 msgid "the password must be 1 to %d bytes long and must not contain control characters."
 msgstr ""
 
-#: includes/pdf-password.php:195
+#: includes/pdf-password.php:205
 msgid "the password could not be stored."
 msgstr ""
 
-#: includes/pdf-password.php:208
+#: includes/pdf-password.php:218
 msgid "no PDF password is set for this form. Enter it on the PDF tab of the form editor."
 msgstr ""
 
 #. translators: %s: maximum file size, e.g. "32 MB"
-#: includes/pdf-password.php:213
+#: includes/pdf-password.php:223
 #, php-format
 msgid "the PDF is larger than %s."
 msgstr ""
 
-#: includes/pdf-password.php:224
+#: includes/pdf-password.php:234
 msgid "the request did not contain a PDF."
 msgstr ""
 
-#: includes/pdf-respondent.php:55
+#: includes/pdf-respondent.php:75
 msgid "After submit"
 msgstr ""
 
-#: includes/pdf-respondent.php:57
+#: includes/pdf-respondent.php:77
 msgid "Show a Download PDF button to the respondent"
 msgstr ""
 
-#: includes/pdf-respondent.php:58
-msgid "The button appears on the completed page of the form on your site and creates a PDF of the respondent's answers in their browser."
+#: includes/pdf-respondent.php:78
+msgid "Shown on the completed page; the PDF of the answers is created in the respondent's browser."
 msgstr ""
 
-#: includes/pdf-respondent.php:69
+#: includes/pdf-respondent.php:89
 msgid "PDF Attachment"
 msgstr ""
 
-#: includes/pdf-respondent.php:71
+#: includes/pdf-respondent.php:91
 msgid "Attach a PDF of the entry"
 msgstr ""
 
 #. translators: 1: seconds, 2: maximum file size, e.g. "10 MB"
-#: includes/pdf-respondent.php:76
+#: includes/pdf-respondent.php:96
 #, php-format
-msgid "The respondent's browser creates the PDF when the form is submitted and sends it with the entry. If it is not ready in %1$s seconds or is larger than %2$s, the email is sent without it. The PDF looks as set on the PDF tab."
+msgid "Created in the respondent's browser on submit, styled as set on the PDF tab. If it takes over %1$s seconds or exceeds %2$s, the email is sent without it."
 msgstr ""
 
-#: includes/pdf-respondent.php:92
-msgid "PDF Link in Emails"
+#: includes/pdf-respondent.php:114
+msgid "PDF link in emails"
 msgstr ""
 
-#: includes/pdf-respondent.php:95
-msgid "PDF link"
-msgstr ""
-
-#: includes/pdf-respondent.php:97
+#: includes/pdf-respondent.php:116
 msgid "Allow a link to the PDF of the entry in emails"
 msgstr ""
 
-#: includes/pdf-respondent.php:98
-msgid "Add {pdf_link} (a Download PDF link) or {pdf_url} (the address only) to the email notification or the auto-reply message. The link opens a page that creates the PDF of that entry in the browser. Anyone with the link can see the entry, so send it only to the respondent or to trusted addresses. Needs \"Save submitted entries in the database\" on the Entries tab. Turning this option off disables the links already sent."
+#: includes/pdf-respondent.php:117
+msgid "Add {pdf_link} (a Download PDF link) or {pdf_url} (the address only) to the notification or auto-reply. Anyone with the link can see the entry, so send it only to the respondent or trusted addresses. Needs Store entries on the Entries tab. Turning this off disables links already sent."
 msgstr ""
 
-#: includes/pdf-respondent.php:102
+#: includes/pdf-respondent.php:121
 msgid "Link expires after"
 msgstr ""
 
-#: includes/pdf-respondent.php:104
+#: includes/pdf-respondent.php:123
 msgid "days"
 msgstr ""
 
-#: includes/pdf-respondent.php:105
+#: includes/pdf-respondent.php:124
 msgid "0 means the link does not expire. Administrators can open expired links while logged in."
 msgstr ""
 
 #. translators: 1: entry ID, 2: entry date
-#: includes/pdf-respondent.php:163
-#: includes/pdf.php:348
+#: includes/pdf-respondent.php:182
+#: includes/pdf.php:375
 #, php-format
 msgid "Entry #%1$s, %2$s"
 msgstr ""
 
 #. translators: 1: page number, 2: number of pages
-#: includes/pdf-respondent.php:165
-#: includes/pdf.php:350
+#: includes/pdf-respondent.php:184
+#: includes/pdf.php:377
 #, php-format
 msgid "Page %1$s of %2$s"
 msgstr ""
 
-#: includes/pdf-respondent.php:166
-#: includes/pdf.php:358
+#: includes/pdf-respondent.php:185
+#: includes/pdf.php:385
 msgid "the font could not be loaded."
 msgstr ""
 
-#: includes/pdf-respondent.php:174
-#: includes/pdf-respondent.php:276
-#: includes/pdf-respondent.php:373
+#: includes/pdf-respondent.php:193
+#: includes/pdf-respondent.php:295
+#: includes/pdf-respondent.php:392
 msgid "Download PDF"
 msgstr ""
 
-#: includes/pdf-respondent.php:175
-#: includes/pdf-respondent.php:372
-#: includes/pdf.php:351
+#: includes/pdf-respondent.php:194
+#: includes/pdf-respondent.php:391
+#: includes/pdf.php:378
 msgid "Generating PDF…"
 msgstr ""
 
-#: includes/pdf-respondent.php:176
+#: includes/pdf-respondent.php:195
 msgid "Could not create the PDF. Try again."
 msgstr ""
 
-#: includes/pdf-respondent.php:177
+#: includes/pdf-respondent.php:196
 msgid "the PDF library could not be loaded."
 msgstr ""
 
 #. translators: %1$s: error message
-#: includes/pdf-respondent.php:179
-#: includes/pdf.php:356
+#: includes/pdf-respondent.php:198
+#: includes/pdf.php:383
 #, php-format
 msgid "Could not create the PDF: %1$s"
 msgstr ""
 
-#: includes/pdf-respondent.php:331
+#: includes/pdf-respondent.php:350
 msgid "This link is invalid or has expired."
 msgstr ""
 
 #. translators: 1: form name, 2: entry ID
-#: includes/pdf-respondent.php:352
+#: includes/pdf-respondent.php:371
 #, php-format
 msgid "%1$s: entry #%2$s"
 msgstr ""
 
-#: includes/pdf.php:33
+#: includes/pdf.php:53
 msgid "A4"
 msgstr ""
 
-#: includes/pdf.php:34
+#: includes/pdf.php:54
 msgid "Letter"
 msgstr ""
 
-#: includes/pdf.php:35
+#: includes/pdf.php:55
 msgid "Legal"
 msgstr ""
 
-#: includes/pdf.php:36
+#: includes/pdf.php:56
 msgid "A3"
 msgstr ""
 
-#: includes/pdf.php:37
+#: includes/pdf.php:57
 msgid "A5"
 msgstr ""
 
 #. translators: %s: page size picked from the site language, e.g. "A4"
-#: includes/pdf.php:41
+#: includes/pdf.php:61
 #, php-format
 msgid "Automatic: %s, from the site language"
 msgstr ""
 
-#: includes/pdf.php:46
+#: includes/pdf.php:66
 msgid "Portrait"
 msgstr ""
 
-#: includes/pdf.php:47
+#: includes/pdf.php:67
 msgid "Landscape"
 msgstr ""
 
-#: includes/pdf.php:53
+#: includes/pdf.php:73
 msgid "Compact"
 msgstr ""
 
-#: includes/pdf.php:54
+#: includes/pdf.php:74
 msgid "Spacious"
 msgstr ""
 
-#: includes/pdf.php:60
+#: includes/pdf.php:80
 msgid "Sans-serif (Helvetica)"
 msgstr ""
 
-#: includes/pdf.php:61
+#: includes/pdf.php:81
 msgid "Serif (Times)"
 msgstr ""
 
-#: includes/pdf.php:62
+#: includes/pdf.php:82
 msgid "Monospace (Courier)"
 msgstr ""
 
-#: includes/pdf.php:160
-#: includes/pdf.php:388
+#: includes/pdf.php:180
+#: includes/pdf.php:415
 msgid "PDF"
 msgstr ""
 
-#: includes/pdf.php:178
+#: includes/pdf.php:198
 msgid "Page size"
 msgstr ""
 
-#: includes/pdf.php:181
-msgid "Automatic uses Letter when the site language is for the US, Canada or Latin America, and A4 otherwise. Pick a size if the form is printed elsewhere."
+#: includes/pdf.php:201
+msgid "Automatic: Letter for US, Canada and Latin America site languages, A4 for others."
 msgstr ""
 
-#: includes/pdf.php:185
+#: includes/pdf.php:205
 msgid "Page orientation"
 msgstr ""
 
-#: includes/pdf.php:189
+#: includes/pdf.php:209
 msgid "Font size"
 msgstr ""
 
-#: includes/pdf.php:191
-#: includes/pdf.php:198
+#: includes/pdf.php:211
+#: includes/pdf.php:218
 msgid "pt"
 msgstr ""
 
-#: includes/pdf.php:192
+#: includes/pdf.php:212
 msgid "Size of answers. Headings and spacing scale with it."
 msgstr ""
 
-#: includes/pdf.php:196
+#: includes/pdf.php:216
 msgid "Label font size"
 msgstr ""
 
-#: includes/pdf.php:199
-msgid "Size of question titles. The same value as Font size keeps the default proportions."
+#: includes/pdf.php:219
+msgid "Size of question titles. Keep it equal to Font size for the default proportions."
 msgstr ""
 
-#: includes/pdf.php:203
+#: includes/pdf.php:223
 msgid "Font"
 msgstr ""
 
-#: includes/pdf.php:206
-msgid "A PDF with letters these fonts do not have, such as Cyrillic, Greek or Hebrew, uses a font that has them instead."
+#: includes/pdf.php:226
+msgid "For Cyrillic, Greek, Hebrew and other letters these fonts lack, a suitable font is used instead."
 msgstr ""
 
-#: includes/pdf.php:210
+#: includes/pdf.php:230
 msgid "Layout"
 msgstr ""
 
-#: includes/pdf.php:213
+#: includes/pdf.php:233
 msgid "Compact fits more questions on a page. Spacious adds room between questions and is easier to read."
 msgstr ""
 
-#: includes/pdf.php:217
+#: includes/pdf.php:237
 msgid "Colors"
 msgstr ""
 
-#: includes/pdf.php:219
+#: includes/pdf.php:239
 msgid "Use the colors of the form theme"
 msgstr ""
 
-#: includes/pdf.php:220
-msgid "Applies when Adaptive is off on the Theme tab and the theme is light. Otherwise the PDF uses the default SurveyJS colors."
+#: includes/pdf.php:240
+msgid "Only for a light theme with Adaptive off; otherwise the default SurveyJS colors are used."
 msgstr ""
 
-#: includes/pdf.php:224
-#: includes/pdf.php:227
+#: includes/pdf.php:244
+#: includes/pdf.php:247
 msgid "Accent color"
 msgstr ""
 
-#: includes/pdf.php:226
+#: includes/pdf.php:246
 msgid "Use an accent color"
 msgstr ""
 
-#: includes/pdf.php:228
-msgid "Colors the form, page and panel titles, the selected choices and a line under the header. Light colors are used only for choices and the line, so titles stay readable. Replaces the main color of the form theme."
+#: includes/pdf.php:248
+msgid "Colors titles, selected choices and a line under the header (light colors skip titles to keep them readable). Overrides the main color of the theme."
 msgstr ""
 
-#: includes/pdf.php:232
+#: includes/pdf.php:252
 msgid "Logo"
 msgstr ""
 
-#: includes/pdf.php:236
+#: includes/pdf.php:256
 msgid "Choose a logo for the PDF"
 msgstr ""
 
-#: includes/pdf.php:236
+#: includes/pdf.php:256
 msgid "Use this image"
 msgstr ""
 
-#: includes/pdf.php:236
+#: includes/pdf.php:256
 msgid "Choose image"
 msgstr ""
 
-#: includes/pdf.php:238
+#: includes/pdf.php:258
 msgid "Use site logo"
 msgstr ""
 
-#: includes/pdf.php:240
+#: includes/pdf.php:260
 msgid "Remove"
 msgstr ""
 
-#: includes/pdf.php:241
+#: includes/pdf.php:261
 msgid "Shown at the top left of every page, up to 12 mm high and 50 mm wide."
 msgstr ""
 
-#: includes/pdf.php:245
+#: includes/pdf.php:265
 msgid "Header text"
 msgstr ""
 
-#: includes/pdf.php:249
+#: includes/pdf.php:269
 msgid "Use site title"
 msgstr ""
 
-#: includes/pdf.php:251
+#: includes/pdf.php:271
 msgid "Shown at the top of every page, next to the logo, for example your company name."
 msgstr ""
 
-#: includes/pdf.php:255
+#: includes/pdf.php:275
 msgid "Watermark"
 msgstr ""
 
-#: includes/pdf.php:258
-msgid "Printed diagonally in light gray across every page, for example DRAFT or CONFIDENTIAL. Leave empty for no watermark."
+#: includes/pdf.php:278
+msgid "Printed diagonally in light gray on every page, for example DRAFT or CONFIDENTIAL."
 msgstr ""
 
-#: includes/pdf.php:262
+#: includes/pdf.php:282
 msgid "Blank form"
 msgstr ""
 
-#: includes/pdf.php:264
+#: includes/pdf.php:284
 msgid "Make the blank form a fillable PDF"
 msgstr ""
 
-#: includes/pdf.php:265
+#: includes/pdf.php:285
 msgid "Respondents can type their answers into the PDF in a PDF viewer. Turn it off for a form to print and fill in by hand. The blank form shows every question, including the ones shown only under conditions. Entries are always exported read-only."
 msgstr ""
 
-#: includes/pdf.php:271
+#: includes/pdf.php:291
 msgid "Leave out questions without an answer"
 msgstr ""
 
-#: includes/pdf.php:272
+#: includes/pdf.php:292
 msgid "Entry PDFs show only the answered questions. The blank form still shows every question."
 msgstr ""
 
-#: includes/pdf.php:276
+#: includes/pdf.php:296
 msgid "Footer text"
 msgstr ""
 
-#: includes/pdf.php:279
+#: includes/pdf.php:299
 msgid "Shown at the bottom of every page, for example your address or website."
 msgstr ""
 
-#: includes/pdf.php:283
+#: includes/pdf.php:303
 msgid "Header and footer"
 msgstr ""
 
-#: includes/pdf.php:286
+#: includes/pdf.php:306
 msgid "Show the entry number and date at the bottom of each page"
 msgstr ""
 
-#: includes/pdf.php:287
+#: includes/pdf.php:307
 msgid "Show page numbers"
 msgstr ""
 
-#: includes/pdf.php:288
+#: includes/pdf.php:308
 msgid "Show the date the PDF was created at the bottom of each page"
 msgstr ""
 
-#: includes/pdf.php:294
+#: includes/pdf.php:314
 msgid "Export"
 msgstr ""
 
-#: includes/pdf.php:296
+#: includes/pdf.php:316
 msgid "Preview PDF"
 msgstr ""
 
-#: includes/pdf.php:297
+#: includes/pdf.php:317
 msgid "Download blank form"
 msgstr ""
 
-#: includes/pdf.php:299
-msgid "Uses the form and the settings above as they are now, including unsaved changes. Export entries as PDF on the Results page: the PDF link under an entry, or Export PDF in Bulk actions."
+#: includes/pdf.php:319
+msgid "Uses the form and the settings above as they are now, including unsaved changes. Export entries as PDF on the Entries page: the PDF link under an entry, or Export PDF in Bulk actions."
 msgstr ""
 
-#: includes/pdf.php:307
+#: includes/pdf.php:327
 msgid "Close full screen"
 msgstr ""
 
-#: includes/pdf.php:309
+#: includes/pdf.php:329
 msgid "PDF preview"
 msgstr ""
 
 #. translators: 1: number of the PDF being generated, 2: number of PDFs
-#: includes/pdf.php:353
+#: includes/pdf.php:380
 #, php-format
 msgid "Generating PDF %1$s of %2$s…"
 msgstr ""
 
-#: includes/pdf.php:354
+#: includes/pdf.php:381
 msgid "PDF is ready."
 msgstr ""
 
-#: includes/pdf.php:357
+#: includes/pdf.php:384
 msgid "the entries could not be loaded. Reload the page and try again."
 msgstr ""
 
-#: includes/pdf.php:359
+#: includes/pdf.php:386
 msgid "the logo image could not be loaded."
 msgstr ""
 
-#: includes/pdf.php:360
+#: includes/pdf.php:387
 msgid "the selected entries were not found."
 msgstr ""
 
-#: includes/pdf.php:361
+#: includes/pdf.php:388
 msgid "the form JSON has errors. Fix them on the Config tab first."
 msgstr ""
 
-#: includes/pdf.php:362
+#: includes/pdf.php:389
 msgid "the browser blocked the preview window. Allow pop-ups for this site."
 msgstr ""
 
-#: includes/pdf.php:384
+#: includes/pdf.php:411
 msgid "Blank Form PDF"
 msgstr ""
 
-#: includes/pdf.php:396
+#: includes/pdf.php:423
 msgid "Export PDF"
 msgstr ""
 
-#: includes/plugin.php:42
-msgid "SurveyJS Forms Pro needs the SurveyJS Forms plugin. Activate SurveyJS Forms to use Pro."
+#: includes/plugin.php:80
+msgid "Survey Creator"
 msgstr ""
 
-#: includes/plugin.php:43
+#: includes/plugin.php:83
+msgid "PDF export"
+msgstr ""
+
+#: includes/plugin.php:84
+msgid "PDF for respondents and emails"
+msgstr ""
+
+#: includes/plugin.php:85
+msgid "PDF passwords"
+msgstr ""
+
+#: includes/plugin.php:86
+msgid "AI abilities"
+msgstr ""
+
+#. translators: 1: list of features, 2: installed SurveyJS Forms version
+#: includes/plugin.php:97
+#, php-format
+msgid "SurveyJS Forms Add-on turned off %1$s: SurveyJS Forms %2$s does not have what they need. Update SurveyJS Forms and SurveyJS Forms Add-on to their latest versions."
+msgstr ""
+
+#: includes/plugin.php:103
+#: includes/plugin.php:115
 msgid "Go to Plugins"
 msgstr ""
 
-#. translators: %s: minimum SurveyJS Forms version
-#: includes/plugin.php:47
-#, php-format
-msgid "SurveyJS Forms Pro needs the SurveyJS Forms plugin %s or later. Install and activate SurveyJS Forms to use Pro."
+#: includes/plugin.php:114
+msgid "SurveyJS Forms Add-on needs the SurveyJS Forms plugin. Activate SurveyJS Forms to use the add-on."
 msgstr ""
 
-#: includes/plugin.php:50
+#. translators: %s: minimum SurveyJS Forms version
+#: includes/plugin.php:119
+#, php-format
+msgid "SurveyJS Forms Add-on needs the SurveyJS Forms plugin %s or later. Install and activate SurveyJS Forms to use the add-on."
+msgstr ""
+
+#: includes/plugin.php:122
 msgid "Install SurveyJS Forms"
 msgstr ""
 
@@ -876,11 +908,11 @@ msgid "Turn off to edit forms the classic way, as in the free version: the Confi
 msgstr ""
 
 #: includes/updater.php:65
-msgid "SurveyJS Forms Pro is released together with SurveyJS Forms and always has the same version."
+msgid "SurveyJS Forms Add-on is released together with SurveyJS Forms and always has the same version."
 msgstr ""
 
 #: includes/updater.php:66
-msgid "SurveyJS Forms Pro on surveyjs.io"
+msgid "SurveyJS Forms Add-on on surveyjs.io"
 msgstr ""
 
 #: includes/updater.php:67
@@ -897,11 +929,11 @@ msgid "(opens in a new tab)"
 msgstr ""
 
 #: includes/updater.php:107
-msgid "SurveyJS Forms Pro will be updated to the same version automatically."
+msgid "SurveyJS Forms Add-on will be updated to the same version automatically."
 msgstr ""
 
 #: includes/updater.php:109
-msgid "SurveyJS Forms Pro is installed with Composer and is not updated here: update both plugins with Composer instead."
+msgid "SurveyJS Forms Add-on is installed with Composer and is not updated here: update both plugins with Composer instead."
 msgstr ""
 
 #. translators: %s: Composer command
@@ -933,7 +965,7 @@ msgid "Please update SurveyJS Forms"
 msgstr ""
 
 #: includes/updater.php:361
-msgid "SurveyJS Forms Pro needs the latest SurveyJS Forms."
+msgid "SurveyJS Forms Add-on needs the latest SurveyJS Forms."
 msgstr ""
 
 #: includes/updater.php:362
@@ -941,27 +973,27 @@ msgid "Update SurveyJS Forms"
 msgstr ""
 
 #: includes/updater.php:370
-msgid "Please update SurveyJS Forms Pro"
+msgid "Please update SurveyJS Forms Add-on"
 msgstr ""
 
 #: includes/updater.php:371
-msgid "SurveyJS Forms Pro is older than SurveyJS Forms."
+msgid "SurveyJS Forms Add-on is older than SurveyJS Forms."
 msgstr ""
 
 #: includes/updater.php:372
-msgid "Update SurveyJS Forms Pro"
+msgid "Update SurveyJS Forms Add-on"
 msgstr ""
 
 #. translators: %s: Composer command
 #: includes/updater.php:393
 #, php-format
-msgid "SurveyJS Forms Pro is installed with Composer. Update both plugins with %s"
+msgid "SurveyJS Forms Add-on is installed with Composer. Update both plugins with %s"
 msgstr ""
 
 #. translators: %s: error message
 #: includes/updater.php:403
 #, php-format
-msgid "The last update of SurveyJS Forms Pro failed: %s"
+msgid "The last update of SurveyJS Forms Add-on failed: %s"
 msgstr ""
 
 #: includes/updater.php:413

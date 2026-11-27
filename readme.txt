@@ -52,13 +52,13 @@ On multisite, network-activate the add-on so it can follow SurveyJS Forms update
 
 SurveyJS Forms and SurveyJS Forms Add-on are released together with the same SurveyJS library version. When SurveyJS Forms is updated (manually, in bulk or automatically), the add-on installs its latest version from surveyjs.io in the same request and stays active. When the two versions don't match, an admin notice offers to update the older one.
 
-Turn this off with `define( 'SURVEYJS_PRO_DISABLE_UPDATES', true );` in wp-config.php. On WordPress VIP and on sites where `DISALLOW_FILE_MODS` is set, the add-on does not update itself. When the add-on is installed with Composer, it does not update itself either: update both plugins with `composer update surveyjs/surveyjs-pro --with-dependencies`.
+Turn this off with `define( 'SURVEYJS_ADDON_DISABLE_UPDATES', true );` in wp-config.php. On WordPress VIP and on sites where `DISALLOW_FILE_MODS` is set, the add-on does not update itself. When the add-on is installed with Composer, it does not update itself either: update both plugins with `composer update surveyjs/surveyjs-forms-addon --with-dependencies`.
 
 == External services ==
 
 = Add-on downloads from surveyjs.io =
 
-After SurveyJS Forms is updated, or when you click "Update SurveyJS Forms Add-on" in the version notice, the add-on downloads its latest zip from https://cdn.surveyjs.io/wordpress/surveyjs-pro.zip. The request carries no site address or other data about your site; surveyjs.io sees only the IP address of your web server.
+After SurveyJS Forms is updated, or when you click "Update SurveyJS Forms Add-on" in the version notice, the add-on downloads its latest zip from https://cdn.surveyjs.io/wordpress/surveyjs-forms-addon.zip. The request carries no site address or other data about your site; surveyjs.io sees only the IP address of your web server.
 
 This service is provided by Devsoft Baltic OÜ: [Terms of Use](https://surveyjs.io/terms-use), [Privacy Policy](https://surveyjs.io/privacy-policy).
 

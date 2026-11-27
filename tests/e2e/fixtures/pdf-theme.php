@@ -29,8 +29,8 @@ if ( 'create' === $command ) {
     $settings = SurveyJS_Form_Settings::sanitize( array(
         'notificationEnabled'      => true,
         'notificationTo'           => 'owner@example.test',
-        'proPdfAttachNotification' => true,
-        'proPdfDownload'           => true,
+        'addonPdfAttachNotification' => true,
+        'addonPdfDownload'           => true,
     ) );
     $form_id = SurveyJS_Forms::create( array(
         'name'     => $name,
@@ -50,7 +50,7 @@ if ( 'create' === $command ) {
 } elseif ( 'sanitize' === $command ) {
     $input = json_decode( (string) ( $argv[2] ?? '{}' ), true );
     $sanitized = SurveyJS_Form_Settings::sanitize( is_array( $input ) ? $input : array() );
-    echo wp_json_encode( array_intersect_key( $sanitized, SurveyJS_Pro_Pdf::pdf_defaults() ) ), "\n";
+    echo wp_json_encode( array_intersect_key( $sanitized, SurveyJS_Addon_Pdf::pdf_defaults() ) ), "\n";
 } elseif ( 'cleanup' === $command ) {
     $form_id = absint( $argv[2] ?? 0 );
     $page_id = absint( $argv[3] ?? 0 );

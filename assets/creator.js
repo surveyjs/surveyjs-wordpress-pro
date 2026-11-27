@@ -1,7 +1,7 @@
 (function () {
     const editor = window.surveyjsEditor;
-    const options = window.surveyjsProCreator;
-    const host = document.getElementById("wp-sjs-pro-creator");
+    const options = window.surveyjsAddonCreator;
+    const host = document.getElementById("wp-sjs-addon-creator");
     if (!editor || !options || !host || !window.SurveyCreator) return;
 
     const labels = options.labels;
@@ -9,10 +9,10 @@
     const saveButton = document.getElementById("wp-sjs-save");
     const GDPR_NAME = "gdpr_agreement";
     const MEDIA_URL = "surveyjsMediaUrl";
-    const FULLSCREEN_KEY = "surveyjs-pro-editor-fullscreen";
+    const FULLSCREEN_KEY = "surveyjs-forms-addon-editor-fullscreen";
     const SITE_PREVIEW_TABS = ["preview"];
-    const SITE_PREVIEW_CLASS = "wp-sjs-pro-site-preview";
-    // Creator picks its JSON tab (Monaco or a plain text area) when it is created, so it waits for Base's Monaco.
+    const SITE_PREVIEW_CLASS = "wp-sjs-addon-site-preview";
+    // Creator picks its JSON tab (Monaco or a plain text area) when it is created, so it waits for SurveyJS Forms' Monaco.
     const MONACO_TIMEOUT = 15000;
     const REVIEW_ATTEMPTS = 40;
     const REVIEW_RETRY_MS = 100;
@@ -25,17 +25,17 @@
         "--sjs2-base-unit-radius": "unit-radius"
     };
     const CREATOR_VARIABLES = {
-        "--sjs2-typography-font-size-small": "var(--wp-sjs-pro-creator-font-size-small)",
-        "--sjs2-typography-line-height-small": "var(--wp-sjs-pro-creator-line-height-small)",
-        "--sjs2-color-component-formbox-default-bg": "var(--wp-sjs-pro-input-bg)",
-        "--sjs2-color-component-formbox-hovered-bg": "var(--wp-sjs-pro-input-bg)",
-        "--sjs2-color-component-formbox-focused-bg": "var(--wp-sjs-pro-input-bg)",
-        "--sjs2-color-component-formbox-highlighted-bg": "var(--wp-sjs-pro-input-bg)",
-        "--sjs2-color-component-formbox-invalid-bg": "var(--wp-sjs-pro-input-bg)",
-        "--sjs2-color-component-formbox-invalid-focused-bg": "var(--wp-sjs-pro-input-bg)",
-        "--sjs2-color-component-formbox-default-border": "var(--wp-sjs-pro-input-border)",
-        "--sjs2-color-component-formbox-hovered-border": "var(--wp-sjs-pro-input-border)",
-        "--sjs2-color-component-formbox-highlighted-border": "var(--wp-sjs-pro-text-2)"
+        "--sjs2-typography-font-size-small": "var(--wp-sjs-addon-creator-font-size-small)",
+        "--sjs2-typography-line-height-small": "var(--wp-sjs-addon-creator-line-height-small)",
+        "--sjs2-color-component-formbox-default-bg": "var(--wp-sjs-addon-input-bg)",
+        "--sjs2-color-component-formbox-hovered-bg": "var(--wp-sjs-addon-input-bg)",
+        "--sjs2-color-component-formbox-focused-bg": "var(--wp-sjs-addon-input-bg)",
+        "--sjs2-color-component-formbox-highlighted-bg": "var(--wp-sjs-addon-input-bg)",
+        "--sjs2-color-component-formbox-invalid-bg": "var(--wp-sjs-addon-input-bg)",
+        "--sjs2-color-component-formbox-invalid-focused-bg": "var(--wp-sjs-addon-input-bg)",
+        "--sjs2-color-component-formbox-default-border": "var(--wp-sjs-addon-input-border)",
+        "--sjs2-color-component-formbox-hovered-border": "var(--wp-sjs-addon-input-border)",
+        "--sjs2-color-component-formbox-highlighted-border": "var(--wp-sjs-addon-text-2)"
     };
 
     const columns = rootElement.querySelector(".wp-sjs-editor__columns");
@@ -132,7 +132,7 @@
         }
     }
 
-    // Creator applies text typed in its JSON tab only when the tab is left, and Base may read the survey before that.
+    // Creator applies text typed in its JSON tab only when the tab is left, and SurveyJS Forms may read the survey before that.
     function flushToEditor() {
         if (!creator) return;
         const jsonTab = creator.activeTab === "json" ? creator.getPlugin("json") : null;
@@ -219,7 +219,7 @@
         });
         addGdprToolboxItem(instance);
         applyAdminTheme(instance);
-        // Base counts the issues of a saved form itself; with Creator's lint options it counts what the JSON Editor tab shows.
+        // SurveyJS Forms counts the issues of a saved form itself; with Creator's lint options it counts what the JSON Editor tab shows.
         if (editor.setLintOptions && window.SurveyCreatorCore && SurveyCreatorCore.getCreatorLintOptions) {
             editor.setLintOptions(SurveyCreatorCore.getCreatorLintOptions(instance));
         }
@@ -254,14 +254,14 @@
         const style = window.getComputedStyle(document.body);
         const layout = {};
         Object.keys(CREATOR_LAYOUT).forEach((name) => {
-            const value = style.getPropertyValue("--wp-sjs-pro-creator-" + CREATOR_LAYOUT[name]).trim();
+            const value = style.getPropertyValue("--wp-sjs-addon-creator-" + CREATOR_LAYOUT[name]).trim();
             if (value) layout[name] = value;
         });
         return layout;
     }
 
     function applyAdminTheme(instance) {
-        const adminTheme = window.surveyjsProAdminTheme;
+        const adminTheme = window.surveyjsAddonAdminTheme;
         if (!adminTheme) return;
         const dark = adminTheme.isDark();
         instance.preferredColorPalette = dark ? "dark" : "light";
@@ -280,7 +280,7 @@
         return shown ? host.querySelector(".svc-test-tab__content") : null;
     }
 
-    // Base's preview frame shows the form on a real page of the site and already follows every change Creator hands
+    // SurveyJS Forms' preview frame shows the form on a real page of the site and already follows every change Creator hands
     // to the form editor, so it is laid over Creator's own preview canvas instead of moving it, which would reload it.
     function placeSitePreview() {
         cancelAnimationFrame(sitePreviewFrame);
@@ -359,7 +359,7 @@
         window.addEventListener("resize", scheduleSitePreview);
     }
 
-    // Base's full preview shows the same container, so the overlay placement must not stay on it meanwhile.
+    // SurveyJS Forms' full preview shows the same container, so the overlay placement must not stay on it meanwhile.
     function onFullPreview(event) {
         fullPreviewOpen = Boolean(event.detail && event.detail.open);
         if (fullPreviewOpen) {
@@ -394,7 +394,7 @@
         creatorSurvey = JSON.stringify(creator.JSON);
         creator.render(host);
         watchSitePreview();
-        if (window.surveyjsProAdminTheme) window.surveyjsProAdminTheme.onChange(() => applyAdminTheme(creator));
+        if (window.surveyjsAddonAdminTheme) window.surveyjsAddonAdminTheme.onChange(() => applyAdminTheme(creator));
     }
 
     function readFullscreen() {
@@ -406,11 +406,11 @@
     }
 
     function setFullscreen(button, on) {
-        rootElement.classList.toggle("wp-sjs-pro-fullscreen", on);
-        document.documentElement.classList.toggle("wp-sjs-pro-fullscreen-mode", on);
+        rootElement.classList.toggle("wp-sjs-addon-fullscreen", on);
+        document.documentElement.classList.toggle("wp-sjs-addon-fullscreen-mode", on);
         button.setAttribute("aria-pressed", String(on));
         button.querySelector(".dashicons").className = "dashicons " + (on ? "dashicons-fullscreen-exit-alt" : "dashicons-fullscreen-alt");
-        button.querySelector(".wp-sjs-pro-toolbar-button__label").textContent = on ? labels.exitFullscreen : labels.fullscreen;
+        button.querySelector(".wp-sjs-addon-toolbar-button__label").textContent = on ? labels.exitFullscreen : labels.fullscreen;
         try {
             window.localStorage.setItem(FULLSCREEN_KEY, on ? "1" : "0");
         } catch (error) {
@@ -421,20 +421,20 @@
     function toolbarButton(className, iconName, text) {
         const button = document.createElement("button");
         button.type = "button";
-        button.className = "button wp-sjs-button-icon wp-sjs-pro-toolbar-button " + className;
+        button.className = "button wp-sjs-button-icon wp-sjs-addon-toolbar-button " + className;
         const icon = document.createElement("span");
         icon.className = "dashicons " + iconName;
         icon.setAttribute("aria-hidden", "true");
         const label = document.createElement("span");
-        label.className = "wp-sjs-pro-toolbar-button__label";
+        label.className = "wp-sjs-addon-toolbar-button__label";
         label.textContent = text;
         button.append(icon, label);
         return button;
     }
 
     function addFullscreenButton() {
-        const button = toolbarButton("wp-sjs-pro-fullscreen-toggle", "", "");
-        button.addEventListener("click", () => setFullscreen(button, !rootElement.classList.contains("wp-sjs-pro-fullscreen")));
+        const button = toolbarButton("wp-sjs-addon-fullscreen-toggle", "", "");
+        button.addEventListener("click", () => setFullscreen(button, !rootElement.classList.contains("wp-sjs-addon-fullscreen")));
         (document.getElementById("wp-sjs-full-preview") || saveButton).before(button);
         setFullscreen(button, readFullscreen());
     }

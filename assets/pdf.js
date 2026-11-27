@@ -1,7 +1,7 @@
 (function () {
     "use strict";
 
-    const config = window.surveyjsProPdf;
+    const config = window.surveyjsAddonPdf;
     if (!config || !window.SurveyPDF) return;
 
     // survey-pdf 3.2.4 RTL workarounds: jsPDF mirrors brackets only with isSymmetricSwapping, which survey-pdf never passes;
@@ -151,8 +151,8 @@
     }
 
     function accentColor(settings) {
-        const color = String(settings.proPdfAccentColor || "");
-        return settings.proPdfAccent && /^#[0-9a-f]{6}$/i.test(color) ? color.toLowerCase() : "";
+        const color = String(settings.addonPdfAccentColor || "");
+        return settings.addonPdfAccent && /^#[0-9a-f]{6}$/i.test(color) ? color.toLowerCase() : "";
     }
 
     function contrastWithWhite(color) {
@@ -232,19 +232,19 @@
 
     async function createPdf(source, settings, entry) {
         const json = withPlainLinks(source.json || {});
-        const header = entry && settings.proPdfEntryHeader ? format(i18n.entryHeader, entry.id, entry.date) : "";
-        const title = String(settings.proPdfHeaderText || "").trim();
-        const watermark = String(settings.proPdfWatermark || "").trim();
-        const footerText = [String(settings.proPdfFooterText || "").trim(), settings.proPdfFooterDate ? formatDate(new Date()) : ""].filter(Boolean).join(" · ");
+        const header = entry && settings.addonPdfEntryHeader ? format(i18n.entryHeader, entry.id, entry.date) : "";
+        const title = String(settings.addonPdfHeaderText || "").trim();
+        const watermark = String(settings.addonPdfWatermark || "").trim();
+        const footerText = [String(settings.addonPdfFooterText || "").trim(), settings.addonPdfFooterDate ? formatDate(new Date()) : ""].filter(Boolean).join(" · ");
         const accent = accentColor(settings);
         const texts = [json, entry ? entry.data : null, header, title, footerText];
-        const standardFont = STANDARD_FONTS.includes(settings.proPdfFont) ? settings.proPdfFont : "helvetica";
+        const standardFont = STANDARD_FONTS.includes(settings.addonPdfFont) ? settings.addonPdfFont : "helvetica";
         const font = HEBREW_LETTERS.test(JSON.stringify(texts)) ? HEBREW_FONT : needsUnicodeFont(...texts) ? UNICODE_FONT : standardFont;
         if (font === HEBREW_FONT) await loadFont(font, config.hebrewFont);
         if (font === UNICODE_FONT) await loadFont(font, config.unicodeFont);
         const logo = source.logoUrl ? await loadLogo(source.logoUrl) : null;
 
-        const readOnly = Boolean(entry) || !settings.proPdfFillable;
+        const readOnly = Boolean(entry) || !settings.addonPdfFillable;
         const blankShowsAll = entry ? {} : {
             choiceComments: true,
             choiceNestedContent: true,
@@ -253,12 +253,12 @@
             conditionalMatrixColumns: true,
             conditionalMatrixRows: true
         };
-        const fontSize = clamp(settings.proPdfFontSize, 8, 24, 14);
-        const labelFontSize = clamp(settings.proPdfLabelFontSize, 8, 24, fontSize);
+        const fontSize = clamp(settings.addonPdfFontSize, 8, 24, 14);
+        const labelFontSize = clamp(settings.addonPdfLabelFontSize, 8, 24, fontSize);
         const pdf = new SurveyPDF.SurveyPDF(json, {
-            format: settings.proPdfFormat && settings.proPdfFormat !== "auto" ? settings.proPdfFormat : config.format || "a4",
+            format: settings.addonPdfFormat && settings.addonPdfFormat !== "auto" ? settings.addonPdfFormat : config.format || "a4",
             // survey-pdf 3.2.2 lays out a page given by a format name as landscape unless the orientation is set.
-            orientation: settings.proPdfOrientation === "landscape" ? "l" : "p",
+            orientation: settings.addonPdfOrientation === "landscape" ? "l" : "p",
             fontSize,
             margins: { left: MARGIN, right: MARGIN, top: logo || title ? BRANDED_TOP_MARGIN : MARGIN, bot: footerText ? FOOTER_TEXT_BOTTOM_MARGIN : MARGIN },
             fontName: font,
@@ -277,15 +277,15 @@
         }
         const rtl = isRightToLeft(pdf);
         pdf.options.isRTL = rtl;
-        if (settings.proPdfLayout === "spacious" && window.DocLayout && window.DocLayout.Spacious) {
+        if (settings.addonPdfLayout === "spacious" && window.DocLayout && window.DocLayout.Spacious) {
             pdf.applyLayout(layoutWithoutPagePadding(window.DocLayout.Spacious));
         }
-        const themeColors = settings.proPdfThemeColors && settings.themeMode === "surveyjs" && source.theme && source.theme.colorPalette !== "dark";
+        const themeColors = settings.addonPdfThemeColors && settings.themeMode === "surveyjs" && source.theme && source.theme.colorPalette !== "dark";
         if (accent) applyAccent(pdf, accent, themeColors ? source.theme : undefined);
         else if (themeColors) pdf.applyTheme(source.theme);
         if (entry) {
             pdf.data = entry.data;
-            if (settings.proPdfHideEmpty) hideUnansweredQuestions(pdf);
+            if (settings.addonPdfHideEmpty) hideUnansweredQuestions(pdf);
         }
         pdf.readOnly = readOnly;
 
@@ -306,7 +306,7 @@
             });
         }
         if (watermark) addWatermark(pdf, watermark);
-        if (settings.proPdfPageNumbers) {
+        if (settings.addonPdfPageNumbers) {
             pdf.onRenderFooter.add((_, canvas) => {
                 canvas.drawText({ text: format(i18n.page, canvas.pageNumber, canvas.pageCount), fontSize: 9, horizontalAlign: end, ...footerLine });
             });
@@ -419,11 +419,11 @@
     }
 
     function initLogoPicker(logoUrls) {
-        const input = document.getElementById("wp-sjs-pro-pdf-logo");
-        const preview = document.getElementById("wp-sjs-pro-pdf-logo-preview");
-        const chooseButton = document.getElementById("wp-sjs-pro-pdf-logo-choose");
-        const removeButton = document.getElementById("wp-sjs-pro-pdf-logo-remove");
-        const siteButton = document.getElementById("wp-sjs-pro-pdf-logo-site");
+        const input = document.getElementById("wp-sjs-addon-pdf-logo");
+        const preview = document.getElementById("wp-sjs-addon-pdf-logo-preview");
+        const chooseButton = document.getElementById("wp-sjs-addon-pdf-logo-choose");
+        const removeButton = document.getElementById("wp-sjs-addon-pdf-logo-remove");
+        const siteButton = document.getElementById("wp-sjs-addon-pdf-logo-site");
         const siteLogo = config.site && config.site.logo;
         if (!input || !preview || !chooseButton || !removeButton) return;
 
@@ -463,8 +463,8 @@
     }
 
     function initSiteTitle() {
-        const button = document.getElementById("wp-sjs-pro-pdf-header-site");
-        const input = document.getElementById("wp-sjs-pro-pdf-header-text");
+        const button = document.getElementById("wp-sjs-addon-pdf-header-site");
+        const input = document.getElementById("wp-sjs-addon-pdf-header-text");
         if (!button || !input || !config.site) return;
         button.addEventListener("click", () => {
             input.value = config.site.title;
@@ -474,9 +474,9 @@
 
     function initEditor() {
         const api = window.surveyjsEditor;
-        const previewButton = document.getElementById("wp-sjs-pro-pdf-preview");
-        const blankButton = document.getElementById("wp-sjs-pro-pdf-blank");
-        const status = document.getElementById("wp-sjs-pro-pdf-status");
+        const previewButton = document.getElementById("wp-sjs-addon-pdf-preview");
+        const blankButton = document.getElementById("wp-sjs-addon-pdf-blank");
+        const status = document.getElementById("wp-sjs-addon-pdf-status");
         if (!api || !previewButton || !blankButton || !status) return;
 
         function setStatus(text, isError) {
@@ -504,14 +504,14 @@
                 const json = api.getSurvey();
                 if (!json) throw new Error(i18n.invalidJson);
                 const settings = api.getSettings();
-                return createPdf({ json, theme: api.getTheme(), logoUrl: logoUrls.get(String(settings.proPdfLogo)) }, settings);
+                return createPdf({ json, theme: api.getTheme(), logoUrl: logoUrls.get(String(settings.addonPdfLogo)) }, settings);
             });
         }
 
-        const passwordInput = document.getElementById("wp-sjs-pro-pdf-password");
+        const passwordInput = document.getElementById("wp-sjs-addon-pdf-password");
 
         blankButton.addEventListener("click", () => run(async () => {
-            const encrypt = config.password && api.getSettings().proPdfPassword;
+            const encrypt = config.password && api.getSettings().addonPdfPassword;
             if (encrypt && passwordInput && passwordInput.dataset.typed) throw new Error(i18n.passwordUnsaved);
             const blob = await currentBlankPdf();
             download(encrypt ? await protect(blob) : blob, `${fileBase(api.config.name || config.formName)}.pdf`);
@@ -571,16 +571,16 @@
         }
 
         document.addEventListener("surveyjs:editor-saved", (event) => {
-            const enabled = Boolean(event.detail.settings.proPdfPassword);
+            const enabled = Boolean(event.detail.settings.addonPdfPassword);
             if (enabled ? input.dataset.typed : isSet) savePassword(enabled);
             else if (enabled && !isSet) setStatus(i18n.passwordMissing, true);
             else showSaved();
         });
-        if (api.getSettings().proPdfPassword && !isSet) setStatus(i18n.passwordMissing, true);
+        if (api.getSettings().addonPdfPassword && !isSet) setStatus(i18n.passwordMissing, true);
     }
 
     function initLivePreview(buildPdf, setStatus) {
-        const frame = document.getElementById("wp-sjs-pro-pdf-live");
+        const frame = document.getElementById("wp-sjs-addon-pdf-live");
         const panel = frame && frame.closest("[data-panel]");
         if (!panel) return;
         let frameUrl = null;
@@ -621,16 +621,16 @@
         });
         if (!panel.hidden) refresh();
 
-        const previewPanel = document.getElementById("wp-sjs-pro-pdf-preview-panel");
-        const openButton = document.getElementById("wp-sjs-pro-pdf-full");
-        const closeButton = document.getElementById("wp-sjs-pro-pdf-full-close");
+        const previewPanel = document.getElementById("wp-sjs-addon-pdf-preview-panel");
+        const openButton = document.getElementById("wp-sjs-addon-pdf-full");
+        const closeButton = document.getElementById("wp-sjs-addon-pdf-full-close");
         let fullScreen = false;
 
         function setFullScreen(open) {
             if (!previewPanel || open === fullScreen) return;
             fullScreen = open;
-            previewPanel.classList.toggle("wp-sjs-pro-pdf__preview--full", open);
-            document.body.classList.toggle("wp-sjs-pro-pdf-full-open", open);
+            previewPanel.classList.toggle("wp-sjs-addon-pdf__preview--full", open);
+            document.body.classList.toggle("wp-sjs-addon-pdf-full-open", open);
             openButton.setAttribute("aria-expanded", String(open));
             openButton.hidden = open;
             closeButton.hidden = !open;
@@ -692,13 +692,13 @@
         }
 
         document.addEventListener("click", (event) => {
-            const entryLink = event.target.closest(".wp-sjs-pro-pdf-entry");
+            const entryLink = event.target.closest(".wp-sjs-addon-pdf-entry");
             if (entryLink) {
                 event.preventDefault();
                 exportEntries([Number(entryLink.dataset.entry)]);
                 return;
             }
-            if (event.target.closest(".wp-sjs-pro-pdf-blank")) {
+            if (event.target.closest(".wp-sjs-addon-pdf-blank")) {
                 event.preventDefault();
                 run(async () => {
                     download(await protectedPdf(await createPdf(source, config.settings)), `${baseName}.pdf`);
@@ -713,7 +713,7 @@
                 if (!button || !/^doaction2?$/.test(button.id)) return;
                 const select = document.getElementById(button.id === "doaction2" ? "bulk-action-selector-bottom" : "bulk-action-selector-top");
                 const ids = Array.from(list.querySelectorAll('input[name="result[]"]:checked'), (input) => Number(input.value));
-                if (!select || select.value !== "pro_pdf" || !ids.length) return;
+                if (!select || select.value !== "addon_pdf" || !ids.length) return;
                 event.preventDefault();
                 exportEntries(ids);
             });
@@ -721,13 +721,13 @@
 
         if (config.autoExport && config.autoExport.length) {
             const url = new URL(window.location.href);
-            url.searchParams.delete("pro_pdf");
+            url.searchParams.delete("addon_pdf");
             window.history.replaceState(null, "", url);
             exportEntries(config.autoExport);
         }
     }
 
-    window.SurveyJSProPdf = { createPdf, download, fileBase };
+    window.SurveyJSAddonPdf = { createPdf, download, fileBase };
 
     if (config.page === "editor") {
         initEditor();

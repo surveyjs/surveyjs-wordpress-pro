@@ -1,53 +1,53 @@
-.wp-sjs-pro-dashboard__ranges {
+.wp-sjs-addon-dashboard__ranges {
     margin-bottom: 8px;
 }
 
-.wp-sjs-pro-dashboard__stats {
+.wp-sjs-addon-dashboard__stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 16px;
     margin: 8px 0 16px;
 }
 
-.wp-sjs-pro-dashboard__stat,
-.wp-sjs-pro-dashboard__panel {
+.wp-sjs-addon-dashboard__stat,
+.wp-sjs-addon-dashboard__panel {
     box-sizing: border-box;
     min-width: 0;
-    background: var(--wp-sjs-pro-surface);
-    border: 1px solid var(--wp-sjs-pro-border);
-    box-shadow: 0 1px 1px var(--wp-sjs-pro-shadow);
-    color: var(--wp-sjs-pro-text);
+    background: var(--wp-sjs-addon-surface);
+    border: 1px solid var(--wp-sjs-addon-border);
+    box-shadow: 0 1px 1px var(--wp-sjs-addon-shadow);
+    color: var(--wp-sjs-addon-text);
 }
 
-.wp-sjs-pro-dashboard__stat {
+.wp-sjs-addon-dashboard__stat {
     display: flex;
     flex-direction: column;
     gap: 4px;
     padding: 16px;
 }
 
-.wp-sjs-pro-dashboard__stat-label {
-    color: var(--wp-sjs-pro-text-2);
+.wp-sjs-addon-dashboard__stat-label {
+    color: var(--wp-sjs-addon-text-2);
 }
 
-.wp-sjs-pro-dashboard__stat-value {
+.wp-sjs-addon-dashboard__stat-value {
     font-size: 28px;
     font-weight: 600;
     line-height: 1.2;
-    color: var(--wp-sjs-pro-text);
+    color: var(--wp-sjs-addon-text);
 }
 
-.wp-sjs-pro-dashboard__stat-value a {
+.wp-sjs-addon-dashboard__stat-value a {
     text-decoration: none;
 }
 
-.wp-sjs-pro-dashboard__stat-note {
+.wp-sjs-addon-dashboard__stat-note {
     min-height: 1.5em;
-    color: var(--wp-sjs-pro-text-3);
+    color: var(--wp-sjs-addon-text-3);
 }
 
-.wp-sjs-pro-dashboard__charts,
-.wp-sjs-pro-dashboard__tables {
+.wp-sjs-addon-dashboard__charts,
+.wp-sjs-addon-dashboard__tables {
     display: grid;
     grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     gap: 16px;
@@ -55,73 +55,73 @@
     align-items: start;
 }
 
-.wp-sjs-pro-dashboard__tables {
+.wp-sjs-addon-dashboard__tables {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 
-.wp-sjs-pro-dashboard__panel {
+.wp-sjs-addon-dashboard__panel {
     padding: 0 16px 16px;
 }
 
-.wp-sjs-pro-dashboard__panel h2 {
+.wp-sjs-addon-dashboard__panel h2 {
     margin: 0 -16px 16px;
     padding: 12px 16px;
     font-size: 14px;
-    border-bottom: 1px solid var(--wp-sjs-pro-grid);
-    color: var(--wp-sjs-pro-text);
+    border-bottom: 1px solid var(--wp-sjs-addon-grid);
+    color: var(--wp-sjs-addon-text);
 }
 
-.wp-sjs-pro-dashboard__chart {
+.wp-sjs-addon-dashboard__chart {
     position: relative;
     height: 280px;
 }
 
-.wp-sjs-pro-dashboard__conversion {
+.wp-sjs-addon-dashboard__conversion {
     margin-bottom: 16px;
 }
 
-.wp-sjs-pro-dashboard__conversion .description {
+.wp-sjs-addon-dashboard__conversion .description {
     margin-bottom: 0;
 }
 
-.wp-sjs-pro-dashboard__panel .widefat {
+.wp-sjs-addon-dashboard__panel .widefat {
     border-left: 0;
     border-right: 0;
     box-shadow: none;
-    border-color: var(--wp-sjs-pro-border-2);
-    background: var(--wp-sjs-pro-surface);
+    border-color: var(--wp-sjs-addon-border-2);
+    background: var(--wp-sjs-addon-surface);
 }
 
-.wp-sjs-pro-dashboard__panel .widefat th,
-.wp-sjs-pro-dashboard__panel .widefat td,
-.wp-sjs-pro-dashboard__panel .widefat thead th,
-.wp-sjs-pro-dashboard__panel .widefat tfoot td {
-    border-color: var(--wp-sjs-pro-border-2);
-    color: var(--wp-sjs-pro-text);
+.wp-sjs-addon-dashboard__panel .widefat th,
+.wp-sjs-addon-dashboard__panel .widefat td,
+.wp-sjs-addon-dashboard__panel .widefat thead th,
+.wp-sjs-addon-dashboard__panel .widefat tfoot td {
+    border-color: var(--wp-sjs-addon-border-2);
+    color: var(--wp-sjs-addon-text);
 }
 
-.wp-sjs-pro-dashboard__panel .striped > tbody > :nth-child(odd) {
-    background: var(--wp-sjs-pro-surface-2);
+.wp-sjs-addon-dashboard__panel .striped > tbody > :nth-child(odd) {
+    background: var(--wp-sjs-addon-surface-2);
 }
 
-html.wp-sjs-pro-dark .wp-sjs-pro-dashboard__panel a {
-    color: var(--wp-sjs-pro-accent);
+html.wp-sjs-addon-dark .wp-sjs-addon-dashboard__panel a {
+    color: var(--wp-sjs-addon-accent);
 }
 
-.wp-sjs-pro-dashboard__panel .widefat .num {
+.wp-sjs-addon-dashboard__panel .widefat .num {
     text-align: end;
 }
 
-.wp-sjs-pro-dashboard__forms tfoot th,
-.wp-sjs-pro-dashboard__forms tfoot td {
+.wp-sjs-addon-dashboard__forms tfoot th,
+.wp-sjs-addon-dashboard__forms tfoot td {
     font-weight: 600;
 }
 
-.wp-sjs-pro-dashboard__unread td {
+.wp-sjs-addon-dashboard__unread td {
     font-weight: 600;
 }
 
-.wp-sjs-pro-dashboard__badge {
+.wp-sjs-addon-dashboard__badge {
     display: inline-block;
     margin-inline-start: 4px;
     padding: 0 6px;
@@ -129,47 +129,47 @@ html.wp-sjs-pro-dark .wp-sjs-pro-dashboard__panel a {
     font-size: 11px;
     font-weight: 400;
     line-height: 18px;
-    color: var(--wp-sjs-pro-on-accent);
-    background: var(--wp-sjs-pro-accent);
+    color: var(--wp-sjs-addon-on-accent);
+    background: var(--wp-sjs-addon-accent);
 }
 
-.wp-sjs-pro-dashboard__empty {
+.wp-sjs-addon-dashboard__empty {
     max-width: 640px;
     padding-top: 16px;
 }
 
 @media screen and (max-width: 1100px) {
-    .wp-sjs-pro-dashboard__charts,
-    .wp-sjs-pro-dashboard__tables {
+    .wp-sjs-addon-dashboard__charts,
+    .wp-sjs-addon-dashboard__tables {
         grid-template-columns: minmax(0, 1fr);
     }
 }
 
 @media screen and (max-width: 782px) {
-    .wp-sjs-pro-dashboard__chart {
+    .wp-sjs-addon-dashboard__chart {
         height: 220px;
     }
 
-    .wp-sjs-pro-dashboard__panel .widefat {
+    .wp-sjs-addon-dashboard__panel .widefat {
         table-layout: fixed;
         width: 100%;
     }
 
-    .wp-sjs-pro-dashboard__panel .widefat th,
-    .wp-sjs-pro-dashboard__panel .widefat td {
+    .wp-sjs-addon-dashboard__panel .widefat th,
+    .wp-sjs-addon-dashboard__panel .widefat td {
         padding: 8px 3px;
         overflow-wrap: break-word;
     }
 
-    .wp-sjs-pro-dashboard__panel .widefat thead th {
+    .wp-sjs-addon-dashboard__panel .widefat thead th {
         font-size: 12px;
     }
 
-    .wp-sjs-pro-dashboard__forms th:first-child {
+    .wp-sjs-addon-dashboard__forms th:first-child {
         width: 28%;
     }
 
-    .wp-sjs-pro-dashboard__forms th:nth-child(n+2):nth-child(-n+4) {
+    .wp-sjs-addon-dashboard__forms th:nth-child(n+2):nth-child(-n+4) {
         width: 14%;
     }
 }

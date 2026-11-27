@@ -2,7 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Standard security handler, AES-256 revision 6: ISO 32000-2, 7.6.4.3.3, Algorithms 2.B, 8, 9 and 10.
-class SurveyJS_Pro_Pdf_Aes256 {
+class SurveyJS_Addon_Pdf_Aes256 {
 
     const PERMISSIONS = -4;
     const MAX_PASSWORD_BYTES = 127;

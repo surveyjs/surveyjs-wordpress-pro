@@ -26,7 +26,7 @@ async function setCreator(page, on) {
   }
 }
 
-test.describe.serial("Base's blank form texts and empty-form hint follow the Creator setting", () => {
+test.describe.serial("SurveyJS Forms' blank form texts and empty-form hint follow the Creator setting", () => {
   test.skip(!WP_CONTAINER, "Set WP_CONTAINER to the WordPress container name to delete the test form");
 
   let formId = 0;

@@ -1,12 +1,12 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class SurveyJS_Pro_Analytics {
+class SurveyJS_Addon_Analytics {
 
     const VIEW_CHARTS = 'chart';
-    const SCRIPT = 'surveyjs-pro-analytics-view';
-    const AJAX_ACTION = 'surveyjs_pro_analytics_entries';
-    const DATE_FIELD = '_surveyjs_pro_date';
+    const SCRIPT = 'surveyjs-forms-addon-analytics-view';
+    const AJAX_ACTION = 'surveyjs_addon_analytics_entries';
+    const DATE_FIELD = '_surveyjs_addon_date';
     const PAGE_SIZE = 500;
     const MAX_ENTRIES = 10000;
 
@@ -25,7 +25,7 @@ class SurveyJS_Pro_Analytics {
     );
 
     public static function init() {
-        if ( ! SurveyJS_Pro::requires( __CLASS__, self::BASE_REQUIRES ) ) {
+        if ( ! SurveyJS_Addon::requires( __CLASS__, self::BASE_REQUIRES ) ) {
             return;
         }
         add_filter( 'surveyjs_results_views', array( __CLASS__, 'views' ) );
@@ -36,16 +36,16 @@ class SurveyJS_Pro_Analytics {
 
     public static function views( $views ) {
         return $views + array(
-            self::VIEW_CHARTS => __( 'Charts', 'surveyjs-pro' ),
+            self::VIEW_CHARTS => __( 'Charts', 'surveyjs-forms-addon' ),
         );
     }
 
     public static function page_size() {
-        return max( 1, absint( apply_filters( 'surveyjs_pro_analytics_page_size', self::PAGE_SIZE ) ) );
+        return max( 1, absint( apply_filters( 'surveyjs_addon_analytics_page_size', self::PAGE_SIZE ) ) );
     }
 
     public static function max_entries() {
-        return absint( apply_filters( 'surveyjs_pro_analytics_max_entries', self::MAX_ENTRIES ) );
+        return absint( apply_filters( 'surveyjs_addon_analytics_max_entries', self::MAX_ENTRIES ) );
     }
 
     private static function bundle( $view ) {
@@ -56,7 +56,7 @@ class SurveyJS_Pro_Analytics {
     }
 
     private static function nonce_action( $form_id ) {
-        return 'surveyjs-pro-analytics_' . (int) $form_id;
+        return 'surveyjs-forms-addon-analytics_' . (int) $form_id;
     }
 
     public static function enqueue( $page ) {
@@ -69,14 +69,14 @@ class SurveyJS_Pro_Analytics {
         }
         $view = SurveyJS_Results::current_view( $survey );
         $bundle = self::bundle( $view );
-        if ( '' === $bundle || ! SurveyJS_Pro_Libs::enqueue( $bundle ) ) {
+        if ( '' === $bundle || ! SurveyJS_Addon_Libs::enqueue( $bundle ) ) {
             return;
         }
-        SurveyJS_Pro_Admin_Theme::enqueue();
-        $library = SurveyJS_Pro_Libs::handle( $bundle );
-        wp_enqueue_style( self::SCRIPT, plugins_url( 'assets/analytics.css', SURVEYJS_PRO_FILE ), array( $library, SurveyJS_Pro_Admin_Theme::HANDLE ), SURVEYJS_PRO_VERSION );
-        wp_enqueue_script( self::SCRIPT, plugins_url( 'assets/analytics.js', SURVEYJS_PRO_FILE ), array( $library, SurveyJS_Pro_Admin_Theme::HANDLE ), SURVEYJS_PRO_VERSION, true );
-        wp_add_inline_script( self::SCRIPT, 'window.surveyjsProAnalytics = ' . wp_json_encode( self::config( $survey, $view ), JSON_HEX_TAG | JSON_HEX_AMP ) . ';', 'before' );
+        SurveyJS_Addon_Admin_Theme::enqueue();
+        $library = SurveyJS_Addon_Libs::handle( $bundle );
+        wp_enqueue_style( self::SCRIPT, plugins_url( 'assets/analytics.css', SURVEYJS_ADDON_FILE ), array( $library, SurveyJS_Addon_Admin_Theme::HANDLE ), SURVEYJS_ADDON_VERSION );
+        wp_enqueue_script( self::SCRIPT, plugins_url( 'assets/analytics.js', SURVEYJS_ADDON_FILE ), array( $library, SurveyJS_Addon_Admin_Theme::HANDLE ), SURVEYJS_ADDON_VERSION, true );
+        wp_add_inline_script( self::SCRIPT, 'window.surveyjsAddonAnalytics = ' . wp_json_encode( self::config( $survey, $view ), JSON_HEX_TAG | JSON_HEX_AMP ) . ';', 'before' );
     }
 
     private static function config( $survey, $view ) {
@@ -96,12 +96,12 @@ class SurveyJS_Pro_Analytics {
             'nonce'      => wp_create_nonce( self::nonce_action( $survey->id ) ),
             'i18n'       => array(
                 /* translators: 1: number of loaded entries, 2: number of entries to load */
-                'loading'     => __( 'Loading entries: %1$s of %2$s…', 'surveyjs-pro' ),
+                'loading'     => __( 'Loading entries: %1$s of %2$s…', 'surveyjs-forms-addon' ),
                 /* translators: 1: number of shown entries, 2: number of all submitted entries */
-                'limited'     => __( 'Showing the latest %1$s of %2$s entries. Export CSV includes all of them.', 'surveyjs-pro' ),
-                'noEntries'   => __( 'No entries yet.', 'surveyjs-pro' ),
-                'noQuestions' => __( 'This form has no questions yet.', 'surveyjs-pro' ),
-                'error'       => __( 'Could not load the entries. Reload the page to try again.', 'surveyjs-pro' ),
+                'limited'     => __( 'Showing the latest %1$s of %2$s entries. Export CSV includes all of them.', 'surveyjs-forms-addon' ),
+                'noEntries'   => __( 'No entries yet.', 'surveyjs-forms-addon' ),
+                'noQuestions' => __( 'This form has no questions yet.', 'surveyjs-forms-addon' ),
+                'error'       => __( 'Could not load the entries. Reload the page to try again.', 'surveyjs-forms-addon' ),
             ),
         );
     }
@@ -116,16 +116,16 @@ class SurveyJS_Pro_Analytics {
             return;
         }
         ?>
-        <div id="wp-sjs-pro-analytics" class="wp-sjs-pro-analytics" data-view="<?php echo esc_attr( $view ); ?>" data-form="<?php echo esc_attr( $survey->id ); ?>">
-            <div class="wp-sjs-pro-analytics__status" aria-live="polite">
-                <p class="wp-sjs-pro-analytics__message"></p>
-                <progress class="wp-sjs-pro-analytics__progress" hidden></progress>
+        <div id="wp-sjs-addon-analytics" class="wp-sjs-addon-analytics" data-view="<?php echo esc_attr( $view ); ?>" data-form="<?php echo esc_attr( $survey->id ); ?>">
+            <div class="wp-sjs-addon-analytics__status" aria-live="polite">
+                <p class="wp-sjs-addon-analytics__message"></p>
+                <progress class="wp-sjs-addon-analytics__progress" hidden></progress>
             </div>
-            <div class="notice notice-info inline wp-sjs-pro-analytics__notice" hidden><p></p></div>
-            <div class="wp-sjs-pro-analytics__container"></div>
+            <div class="notice notice-info inline wp-sjs-addon-analytics__notice" hidden><p></p></div>
+            <div class="wp-sjs-addon-analytics__container"></div>
         </div>
         <?php if ( ! wp_script_is( self::SCRIPT ) ) : ?>
-            <div class="notice notice-error inline"><p><?php esc_html_e( 'Analytics libraries are not available.', 'surveyjs-pro' ); ?></p></div>
+            <div class="notice notice-error inline"><p><?php esc_html_e( 'Analytics libraries are not available.', 'surveyjs-forms-addon' ); ?></p></div>
         <?php endif; ?>
         <?php
     }
@@ -158,4 +158,4 @@ class SurveyJS_Pro_Analytics {
     }
 }
 
-add_action( 'surveyjs_pro_loaded', array( 'SurveyJS_Pro_Analytics', 'init' ) );
+add_action( 'surveyjs_addon_loaded', array( 'SurveyJS_Addon_Analytics', 'init' ) );

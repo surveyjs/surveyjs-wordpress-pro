@@ -1,6 +1,6 @@
 # License
 
-The license of SurveyJS Forms Pro is not decided yet (TBD).
+The license of SurveyJS Forms Add-on is not decided yet (TBD).
 
 Until it is, all rights are reserved by Devsoft Baltic OÜ. Do not redistribute this plugin.
 

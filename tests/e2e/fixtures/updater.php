@@ -13,9 +13,9 @@ if ( 'offer-base-update' === $command ) {
         'last_checked' => time(),
         'checked'      => $checked,
         'response'     => array(
-            SurveyJS_Pro_Updater::BASE => (object) array(
+            SurveyJS_Addon_Updater::BASE => (object) array(
                 'slug'        => 'surveyjs',
-                'plugin'      => SurveyJS_Pro_Updater::BASE,
+                'plugin'      => SurveyJS_Addon_Updater::BASE,
                 'new_version' => '99.0.0',
                 'package'     => '',
                 'url'         => 'https://wordpress.org/plugins/surveyjs/',
@@ -30,7 +30,7 @@ if ( 'offer-base-update' === $command ) {
 }
 echo wp_json_encode(
     array(
-        'composer' => SurveyJS_Pro_Updater::composer(),
-        'enabled'  => SurveyJS_Pro_Updater::enabled(),
+        'composer' => SurveyJS_Addon_Updater::composer(),
+        'enabled'  => SurveyJS_Addon_Updater::enabled(),
     )
 ), "\n";

@@ -163,6 +163,10 @@ function get_option( $name, $default = false ) {
     return $default;
 }
 
+function get_site_option( $name, $default = false ) {
+    return $default;
+}
+
 function test_error_log() {
     $file = ini_get( 'error_log' );
     return is_string( $file ) && is_file( $file ) ? (string) file_get_contents( $file ) : '';

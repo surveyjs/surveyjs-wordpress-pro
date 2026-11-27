@@ -29,16 +29,16 @@ function packageVersion(name) {
 }
 
 function pluginLibraryVersion() {
-  const source = fs.readFileSync(path.join(root, "surveyjs-pro.php"), "utf8");
-  const match = source.match(/define\(\s*'SURVEYJS_PRO_LIBRARY_VERSION',\s*'([^']+)'\s*\)/);
-  if (!match) throw new Error("SURVEYJS_PRO_LIBRARY_VERSION is not defined in surveyjs-pro.php");
+  const source = fs.readFileSync(path.join(root, "surveyjs-forms-addon.php"), "utf8");
+  const match = source.match(/define\(\s*'SURVEYJS_ADDON_LIBRARY_VERSION',\s*'([^']+)'\s*\)/);
+  if (!match) throw new Error("SURVEYJS_ADDON_LIBRARY_VERSION is not defined in surveyjs-forms-addon.php");
   return match[1];
 }
 
 const expected = pluginLibraryVersion();
 const mismatched = SURVEYJS_PACKAGES.filter((name) => packageVersion(name) !== expected);
 if (mismatched.length) {
-  console.error(`SURVEYJS_PRO_LIBRARY_VERSION is ${expected}, but node_modules has ${mismatched.map((name) => `${name}@${packageVersion(name)}`).join(", ")}.`);
+  console.error(`SURVEYJS_ADDON_LIBRARY_VERSION is ${expected}, but node_modules has ${mismatched.map((name) => `${name}@${packageVersion(name)}`).join(", ")}.`);
   process.exit(1);
 }
 

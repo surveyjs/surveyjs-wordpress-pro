@@ -1,10 +1,10 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class SurveyJS_Pro_Dashboard {
+class SurveyJS_Addon_Dashboard {
 
-    const PAGE = 'surveyjs-pro-dashboard';
-    const SCRIPT = 'surveyjs-pro-dashboard';
+    const PAGE = 'surveyjs-forms-addon-dashboard';
+    const SCRIPT = 'surveyjs-forms-addon-dashboard';
     const SUBMITTED = array( 'unread', 'read' );
     const DEFAULT_RANGE = '30d';
     const LATEST = 10;
@@ -27,7 +27,7 @@ class SurveyJS_Pro_Dashboard {
     );
 
     public static function init() {
-        if ( ! SurveyJS_Pro::requires( __CLASS__, self::BASE_REQUIRES ) ) {
+        if ( ! SurveyJS_Addon::requires( __CLASS__, self::BASE_REQUIRES ) ) {
             return;
         }
         add_action( 'surveyjs_admin_menu', array( __CLASS__, 'add_page' ), 10, 2 );
@@ -35,7 +35,7 @@ class SurveyJS_Pro_Dashboard {
     }
 
     public static function add_page( $parent, $capability ) {
-        self::$hook = (string) add_submenu_page( $parent, __( 'Dashboard', 'surveyjs-pro' ), __( 'Dashboard', 'surveyjs-pro' ), $capability, self::PAGE, array( __CLASS__, 'render' ), 3 );
+        self::$hook = (string) add_submenu_page( $parent, __( 'Dashboard', 'surveyjs-forms-addon' ), __( 'Dashboard', 'surveyjs-forms-addon' ), $capability, self::PAGE, array( __CLASS__, 'render' ), 3 );
     }
 
     public static function url( $args = array() ) {
@@ -48,10 +48,10 @@ class SurveyJS_Pro_Dashboard {
 
     public static function ranges() {
         return array(
-            '7d'  => array( 'label' => __( 'Last 7 days', 'surveyjs-pro' ), 'unit' => 'day', 'count' => 7 ),
-            '30d' => array( 'label' => __( 'Last 30 days', 'surveyjs-pro' ), 'unit' => 'day', 'count' => 30 ),
-            '90d' => array( 'label' => __( 'Last 90 days', 'surveyjs-pro' ), 'unit' => 'day', 'count' => 90 ),
-            '12m' => array( 'label' => __( 'Last 12 months', 'surveyjs-pro' ), 'unit' => 'month', 'count' => 12 ),
+            '7d'  => array( 'label' => __( 'Last 7 days', 'surveyjs-forms-addon' ), 'unit' => 'day', 'count' => 7 ),
+            '30d' => array( 'label' => __( 'Last 30 days', 'surveyjs-forms-addon' ), 'unit' => 'day', 'count' => 30 ),
+            '90d' => array( 'label' => __( 'Last 90 days', 'surveyjs-forms-addon' ), 'unit' => 'day', 'count' => 90 ),
+            '12m' => array( 'label' => __( 'Last 12 months', 'surveyjs-forms-addon' ), 'unit' => 'month', 'count' => 12 ),
         );
     }
 
@@ -64,17 +64,17 @@ class SurveyJS_Pro_Dashboard {
         if ( '' === self::$hook || $hook_suffix !== self::$hook ) {
             return;
         }
-        SurveyJS_Pro_Admin_Theme::enqueue();
-        wp_enqueue_style( self::SCRIPT, plugins_url( 'assets/dashboard.css', SURVEYJS_PRO_FILE ), array( SurveyJS_Pro_Admin_Theme::HANDLE ), SURVEYJS_PRO_VERSION );
-        if ( ! SurveyJS_Pro_Libs::register() ) {
+        SurveyJS_Addon_Admin_Theme::enqueue();
+        wp_enqueue_style( self::SCRIPT, plugins_url( 'assets/dashboard.css', SURVEYJS_ADDON_FILE ), array( SurveyJS_Addon_Admin_Theme::HANDLE ), SURVEYJS_ADDON_VERSION );
+        if ( ! SurveyJS_Addon_Libs::register() ) {
             return;
         }
         $data = self::data();
         if ( ! $data['forms'] ) {
             return;
         }
-        wp_enqueue_script( self::SCRIPT, plugins_url( 'assets/dashboard.js', SURVEYJS_PRO_FILE ), array( SurveyJS_Pro_Libs::handle( 'chartjs' ), SurveyJS_Pro_Admin_Theme::HANDLE ), SURVEYJS_PRO_VERSION, true );
-        wp_add_inline_script( self::SCRIPT, 'var surveyjsProDashboard = ' . wp_json_encode( self::chart_data( $data ), JSON_HEX_TAG | JSON_HEX_AMP ) . ';', 'before' );
+        wp_enqueue_script( self::SCRIPT, plugins_url( 'assets/dashboard.js', SURVEYJS_ADDON_FILE ), array( SurveyJS_Addon_Libs::handle( 'chartjs' ), SurveyJS_Addon_Admin_Theme::HANDLE ), SURVEYJS_ADDON_VERSION, true );
+        wp_add_inline_script( self::SCRIPT, 'var surveyjsAddonDashboard = ' . wp_json_encode( self::chart_data( $data ), JSON_HEX_TAG | JSON_HEX_AMP ) . ';', 'before' );
     }
 
     public static function data() {
@@ -87,7 +87,7 @@ class SurveyJS_Pro_Dashboard {
         foreach ( SurveyJS_Forms::names() as $form ) {
             $forms[ (int) $form->id ] = (object) array(
                 'id'         => (int) $form->id,
-                'name'       => '' !== (string) $form->name ? (string) $form->name : __( '(no title)', 'surveyjs-pro' ),
+                'name'       => '' !== (string) $form->name ? (string) $form->name : __( '(no title)', 'surveyjs-forms-addon' ),
                 'total'      => 0,
                 'unread'     => 0,
                 'recent'     => 0,
@@ -214,7 +214,7 @@ class SurveyJS_Pro_Dashboard {
     }
 
     public static function views_enabled() {
-        return SurveyJS_Pro::base_provides( array( 'SurveyJS_Form_Stats::enabled', 'SurveyJS_Form_Stats::totals', 'SurveyJS_Form_Stats::timeline', 'SurveyJS_Form_Stats::format_conversion' ) ) && SurveyJS_Form_Stats::enabled();
+        return SurveyJS_Addon::base_provides( array( 'SurveyJS_Form_Stats::enabled', 'SurveyJS_Form_Stats::totals', 'SurveyJS_Form_Stats::timeline', 'SurveyJS_Form_Stats::format_conversion' ) ) && SurveyJS_Form_Stats::enabled();
     }
 
     private static function views_timeline( $form_ids, $period ) {
@@ -269,7 +269,7 @@ class SurveyJS_Pro_Dashboard {
         if ( $rest ) {
             $chart_forms['labels'][] = sprintf(
                 /* translators: %s: number of forms */
-                _n( 'Other (%s form)', 'Other (%s forms)', count( $rest ), 'surveyjs-pro' ),
+                _n( 'Other (%s form)', 'Other (%s forms)', count( $rest ), 'surveyjs-forms-addon' ),
                 number_format_i18n( count( $rest ) )
             );
             $chart_forms['values'][] = array_sum( wp_list_pluck( $rest, 'recent' ) );
@@ -283,11 +283,11 @@ class SurveyJS_Pro_Dashboard {
             ),
             'forms'    => $chart_forms,
             'i18n'     => array(
-                'entries'     => __( 'Entries', 'surveyjs-pro' ),
-                'views'       => __( 'Views', 'surveyjs-pro' ),
-                'submissions' => __( 'Submissions', 'surveyjs-pro' ),
+                'entries'     => __( 'Entries', 'surveyjs-forms-addon' ),
+                'views'       => __( 'Views', 'surveyjs-forms-addon' ),
+                'submissions' => __( 'Submissions', 'surveyjs-forms-addon' ),
                 /* translators: %s: conversion rate, e.g. "12.5%" */
-                'conversion'  => __( 'Conversion: %s', 'surveyjs-pro' ),
+                'conversion'  => __( 'Conversion: %s', 'surveyjs-forms-addon' ),
             ),
         );
         if ( $data['views'] ) {
@@ -309,18 +309,18 @@ class SurveyJS_Pro_Dashboard {
         $change = (int) round( ( $recent - $previous ) / $previous * 100 );
         $previous_label = sprintf(
             /* translators: %s: number of days or months */
-            'month' === $period['unit'] ? _n( 'previous %s month', 'previous %s months', $period['count'], 'surveyjs-pro' ) : _n( 'previous %s day', 'previous %s days', $period['count'], 'surveyjs-pro' ),
+            'month' === $period['unit'] ? _n( 'previous %s month', 'previous %s months', $period['count'], 'surveyjs-forms-addon' ) : _n( 'previous %s day', 'previous %s days', $period['count'], 'surveyjs-forms-addon' ),
             number_format_i18n( $period['count'] )
         );
         // U+2066/U+2069 isolate the number as left-to-right, or RTL languages show "+12%" as "12%+".
         /* translators: 1: signed percentage change, e.g. "+12%", 2: the comparison period, e.g. "previous 30 days" */
-        return sprintf( __( '%1$s vs %2$s', 'surveyjs-pro' ), "\u{2066}" . ( $change > 0 ? '+' : '' ) . number_format_i18n( $change ) . "%\u{2069}", $previous_label );
+        return sprintf( __( '%1$s vs %2$s', 'surveyjs-forms-addon' ), "\u{2066}" . ( $change > 0 ? '+' : '' ) . number_format_i18n( $change ) . "%\u{2069}", $previous_label );
     }
 
     private static function conversion_note( $views, $submissions ) {
         return sprintf(
             /* translators: 1: number of submissions, 2: number of views */
-            _n( '%1$s submission from %2$s views', '%1$s submissions from %2$s views', $submissions, 'surveyjs-pro' ),
+            _n( '%1$s submission from %2$s views', '%1$s submissions from %2$s views', $submissions, 'surveyjs-forms-addon' ),
             number_format_i18n( $submissions ),
             number_format_i18n( $views )
         );
@@ -328,7 +328,7 @@ class SurveyJS_Pro_Dashboard {
 
     public static function render() {
         if ( ! current_user_can( SurveyJS_SurveyJS::CAPABILITY ) ) {
-            wp_die( esc_html__( 'Sorry, you are not allowed to access this page.', 'surveyjs-pro' ) );
+            wp_die( esc_html__( 'Sorry, you are not allowed to access this page.', 'surveyjs-forms-addon' ) );
         }
         $data = self::data();
         $period = $data['period'];
@@ -336,16 +336,16 @@ class SurveyJS_Pro_Dashboard {
         $forms_url = self::base_url( SurveyJS_SurveyJS::MENU_SLUG );
         $active_forms = $data['active'];
         ?>
-        <div class="wrap wp-sjs-pro-dashboard">
+        <div class="wrap wp-sjs-addon-dashboard">
             <?php // Notices from WordPress and other plugins go here, above the title, on every plugin page. ?>
             <hr class="wp-header-end">
             <?php // A block title: the range links below float left and would otherwise sit on the title's line. ?>
-            <h1><?php esc_html_e( 'Dashboard', 'surveyjs-pro' ); ?></h1>
+            <h1><?php esc_html_e( 'Dashboard', 'surveyjs-forms-addon' ); ?></h1>
 
             <?php if ( ! $data['forms'] ) : ?>
-                <div class="wp-sjs-pro-dashboard__panel wp-sjs-pro-dashboard__empty">
-                    <p><?php esc_html_e( 'No forms yet. Create a form, add it to a page, and its entries will show up here.', 'surveyjs-pro' ); ?></p>
-                    <p><a class="button button-primary" href="<?php echo esc_url( $forms_url ); ?>"><?php esc_html_e( 'Go to Forms', 'surveyjs-pro' ); ?></a></p>
+                <div class="wp-sjs-addon-dashboard__panel wp-sjs-addon-dashboard__empty">
+                    <p><?php esc_html_e( 'No forms yet. Create a form, add it to a page, and its entries will show up here.', 'surveyjs-forms-addon' ); ?></p>
+                    <p><a class="button button-primary" href="<?php echo esc_url( $forms_url ); ?>"><?php esc_html_e( 'Go to Forms', 'surveyjs-forms-addon' ); ?></a></p>
                 </div>
             </div>
                 <?php
@@ -353,7 +353,7 @@ class SurveyJS_Pro_Dashboard {
             endif;
             ?>
 
-            <ul class="subsubsub wp-sjs-pro-dashboard__ranges">
+            <ul class="subsubsub wp-sjs-addon-dashboard__ranges">
                 <?php
                 $links = array();
                 foreach ( self::ranges() as $key => $range ) {
@@ -370,86 +370,86 @@ class SurveyJS_Pro_Dashboard {
             </ul>
             <div class="clear"></div>
 
-            <div class="wp-sjs-pro-dashboard__stats">
-                <div class="wp-sjs-pro-dashboard__stat">
-                    <span class="wp-sjs-pro-dashboard__stat-label"><?php echo esc_html( $period['label'] ); ?></span>
-                    <span class="wp-sjs-pro-dashboard__stat-value"><?php echo esc_html( number_format_i18n( $totals['recent'] ) ); ?></span>
-                    <span class="wp-sjs-pro-dashboard__stat-note"><?php echo esc_html( self::change_text( $totals['recent'], $totals['previous'], $period ) ); ?></span>
+            <div class="wp-sjs-addon-dashboard__stats">
+                <div class="wp-sjs-addon-dashboard__stat">
+                    <span class="wp-sjs-addon-dashboard__stat-label"><?php echo esc_html( $period['label'] ); ?></span>
+                    <span class="wp-sjs-addon-dashboard__stat-value"><?php echo esc_html( number_format_i18n( $totals['recent'] ) ); ?></span>
+                    <span class="wp-sjs-addon-dashboard__stat-note"><?php echo esc_html( self::change_text( $totals['recent'], $totals['previous'], $period ) ); ?></span>
                 </div>
-                <div class="wp-sjs-pro-dashboard__stat">
-                    <span class="wp-sjs-pro-dashboard__stat-label"><?php esc_html_e( 'All entries', 'surveyjs-pro' ); ?></span>
-                    <span class="wp-sjs-pro-dashboard__stat-value"><?php echo esc_html( number_format_i18n( $totals['total'] ) ); ?></span>
+                <div class="wp-sjs-addon-dashboard__stat">
+                    <span class="wp-sjs-addon-dashboard__stat-label"><?php esc_html_e( 'All entries', 'surveyjs-forms-addon' ); ?></span>
+                    <span class="wp-sjs-addon-dashboard__stat-value"><?php echo esc_html( number_format_i18n( $totals['total'] ) ); ?></span>
                 </div>
-                <div class="wp-sjs-pro-dashboard__stat">
-                    <span class="wp-sjs-pro-dashboard__stat-label"><?php esc_html_e( 'Unread', 'surveyjs-pro' ); ?></span>
-                    <span class="wp-sjs-pro-dashboard__stat-value"><?php echo esc_html( number_format_i18n( $totals['unread'] ) ); ?></span>
+                <div class="wp-sjs-addon-dashboard__stat">
+                    <span class="wp-sjs-addon-dashboard__stat-label"><?php esc_html_e( 'Unread', 'surveyjs-forms-addon' ); ?></span>
+                    <span class="wp-sjs-addon-dashboard__stat-value"><?php echo esc_html( number_format_i18n( $totals['unread'] ) ); ?></span>
                 </div>
-                <div class="wp-sjs-pro-dashboard__stat">
-                    <span class="wp-sjs-pro-dashboard__stat-label"><?php esc_html_e( 'Forms', 'surveyjs-pro' ); ?></span>
-                    <span class="wp-sjs-pro-dashboard__stat-value"><a href="<?php echo esc_url( $forms_url ); ?>"><?php echo esc_html( number_format_i18n( count( $data['forms'] ) ) ); ?></a></span>
+                <div class="wp-sjs-addon-dashboard__stat">
+                    <span class="wp-sjs-addon-dashboard__stat-label"><?php esc_html_e( 'Forms', 'surveyjs-forms-addon' ); ?></span>
+                    <span class="wp-sjs-addon-dashboard__stat-value"><a href="<?php echo esc_url( $forms_url ); ?>"><?php echo esc_html( number_format_i18n( count( $data['forms'] ) ) ); ?></a></span>
                 </div>
                 <?php if ( $data['views'] ) : ?>
-                    <div class="wp-sjs-pro-dashboard__stat">
-                        <span class="wp-sjs-pro-dashboard__stat-label"><?php esc_html_e( 'Views', 'surveyjs-pro' ); ?></span>
-                        <span class="wp-sjs-pro-dashboard__stat-value"><?php echo esc_html( number_format_i18n( $totals['views'] ) ); ?></span>
-                        <span class="wp-sjs-pro-dashboard__stat-note"><?php echo esc_html( self::change_text( $totals['views'], $totals['previous_views'], $period ) ); ?></span>
+                    <div class="wp-sjs-addon-dashboard__stat">
+                        <span class="wp-sjs-addon-dashboard__stat-label"><?php esc_html_e( 'Views', 'surveyjs-forms-addon' ); ?></span>
+                        <span class="wp-sjs-addon-dashboard__stat-value"><?php echo esc_html( number_format_i18n( $totals['views'] ) ); ?></span>
+                        <span class="wp-sjs-addon-dashboard__stat-note"><?php echo esc_html( self::change_text( $totals['views'], $totals['previous_views'], $period ) ); ?></span>
                     </div>
-                    <div class="wp-sjs-pro-dashboard__stat">
-                        <span class="wp-sjs-pro-dashboard__stat-label"><?php esc_html_e( 'Conversion', 'surveyjs-pro' ); ?></span>
-                        <span class="wp-sjs-pro-dashboard__stat-value"><?php echo esc_html( SurveyJS_Form_Stats::format_conversion( $totals['views'], $totals['submissions'] ) ); ?></span>
-                        <span class="wp-sjs-pro-dashboard__stat-note"><?php echo esc_html( self::conversion_note( $totals['views'], $totals['submissions'] ) ); ?></span>
+                    <div class="wp-sjs-addon-dashboard__stat">
+                        <span class="wp-sjs-addon-dashboard__stat-label"><?php esc_html_e( 'Conversion', 'surveyjs-forms-addon' ); ?></span>
+                        <span class="wp-sjs-addon-dashboard__stat-value"><?php echo esc_html( SurveyJS_Form_Stats::format_conversion( $totals['views'], $totals['submissions'] ) ); ?></span>
+                        <span class="wp-sjs-addon-dashboard__stat-note"><?php echo esc_html( self::conversion_note( $totals['views'], $totals['submissions'] ) ); ?></span>
                     </div>
                 <?php endif; ?>
             </div>
 
-            <div class="wp-sjs-pro-dashboard__charts">
-                <section class="wp-sjs-pro-dashboard__panel">
-                    <h2><?php esc_html_e( 'Entries over time', 'surveyjs-pro' ); ?></h2>
-                    <div class="wp-sjs-pro-dashboard__chart">
-                        <canvas id="wp-sjs-pro-dashboard-timeline" role="img" aria-label="<?php echo esc_attr( sprintf( /* translators: 1: number of entries, 2: period, e.g. "Last 30 days" */ __( '%1$s entries, %2$s', 'surveyjs-pro' ), number_format_i18n( $totals['recent'] ), $period['label'] ) ); ?>"></canvas>
+            <div class="wp-sjs-addon-dashboard__charts">
+                <section class="wp-sjs-addon-dashboard__panel">
+                    <h2><?php esc_html_e( 'Entries over time', 'surveyjs-forms-addon' ); ?></h2>
+                    <div class="wp-sjs-addon-dashboard__chart">
+                        <canvas id="wp-sjs-addon-dashboard-timeline" role="img" aria-label="<?php echo esc_attr( sprintf( /* translators: 1: number of entries, 2: period, e.g. "Last 30 days" */ __( '%1$s entries, %2$s', 'surveyjs-forms-addon' ), number_format_i18n( $totals['recent'] ), $period['label'] ) ); ?>"></canvas>
                     </div>
                 </section>
-                <section class="wp-sjs-pro-dashboard__panel">
-                    <h2><?php esc_html_e( 'Entries by form', 'surveyjs-pro' ); ?></h2>
+                <section class="wp-sjs-addon-dashboard__panel">
+                    <h2><?php esc_html_e( 'Entries by form', 'surveyjs-forms-addon' ); ?></h2>
                     <?php if ( $totals['recent'] > 0 ) : ?>
                         <?php $bars = min( self::CHART_FORMS + 1, count( array_filter( wp_list_pluck( $data['forms'], 'recent' ) ) ) ); ?>
-                        <div class="wp-sjs-pro-dashboard__chart" style="height: <?php echo esc_attr( max( 160, 40 + 32 * $bars ) ); ?>px">
-                            <canvas id="wp-sjs-pro-dashboard-forms" role="img" aria-label="<?php esc_attr_e( 'Entries by form; the same numbers are in the Forms table below.', 'surveyjs-pro' ); ?>"></canvas>
+                        <div class="wp-sjs-addon-dashboard__chart" style="height: <?php echo esc_attr( max( 160, 40 + 32 * $bars ) ); ?>px">
+                            <canvas id="wp-sjs-addon-dashboard-forms" role="img" aria-label="<?php esc_attr_e( 'Entries by form; the same numbers are in the Forms table below.', 'surveyjs-forms-addon' ); ?>"></canvas>
                         </div>
                     <?php else : ?>
-                        <p class="description"><?php esc_html_e( 'No entries in this period.', 'surveyjs-pro' ); ?></p>
+                        <p class="description"><?php esc_html_e( 'No entries in this period.', 'surveyjs-forms-addon' ); ?></p>
                     <?php endif; ?>
                 </section>
             </div>
 
-            <section class="wp-sjs-pro-dashboard__panel wp-sjs-pro-dashboard__conversion">
-                <h2><?php esc_html_e( 'Views and submissions', 'surveyjs-pro' ); ?></h2>
+            <section class="wp-sjs-addon-dashboard__panel wp-sjs-addon-dashboard__conversion">
+                <h2><?php esc_html_e( 'Views and submissions', 'surveyjs-forms-addon' ); ?></h2>
                 <?php if ( ! $data['views'] ) : ?>
                     <p class="description">
-                        <?php esc_html_e( 'Form views are not counted, so there is no conversion rate.', 'surveyjs-pro' ); ?>
-                        <a href="<?php echo esc_url( self::base_url( 'surveyjs-settings' ) ); ?>"><?php esc_html_e( 'Turn on Form views in Settings', 'surveyjs-pro' ); ?></a>
+                        <?php esc_html_e( 'Form views are not counted, so there is no conversion rate.', 'surveyjs-forms-addon' ); ?>
+                        <a href="<?php echo esc_url( self::base_url( 'surveyjs-settings' ) ); ?>"><?php esc_html_e( 'Turn on Form views in Settings', 'surveyjs-forms-addon' ); ?></a>
                     </p>
                 <?php elseif ( $totals['views'] > 0 || $totals['submissions'] > 0 ) : ?>
-                    <div class="wp-sjs-pro-dashboard__chart">
-                        <canvas id="wp-sjs-pro-dashboard-views" role="img" aria-label="<?php echo esc_attr( sprintf( /* translators: 1: number of views, 2: number of submissions, 3: period, e.g. "Last 30 days" */ __( '%1$s views and %2$s submissions, %3$s; the same numbers per form are in the Forms table below.', 'surveyjs-pro' ), number_format_i18n( $totals['views'] ), number_format_i18n( $totals['submissions'] ), $period['label'] ) ); ?>"></canvas>
+                    <div class="wp-sjs-addon-dashboard__chart">
+                        <canvas id="wp-sjs-addon-dashboard-views" role="img" aria-label="<?php echo esc_attr( sprintf( /* translators: 1: number of views, 2: number of submissions, 3: period, e.g. "Last 30 days" */ __( '%1$s views and %2$s submissions, %3$s; the same numbers per form are in the Forms table below.', 'surveyjs-forms-addon' ), number_format_i18n( $totals['views'] ), number_format_i18n( $totals['submissions'] ), $period['label'] ) ); ?>"></canvas>
                     </div>
-                    <p class="description"><?php esc_html_e( 'Conversion is submissions divided by views. A view is counted when a visitor sees the form on the site; logged-in users who can edit posts and bots are not counted.', 'surveyjs-pro' ); ?></p>
+                    <p class="description"><?php esc_html_e( 'Conversion is submissions divided by views. A view is counted when a visitor sees the form on the site; logged-in users who can edit posts and bots are not counted.', 'surveyjs-forms-addon' ); ?></p>
                 <?php else : ?>
-                    <p class="description"><?php esc_html_e( 'No views in this period. A view is counted when a visitor sees a form on the site; logged-in users who can edit posts are not counted.', 'surveyjs-pro' ); ?></p>
+                    <p class="description"><?php esc_html_e( 'No views in this period. A view is counted when a visitor sees a form on the site; logged-in users who can edit posts are not counted.', 'surveyjs-forms-addon' ); ?></p>
                 <?php endif; ?>
             </section>
 
-            <div class="wp-sjs-pro-dashboard__tables">
-                <section class="wp-sjs-pro-dashboard__panel">
-                    <h2><?php esc_html_e( 'Latest entries', 'surveyjs-pro' ); ?></h2>
+            <div class="wp-sjs-addon-dashboard__tables">
+                <section class="wp-sjs-addon-dashboard__panel">
+                    <h2><?php esc_html_e( 'Latest entries', 'surveyjs-forms-addon' ); ?></h2>
                     <?php if ( $data['latest'] ) : ?>
                         <table class="widefat striped">
                             <thead>
                                 <tr>
-                                    <th scope="col"><?php esc_html_e( 'Entry', 'surveyjs-pro' ); ?></th>
-                                    <th scope="col"><?php esc_html_e( 'Form', 'surveyjs-pro' ); ?></th>
-                                    <th scope="col"><?php esc_html_e( 'Submitted by', 'surveyjs-pro' ); ?></th>
-                                    <th scope="col"><?php esc_html_e( 'Date', 'surveyjs-pro' ); ?></th>
+                                    <th scope="col"><?php esc_html_e( 'Entry', 'surveyjs-forms-addon' ); ?></th>
+                                    <th scope="col"><?php esc_html_e( 'Form', 'surveyjs-forms-addon' ); ?></th>
+                                    <th scope="col"><?php esc_html_e( 'Submitted by', 'surveyjs-forms-addon' ); ?></th>
+                                    <th scope="col"><?php esc_html_e( 'Date', 'surveyjs-forms-addon' ); ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -458,40 +458,40 @@ class SurveyJS_Pro_Dashboard {
                                     $form = $data['forms'][ (int) $entry->form_id ];
                                     $user = $entry->user_id ? get_userdata( (int) $entry->user_id ) : false;
                                     ?>
-                                    <tr<?php echo 'unread' === $entry->status ? ' class="wp-sjs-pro-dashboard__unread"' : ''; ?>>
+                                    <tr<?php echo 'unread' === $entry->status ? ' class="wp-sjs-addon-dashboard__unread"' : ''; ?>>
                                         <td>
                                             <a href="<?php echo esc_url( self::base_url( 'surveyjs_results', array( 'id' => $form->id, 'entry' => (int) $entry->id ) ) ); ?>">#<?php echo esc_html( (int) $entry->id ); ?></a>
                                             <?php if ( 'unread' === $entry->status ) : ?>
-                                                <span class="wp-sjs-pro-dashboard__badge"><?php echo esc_html( SurveyJS_Entries::status_label( $entry->status ) ); ?></span>
+                                                <span class="wp-sjs-addon-dashboard__badge"><?php echo esc_html( SurveyJS_Entries::status_label( $entry->status ) ); ?></span>
                                             <?php endif; ?>
                                         </td>
                                         <td><a href="<?php echo esc_url( self::base_url( 'surveyjs_results', array( 'id' => $form->id ) ) ); ?>"><?php echo esc_html( $form->name ); ?></a></td>
-                                        <td><?php echo $user ? esc_html( $user->display_name ) : esc_html__( 'Guest', 'surveyjs-pro' ); ?></td>
+                                        <td><?php echo $user ? esc_html( $user->display_name ) : esc_html__( 'Guest', 'surveyjs-forms-addon' ); ?></td>
                                         <td><?php echo esc_html( SurveyJS_Entries::format_date( $entry->created_at ) ); ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
                     <?php else : ?>
-                        <p class="description"><?php esc_html_e( 'No entries yet.', 'surveyjs-pro' ); ?></p>
+                        <p class="description"><?php esc_html_e( 'No entries yet.', 'surveyjs-forms-addon' ); ?></p>
                     <?php endif; ?>
                 </section>
 
-                <section class="wp-sjs-pro-dashboard__panel">
-                    <h2><?php esc_html_e( 'Forms', 'surveyjs-pro' ); ?></h2>
+                <section class="wp-sjs-addon-dashboard__panel">
+                    <h2><?php esc_html_e( 'Forms', 'surveyjs-forms-addon' ); ?></h2>
                     <?php if ( $active_forms ) : ?>
-                        <table class="widefat striped wp-sjs-pro-dashboard__forms">
+                        <table class="widefat striped wp-sjs-addon-dashboard__forms">
                             <thead>
                                 <tr>
-                                    <th scope="col"><?php esc_html_e( 'Form', 'surveyjs-pro' ); ?></th>
+                                    <th scope="col"><?php esc_html_e( 'Form', 'surveyjs-forms-addon' ); ?></th>
                                     <th scope="col" class="num"><?php echo esc_html( $period['label'] ); ?></th>
-                                    <th scope="col" class="num"><?php esc_html_e( 'All entries', 'surveyjs-pro' ); ?></th>
-                                    <th scope="col" class="num"><?php esc_html_e( 'Unread', 'surveyjs-pro' ); ?></th>
+                                    <th scope="col" class="num"><?php esc_html_e( 'All entries', 'surveyjs-forms-addon' ); ?></th>
+                                    <th scope="col" class="num"><?php esc_html_e( 'Unread', 'surveyjs-forms-addon' ); ?></th>
                                     <?php if ( $data['views'] ) : ?>
-                                        <th scope="col" class="num"><?php esc_html_e( 'Views', 'surveyjs-pro' ); ?></th>
-                                        <th scope="col" class="num"><?php esc_html_e( 'Conversion', 'surveyjs-pro' ); ?></th>
+                                        <th scope="col" class="num"><?php esc_html_e( 'Views', 'surveyjs-forms-addon' ); ?></th>
+                                        <th scope="col" class="num"><?php esc_html_e( 'Conversion', 'surveyjs-forms-addon' ); ?></th>
                                     <?php endif; ?>
-                                    <th scope="col"><?php esc_html_e( 'Last entry', 'surveyjs-pro' ); ?></th>
+                                    <th scope="col"><?php esc_html_e( 'Last entry', 'surveyjs-forms-addon' ); ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -518,7 +518,7 @@ class SurveyJS_Pro_Dashboard {
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th scope="row"><?php esc_html_e( 'Total', 'surveyjs-pro' ); ?></th>
+                                    <th scope="row"><?php esc_html_e( 'Total', 'surveyjs-forms-addon' ); ?></th>
                                     <td class="num"><?php echo esc_html( number_format_i18n( $totals['recent'] ) ); ?></td>
                                     <td class="num"><?php echo esc_html( number_format_i18n( $totals['total'] ) ); ?></td>
                                     <td class="num"><?php echo esc_html( number_format_i18n( $totals['unread'] ) ); ?></td>
@@ -536,9 +536,9 @@ class SurveyJS_Pro_Dashboard {
                         <p class="description">
                             <?php
                             /* translators: %s: number of forms */
-                            echo esc_html( sprintf( _n( '%s form has no entries yet.', '%s forms have no entries yet.', $empty_forms, 'surveyjs-pro' ), number_format_i18n( $empty_forms ) ) );
+                            echo esc_html( sprintf( _n( '%s form has no entries yet.', '%s forms have no entries yet.', $empty_forms, 'surveyjs-forms-addon' ), number_format_i18n( $empty_forms ) ) );
                             ?>
-                            <a href="<?php echo esc_url( $forms_url ); ?>"><?php esc_html_e( 'All forms', 'surveyjs-pro' ); ?></a>
+                            <a href="<?php echo esc_url( $forms_url ); ?>"><?php esc_html_e( 'All forms', 'surveyjs-forms-addon' ); ?></a>
                         </p>
                     <?php endif; ?>
                 </section>
@@ -548,4 +548,4 @@ class SurveyJS_Pro_Dashboard {
     }
 }
 
-add_action( 'surveyjs_pro_loaded', array( 'SurveyJS_Pro_Dashboard', 'init' ) );
+add_action( 'surveyjs_addon_loaded', array( 'SurveyJS_Addon_Dashboard', 'init' ) );

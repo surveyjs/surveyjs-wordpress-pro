@@ -1,5 +1,5 @@
 {
-  "name": "surveyjs-wordpress-pro",
+  "name": "surveyjs-wordpress-addon",
   "private": true,
   "scripts": {
     "build": "node scripts/build.js",

@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       base-ref:
-        description: Base (surveyjs-wordpress) branch, tag or SHA; empty = branch with the same name, else NEIGHBOR_FALLBACK_REF
+        description: SurveyJS Forms (surveyjs-wordpress) branch, tag or SHA; empty = branch with the same name, else NEIGHBOR_FALLBACK_REF
         required: false
   workflow_call:
     inputs:
@@ -58,16 +58,16 @@ jobs:
           RELEASE_VERSION: ${{ inputs.release-version }}
           BASE_REF: ${{ steps.base.outputs.ref }}
         run: |
-          version="$(sed -nE 's/^Version:[[:space:]]*([^[:space:]]+).*/\1/p' surveyjs-pro.php)"
+          version="$(sed -nE 's/^Version:[[:space:]]*([^[:space:]]+).*/\1/p' surveyjs-forms-addon.php)"
           if [ -n "$RELEASE_VERSION" ] && [ "$version" != "$RELEASE_VERSION" ]; then
-            echo "::error file=surveyjs-pro.php::Version is $version, the release is $RELEASE_VERSION"
+            echo "::error file=surveyjs-forms-addon.php::Version is $version, the release is $RELEASE_VERSION"
             exit 1
           fi
           node scripts/build.js --base-ref HEAD --base-repo base --out dist
-          unzip -q "dist/surveyjs-pro-$version.zip" -d dist
+          unzip -q "dist/surveyjs-forms-addon-$version.zip" -d dist
           unzip -q "dist/surveyjs-forms-vip-$version.zip" -d dist/vip
           COMPOSER_ROOT_VERSION="$version" composer validate --no-check-lock
-          echo "Base: $BASE_REF ($(git -C base rev-parse HEAD))" >> "$GITHUB_STEP_SUMMARY"
+          echo "SurveyJS Forms: $BASE_REF ($(git -C base rev-parse HEAD))" >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: plugin
@@ -95,11 +95,11 @@ jobs:
     needs: build
     uses: surveyjs/surveyjs-wordpress/.github/workflows/checks.yml@base-pro-split
     with:
-      php-paths: dist/surveyjs-pro dist/vip/client-mu-plugins
-      plugin-check-dir: dist/surveyjs-pro
+      php-paths: dist/surveyjs-forms-addon dist/vip/client-mu-plugins
+      plugin-check-dir: dist/surveyjs-forms-addon
       plugin-check-ignore-codes: |
         plugin_header_invalid_license
         invalid_license
         plugin_updater_detected
       e2e-base-dir: dist/vip/plugins/surveyjs
-      e2e-pro-dir: dist/surveyjs-pro
+      e2e-addon-dir: dist/surveyjs-forms-addon

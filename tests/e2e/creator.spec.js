@@ -46,7 +46,7 @@ test.describe("Survey Creator in the form editor", () => {
     }
     await expect(page.locator("#wp-sjs-monaco")).toBeHidden();
 
-    const creator = page.locator('.wp-sjs-pro-creator[data-panel="creator"] .svc-creator');
+    const creator = page.locator('.wp-sjs-addon-creator[data-panel="creator"] .svc-creator');
     await expect(creator).toBeVisible();
     const creatorTabs = creator.locator(".svc-tabbed-menu");
     for (const tab of ["Designer", "Preview", "Logic", "JSON Editor"]) {
@@ -70,7 +70,7 @@ test.describe("Survey Creator in the form editor", () => {
     await expect(page.locator('.svc-creator [data-sv-drop-target-survey-element="gdpr_agreement"]')).toBeVisible();
   });
 
-  test("never renders Base's Config editor while Creator replaces it", async ({ page }) => {
+  test("never renders SurveyJS Forms' Config editor while Creator replaces it", async ({ page }) => {
     test.skip(!formId, "Needs the form from the previous test");
     const editorUrl = `/wp-admin/admin.php?page=surveyjs_editor&id=${formId}`;
     await page.addInitScript(() => {
@@ -79,7 +79,7 @@ test.describe("Survey Creator in the form editor", () => {
         const pane = document.getElementById("wp-sjs-json-pane");
         if ((pane && !pane.hidden) || document.getElementById("wp-sjs-set-logo") || document.getElementById("wp-sjs-lint")) window.__sjsSeen.config = true;
         if (window.__sjsSeen.fullscreenAtRoot === null && document.querySelector(".wp-sjs-editor")) {
-          window.__sjsSeen.fullscreenAtRoot = document.documentElement.classList.contains("wp-sjs-pro-fullscreen-mode");
+          window.__sjsSeen.fullscreenAtRoot = document.documentElement.classList.contains("wp-sjs-addon-fullscreen-mode");
         }
       };
       new MutationObserver(check).observe(document, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden"] });
@@ -120,7 +120,7 @@ test.describe("Survey Creator in the form editor", () => {
     expect(leaks).toEqual([]);
   });
 
-  test("shows Base's Config editor again when Creator is turned off", async ({ page }) => {
+  test("shows SurveyJS Forms' Config editor again when Creator is turned off", async ({ page }) => {
     test.skip(!formId, "Needs the form from the previous test");
     const setCreator = async (on) => {
       await page.goto("/wp-admin/admin.php?page=surveyjs-settings&tab=addon");
@@ -139,8 +139,8 @@ test.describe("Survey Creator in the form editor", () => {
       await expect(page.locator(".wp-sjs-editor__tabs .nav-tab-active")).toHaveAttribute("data-tab", "survey");
       await expect(page.locator("#wp-sjs-json-pane .monaco-editor")).toBeVisible();
       await expect(page.locator("#wp-sjs-set-logo")).toBeVisible();
-      await expect(page.locator(".wp-sjs-pro-creator")).toHaveCount(0);
-      await expect(page.locator("html")).not.toHaveClass(/wp-sjs-pro-fullscreen-mode/);
+      await expect(page.locator(".wp-sjs-addon-creator")).toHaveCount(0);
+      await expect(page.locator("html")).not.toHaveClass(/wp-sjs-addon-fullscreen-mode/);
     } finally {
       await setCreator(true);
     }
@@ -160,18 +160,18 @@ test.describe("Survey Creator in the form editor", () => {
   test("opens full screen by default and remembers when it is turned off", async ({ page }) => {
     test.skip(!formId, "Needs the form from the previous test");
     await page.goto(`/wp-admin/admin.php?page=surveyjs_editor&id=${formId}`);
-    await expect(page.locator(".wp-sjs-editor")).toHaveClass(/wp-sjs-pro-fullscreen/);
+    await expect(page.locator(".wp-sjs-editor")).toHaveClass(/wp-sjs-addon-fullscreen/);
     await expect(page.locator("#adminmenu")).toBeHidden();
     await expect(page.locator("#wpadminbar")).toBeHidden();
     await page.getByRole("button", { name: "Exit full screen" }).click();
-    await expect(page.locator(".wp-sjs-editor")).not.toHaveClass(/wp-sjs-pro-fullscreen/);
+    await expect(page.locator(".wp-sjs-editor")).not.toHaveClass(/wp-sjs-addon-fullscreen/);
     await expect(page.locator("#adminmenu")).toBeVisible();
     await page.reload();
     const enter = page.getByRole("button", { name: "Full screen", exact: true });
     await expect(enter).toBeVisible();
-    await expect(page.locator(".wp-sjs-editor")).not.toHaveClass(/wp-sjs-pro-fullscreen/);
+    await expect(page.locator(".wp-sjs-editor")).not.toHaveClass(/wp-sjs-addon-fullscreen/);
     await enter.click();
-    await expect(page.locator(".wp-sjs-editor")).toHaveClass(/wp-sjs-pro-fullscreen/);
+    await expect(page.locator(".wp-sjs-editor")).toHaveClass(/wp-sjs-addon-fullscreen/);
     await expect(page.locator("#wpadminbar")).toBeHidden();
   });
 
@@ -179,7 +179,7 @@ test.describe("Survey Creator in the form editor", () => {
     test.skip(!formId, "Needs the form from the previous test");
     const editorUrl = new RegExp(`page=surveyjs_editor&id=${formId}$`);
     await page.goto(`/wp-admin/admin.php?page=surveyjs_editor&id=${formId}`);
-    await expect(page.locator(".wp-sjs-editor")).toHaveClass(/wp-sjs-pro-fullscreen/);
+    await expect(page.locator(".wp-sjs-editor")).toHaveClass(/wp-sjs-addon-fullscreen/);
     const creator = page.locator(".svc-creator");
     await expect(creator).toBeVisible();
     const embedButton = page.locator("#wp-sjs-embed");
