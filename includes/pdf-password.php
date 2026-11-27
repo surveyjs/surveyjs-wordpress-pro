@@ -144,7 +144,7 @@ class SurveyJS_Pro_Pdf_Password {
             <th scope="row"><?php esc_html_e( 'Password', 'surveyjs-pro' ); ?></th>
             <td>
                 <label><input type="checkbox" data-setting="<?php echo esc_attr( self::SETTING ); ?>" <?php disabled( ! $available ); ?> /> <?php esc_html_e( 'Password protect PDF', 'surveyjs-pro' ); ?></label>
-                <p class="description"><?php esc_html_e( 'Entry PDFs and blank forms you download from the Results page or this tab, and the PDF attached to the email notification, are encrypted with AES-256 and open only with the password. The preview on this tab, the respondent\'s Download PDF button, the auto-reply attachment and the {pdf_link} page are not protected. Older PDF viewers that do not support AES-256 cannot open protected PDFs.', 'surveyjs-pro' ); ?></p>
+                <p class="description"><?php esc_html_e( 'Encrypts with AES-256 the PDFs you download from Entries or this tab and the PDF attached to the email notification. Not protected: this preview, the respondent\'s Download PDF button, the auto-reply attachment and the {pdf_link} page. Old PDF viewers without AES-256 cannot open them.', 'surveyjs-pro' ); ?></p>
                 <?php if ( ! $available ) : ?>
                     <p class="description"><?php esc_html_e( 'Not available on this site: it needs PHP 8.2 or later with the OpenSSL and ctype extensions.', 'surveyjs-pro' ); ?></p>
                 <?php endif; ?>
@@ -154,7 +154,7 @@ class SurveyJS_Pro_Pdf_Password {
             <th scope="row"><label for="wp-sjs-pro-pdf-password"><?php esc_html_e( 'PDF password', 'surveyjs-pro' ); ?></label></th>
             <td>
                 <input type="password" id="wp-sjs-pro-pdf-password" class="regular-text" autocomplete="new-password" spellcheck="false" />
-                <p class="description"><?php esc_html_e( 'One password for all PDFs of this form, saved with the form. To change it, type a new one. To remove it, turn off Password protect PDF and save the form.', 'surveyjs-pro' ); ?></p>
+                <p class="description"><?php esc_html_e( 'One password for all PDFs of this form. To change it, type a new one; to remove it, turn off Password protect PDF and save the form.', 'surveyjs-pro' ); ?></p>
             </td>
         </tr>
         <?php

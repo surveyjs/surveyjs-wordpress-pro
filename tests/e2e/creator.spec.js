@@ -18,7 +18,7 @@ async function save(page) {
   const saved = page.waitForResponse(r => r.url().includes("action=SurveyJS_SaveSurvey"));
   await page.getByRole("button", { name: "Save", exact: true }).click();
   await saved;
-  await expect(page.locator("#wp-sjs-editor-notice")).toContainText("Form saved");
+  await expect(page.locator(".wp-sjs-snackbars")).toContainText("Form saved");
 }
 
 test.describe("Survey Creator in the form editor", () => {
@@ -123,13 +123,14 @@ test.describe("Survey Creator in the form editor", () => {
   test("shows Base's Config editor again when Creator is turned off", async ({ page }) => {
     test.skip(!formId, "Needs the form from the previous test");
     const setCreator = async (on) => {
-      await page.goto("/wp-admin/admin.php?page=surveyjs-settings");
+      await page.goto("/wp-admin/admin.php?page=surveyjs-settings&tab=addon");
       const checkbox = page.getByLabel("Edit forms in Survey Creator");
-      await checkbox.setChecked(on);
-      const saved = page.waitForResponse(r => r.url().includes("/wp-admin/options.php") && r.request().method() === "POST");
-      await page.getByRole("button", { name: "Save Changes" }).click();
-      await saved;
-      await page.waitForLoadState();
+      if ((await checkbox.isChecked()) !== on) {
+        const saved = page.waitForResponse(r => r.url().includes("/wp-admin/options.php") && r.request().method() === "POST");
+        await checkbox.setChecked(on); // saved as soon as it changes
+        await saved;
+      }
+      await page.reload();
       await expect(checkbox).toBeChecked({ checked: on });
     };
     await setCreator(false);
@@ -242,7 +243,7 @@ test.describe("Survey Creator in the form editor", () => {
     await expect.poll(creatorJsonText).not.toContain('"Other"');
 
     await save(page);
-    await expect(page.locator("#wp-sjs-editor-notice")).toContainText("Form saved.");
+    await expect(page.locator(".wp-sjs-snackbars")).toContainText("Form saved.");
     const { json } = contract("state", formId);
     const methods = (json.pages || [json]).flatMap(p => p.elements || []).find(e => e.name === "methods");
     expect(methods.choices).toEqual(["Medication"]);
@@ -258,7 +259,7 @@ test.describe("Survey Creator in the form editor", () => {
       document.dispatchEvent(new CustomEvent("surveyjs:editor-external-change"));
     });
     await save(page);
-    const notice = page.locator("#wp-sjs-editor-notice");
+    const notice = page.locator(".wp-sjs-snackbars");
     await expect(notice).toContainText("Form saved with 1 issue.");
     await expect(notice.locator(".wp-sjs-editor__issues li")).toContainText('contain "Other" while showOtherItem is on');
 

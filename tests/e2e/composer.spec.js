@@ -68,7 +68,7 @@ test.describe("Pro installed with Composer", () => {
     await expect(page.locator(`${PRO_ROW} .surveyjs-pro-composer-note`)).toContainText(
       "Installed with Composer, so it doesn't update itself. Update both plugins with composer update surveyjs/surveyjs-pro --with-dependencies"
     );
-    await expect(page.locator(BASE_UPDATE_ROW)).toContainText("SurveyJS Forms Pro is installed with Composer and is not updated here");
+    await expect(page.locator(BASE_UPDATE_ROW)).toContainText("SurveyJS Forms Add-on is installed with Composer and is not updated here");
     await expect(page.locator(BASE_UPDATE_ROW)).not.toContainText("will be updated to the same version automatically");
   });
 });

@@ -178,7 +178,7 @@ class SurveyJS_Pro_Pdf {
                     <th scope="row"><label for="wp-sjs-pro-pdf-format"><?php esc_html_e( 'Page size', 'surveyjs-pro' ); ?></label></th>
                     <td>
                         <?php self::render_select( 'wp-sjs-pro-pdf-format', 'proPdfFormat', self::formats() ); ?>
-                        <p class="description"><?php esc_html_e( 'Automatic uses Letter when the site language is for the US, Canada or Latin America, and A4 otherwise. Pick a size if the form is printed elsewhere.', 'surveyjs-pro' ); ?></p>
+                        <p class="description"><?php esc_html_e( 'Automatic: Letter for US, Canada and Latin America site languages, A4 for others.', 'surveyjs-pro' ); ?></p>
                     </td>
                 </tr>
                 <tr>
@@ -196,14 +196,14 @@ class SurveyJS_Pro_Pdf {
                     <th scope="row"><label for="wp-sjs-pro-pdf-label-font-size"><?php esc_html_e( 'Label font size', 'surveyjs-pro' ); ?></label></th>
                     <td>
                         <input type="number" id="wp-sjs-pro-pdf-label-font-size" class="small-text" min="8" max="24" step="1" data-setting="proPdfLabelFontSize" /> <?php esc_html_e( 'pt', 'surveyjs-pro' ); ?>
-                        <p class="description"><?php esc_html_e( 'Size of question titles. The same value as Font size keeps the default proportions.', 'surveyjs-pro' ); ?></p>
+                        <p class="description"><?php esc_html_e( 'Size of question titles. Keep it equal to Font size for the default proportions.', 'surveyjs-pro' ); ?></p>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row"><label for="wp-sjs-pro-pdf-font"><?php esc_html_e( 'Font', 'surveyjs-pro' ); ?></label></th>
                     <td>
                         <?php self::render_select( 'wp-sjs-pro-pdf-font', 'proPdfFont', self::fonts() ); ?>
-                        <p class="description"><?php esc_html_e( 'A PDF with letters these fonts do not have, such as Cyrillic, Greek or Hebrew, uses a font that has them instead.', 'surveyjs-pro' ); ?></p>
+                        <p class="description"><?php esc_html_e( 'For Cyrillic, Greek, Hebrew and other letters these fonts lack, a suitable font is used instead.', 'surveyjs-pro' ); ?></p>
                     </td>
                 </tr>
                 <tr>
@@ -217,7 +217,7 @@ class SurveyJS_Pro_Pdf {
                     <th scope="row"><?php esc_html_e( 'Colors', 'surveyjs-pro' ); ?></th>
                     <td>
                         <label><input type="checkbox" data-setting="proPdfThemeColors" /> <?php esc_html_e( 'Use the colors of the form theme', 'surveyjs-pro' ); ?></label>
-                        <p class="description"><?php esc_html_e( 'Applies when Adaptive is off on the Theme tab and the theme is light. Otherwise the PDF uses the default SurveyJS colors.', 'surveyjs-pro' ); ?></p>
+                        <p class="description"><?php esc_html_e( 'Only for a light theme with Adaptive off; otherwise the default SurveyJS colors are used.', 'surveyjs-pro' ); ?></p>
                     </td>
                 </tr>
                 <tr>
@@ -225,7 +225,7 @@ class SurveyJS_Pro_Pdf {
                     <td>
                         <label><input type="checkbox" data-setting="proPdfAccent" /> <?php esc_html_e( 'Use an accent color', 'surveyjs-pro' ); ?></label>
                         <span data-enabled-by="proPdfAccent"><input type="color" id="wp-sjs-pro-pdf-accent-color" data-setting="proPdfAccentColor" aria-label="<?php esc_attr_e( 'Accent color', 'surveyjs-pro' ); ?>" /></span>
-                        <p class="description"><?php esc_html_e( 'Colors the form, page and panel titles, the selected choices and a line under the header. Light colors are used only for choices and the line, so titles stay readable. Replaces the main color of the form theme.', 'surveyjs-pro' ); ?></p>
+                        <p class="description"><?php esc_html_e( 'Colors titles, selected choices and a line under the header (light colors skip titles to keep them readable). Overrides the main color of the theme.', 'surveyjs-pro' ); ?></p>
                     </td>
                 </tr>
                 <tr>
@@ -255,7 +255,7 @@ class SurveyJS_Pro_Pdf {
                     <th scope="row"><label for="wp-sjs-pro-pdf-watermark"><?php esc_html_e( 'Watermark', 'surveyjs-pro' ); ?></label></th>
                     <td>
                         <input type="text" id="wp-sjs-pro-pdf-watermark" class="regular-text" maxlength="40" data-setting="proPdfWatermark" />
-                        <p class="description"><?php esc_html_e( 'Printed diagonally in light gray across every page, for example DRAFT or CONFIDENTIAL. Leave empty for no watermark.', 'surveyjs-pro' ); ?></p>
+                        <p class="description"><?php esc_html_e( 'Printed diagonally in light gray on every page, for example DRAFT or CONFIDENTIAL.', 'surveyjs-pro' ); ?></p>
                     </td>
                 </tr>
                 <tr>
@@ -296,7 +296,7 @@ class SurveyJS_Pro_Pdf {
                         <button type="button" class="button" id="wp-sjs-pro-pdf-preview"><?php esc_html_e( 'Preview PDF', 'surveyjs-pro' ); ?></button>
                         <button type="button" class="button" id="wp-sjs-pro-pdf-blank"><?php esc_html_e( 'Download blank form', 'surveyjs-pro' ); ?></button>
                         <span id="wp-sjs-pro-pdf-status" role="status"></span>
-                        <p class="description"><?php esc_html_e( 'Uses the form and the settings above as they are now, including unsaved changes. Export entries as PDF on the Results page: the PDF link under an entry, or Export PDF in Bulk actions.', 'surveyjs-pro' ); ?></p>
+                        <p class="description"><?php esc_html_e( 'Uses the form and the settings above as they are now, including unsaved changes. Export entries as PDF on the Entries page: the PDF link under an entry, or Export PDF in Bulk actions.', 'surveyjs-pro' ); ?></p>
                     </td>
                 </tr>
             </table>

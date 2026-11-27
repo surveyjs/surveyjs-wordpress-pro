@@ -39,12 +39,12 @@ class SurveyJS_Pro {
             return;
         }
         if ( file_exists( WP_PLUGIN_DIR . '/surveyjs/surveyjs.php' ) ) {
-            $message = __( 'SurveyJS Forms Pro needs the SurveyJS Forms plugin. Activate SurveyJS Forms to use Pro.', 'surveyjs-pro' );
+            $message = __( 'SurveyJS Forms Add-on needs the SurveyJS Forms plugin. Activate SurveyJS Forms to use the add-on.', 'surveyjs-pro' );
             $link = array( admin_url( 'plugins.php' ), __( 'Go to Plugins', 'surveyjs-pro' ) );
         } else {
             $message = sprintf(
                 /* translators: %s: minimum SurveyJS Forms version */
-                __( 'SurveyJS Forms Pro needs the SurveyJS Forms plugin %s or later. Install and activate SurveyJS Forms to use Pro.', 'surveyjs-pro' ),
+                __( 'SurveyJS Forms Add-on needs the SurveyJS Forms plugin %s or later. Install and activate SurveyJS Forms to use the add-on.', 'surveyjs-pro' ),
                 SURVEYJS_PRO_MIN_BASE_VERSION
             );
             $link = array( admin_url( 'plugin-install.php?s=surveyjs&tab=search&type=term' ), __( 'Install SurveyJS Forms', 'surveyjs-pro' ) );

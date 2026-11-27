@@ -335,8 +335,10 @@ class SurveyJS_Pro_Dashboard {
         $active_forms = $data['active'];
         ?>
         <div class="wrap wp-sjs-pro-dashboard">
-            <h1 class="wp-heading-inline"><?php esc_html_e( 'Dashboard', 'surveyjs-pro' ); ?></h1>
+            <?php // Notices from WordPress and other plugins go here, above the title, on every plugin page. ?>
             <hr class="wp-header-end">
+            <?php // A block title: the range links below float left and would otherwise sit on the title's line. ?>
+            <h1><?php esc_html_e( 'Dashboard', 'surveyjs-pro' ); ?></h1>
 
             <?php if ( ! $data['forms'] ) : ?>
                 <div class="wp-sjs-pro-dashboard__panel wp-sjs-pro-dashboard__empty">

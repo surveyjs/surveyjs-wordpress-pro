@@ -1,15 +1,16 @@
 const { test, expect } = require("@playwright/test");
 
-const SETTINGS_URL = "/wp-admin/admin.php?page=surveyjs-settings";
+const SETTINGS_URL = "/wp-admin/admin.php?page=surveyjs-settings&tab=addon";
 const DASHBOARD_URL = "/wp-admin/admin.php?page=surveyjs-pro-dashboard";
 
 async function setColorMode(page, mode) {
   await page.goto(SETTINGS_URL);
-  await page.getByLabel("Color mode").selectOption(mode);
-  await Promise.all([
-    page.waitForURL(/settings-updated=true/),
-    page.getByRole("button", { name: "Save Changes" }).click()
-  ]);
+  const select = page.getByLabel("Color mode");
+  if ((await select.inputValue()) !== mode) {
+    const saved = page.waitForResponse(r => r.url().includes("/wp-admin/options.php") && r.request().method() === "POST"); // saved as soon as it changes
+    await select.selectOption(mode);
+    await saved;
+  }
 }
 
 function isDark(page) {

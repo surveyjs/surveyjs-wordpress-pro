@@ -18,11 +18,12 @@ function contract(...args) {
 
 async function setAdminStyle(page, on) {
   await page.goto(SETTINGS_URL);
-  await page.getByLabel(ADMIN_STYLE).setChecked(on);
-  await Promise.all([
-    page.waitForURL(/settings-updated=true/),
-    page.getByRole("button", { name: "Save Changes" }).click()
-  ]);
+  const box = page.getByLabel(ADMIN_STYLE);
+  if ((await box.isChecked()) !== on) {
+    const saved = page.waitForResponse(r => r.url().includes("/wp-admin/options.php") && r.request().method() === "POST"); // saved as soon as it changes
+    await box.setChecked(on);
+    await saved;
+  }
 }
 
 async function creatorStyles(page) {

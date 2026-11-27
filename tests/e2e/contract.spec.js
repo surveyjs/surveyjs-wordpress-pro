@@ -20,7 +20,7 @@ async function save(page) {
   const saved = page.waitForResponse(r => r.url().includes("action=SurveyJS_SaveSurvey"));
   await page.getByRole("button", { name: "Save", exact: true }).click();
   await saved;
-  await expect(page.locator("#wp-sjs-editor-notice")).toContainText("Form saved");
+  await expect(page.locator(".wp-sjs-snackbars")).toContainText("Form saved");
 }
 
 test.describe("extension contract of SurveyJS Forms", () => {
@@ -77,7 +77,7 @@ test.describe("extension contract of SurveyJS Forms", () => {
     await page.check(`input[name="result[]"][value="${entry}"]`);
     await page.selectOption("#bulk-action-selector-top", "contract_bulk");
     await page.click("#doaction");
-    await expect(page.locator(".notice-success")).toContainText("1 result updated.");
+    await expect(page.locator(".wp-sjs-snackbar.is-success")).toContainText("1 result updated.");
     expect(contract("state", formId).bulk).toEqual([entry]);
 
     await page.getByRole("link", { name: "Contract View" }).click();
