@@ -44,6 +44,9 @@ class SurveyJS_Pro_Libs {
         if ( self::$registered ) {
             return true;
         }
+        if ( ! SurveyJS_Pro::base_provides( array( 'SurveyJS_SurveyJS::CORE_SCRIPT', 'SurveyJS_SurveyJS::UI_SCRIPT', 'SurveyJS_SurveyJS::CORE_STYLE' ) ) ) {
+            return false;
+        }
         wp_register_script( self::LICENSE_HANDLE, false, array( SurveyJS_SurveyJS::CORE_SCRIPT ), SURVEYJS_PRO_VERSION );
         $license_key = SurveyJS_Pro_Settings::license_key();
         if ( '' !== $license_key ) {
@@ -74,8 +77,11 @@ class SurveyJS_Pro_Libs {
     }
 
     public static function script_url( $name ) {
+        if ( ! self::register() ) {
+            return '';
+        }
         $scripts = self::scripts();
-        return isset( $scripts[ $name ] ) && self::register() ? add_query_arg( 'ver', SURVEYJS_PRO_VERSION, self::url( $scripts[ $name ][0] ) ) : '';
+        return isset( $scripts[ $name ] ) ? add_query_arg( 'ver', SURVEYJS_PRO_VERSION, self::url( $scripts[ $name ][0] ) ) : '';
     }
 
     private static function url( $file ) {

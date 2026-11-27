@@ -10,7 +10,24 @@ class SurveyJS_Pro_Analytics {
     const PAGE_SIZE = 500;
     const MAX_ENTRIES = 10000;
 
+    const BASE_REQUIRES = array(
+        'SurveyJS_SurveyJS::CORE_SCRIPT',
+        'SurveyJS_SurveyJS::UI_SCRIPT',
+        'SurveyJS_SurveyJS::CORE_STYLE',
+        'SurveyJS_SurveyJS::CAPABILITY',
+        'SurveyJS_Forms::get',
+        'SurveyJS_Forms::find',
+        'SurveyJS_Results::current_view',
+        'SurveyJS_Entries::counts',
+        'SurveyJS_Entries::query',
+        'SurveyJS_Client::decode_survey_json',
+        'SurveyJS_Uploaded_Files::with_admin_urls',
+    );
+
     public static function init() {
+        if ( ! SurveyJS_Pro::requires( __CLASS__, self::BASE_REQUIRES ) ) {
+            return;
+        }
         add_filter( 'surveyjs_results_views', array( __CLASS__, 'views' ) );
         add_action( 'surveyjs_render_results_view', array( __CLASS__, 'render' ), 10, 2 );
         add_action( 'surveyjs_admin_enqueue_scripts', array( __CLASS__, 'enqueue' ) );

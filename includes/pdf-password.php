@@ -13,7 +13,17 @@ class SurveyJS_Pro_Pdf_Password {
     // AES-256 PDF passwords are cut to 127 bytes of UTF-8 by every reader.
     const MAX_BYTES = 127;
 
+    const BASE_REQUIRES = array(
+        'SurveyJS_SurveyJS::CAPABILITY',
+        'SurveyJS_Form_Settings::get',
+        'SurveyJS_Forms::find',
+        'SurveyJS_Forms::names',
+    );
+
     public static function init() {
+        if ( ! SurveyJS_Pro::requires( __CLASS__, self::BASE_REQUIRES ) ) {
+            return;
+        }
         add_filter( 'surveyjs_form_settings_defaults', array( __CLASS__, 'defaults' ) );
         add_filter( 'surveyjs_form_settings_sanitize', array( __CLASS__, 'sanitize' ), 10, 2 );
         add_action( 'surveyjs_pro_pdf_editor_rows', array( __CLASS__, 'render_editor_rows' ), 20 );

@@ -52,7 +52,18 @@ class SurveyJS_Pro_Creator {
         'tr' => array( 'turkish', 'tr' ),
     );
 
+    const BASE_REQUIRES = array(
+        'SurveyJS_SurveyJS::CORE_SCRIPT',
+        'SurveyJS_SurveyJS::UI_SCRIPT',
+        'SurveyJS_SurveyJS::CORE_STYLE',
+        'SurveyJS_SurveyJS::EDITOR_SCRIPT',
+        'SurveyJS_Themes::presets',
+    );
+
     public static function init() {
+        if ( ! SurveyJS_Pro::requires( __CLASS__, self::BASE_REQUIRES ) ) {
+            return;
+        }
         add_filter( 'surveyjs_editor_tabs', array( __CLASS__, 'tabs' ) );
         add_filter( 'surveyjs_visual_editor_enabled', array( __CLASS__, 'enabled' ) );
         add_action( 'surveyjs_render_editor', array( __CLASS__, 'render' ), 10, 2 );

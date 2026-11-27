@@ -13,7 +13,27 @@ class SurveyJS_Pro_Pdf_Respondent {
 
     private static $attachment = null;
 
+    const BASE_REQUIRES = array(
+        'SurveyJS_SurveyJS::CORE_SCRIPT',
+        'SurveyJS_SurveyJS::UI_SCRIPT',
+        'SurveyJS_SurveyJS::CORE_STYLE',
+        'SurveyJS_SurveyJS::CAPABILITY',
+        'SurveyJS_Form_Settings::get',
+        'SurveyJS_Forms::find',
+        'SurveyJS_Entries::find_entry',
+        'SurveyJS_Entries::format_date',
+        'SurveyJS_Notification::MAX_ATTACHMENTS_SIZE',
+        'SurveyJS_Client::decode_survey_json',
+        'SurveyJS_Themes::decode',
+        'SurveyJS_Uploaded_Files::stored_name',
+        'SurveyJS_Uploaded_Files::signed_url',
+        'SurveyJS_Uploaded_Files::with_admin_urls',
+    );
+
     public static function init() {
+        if ( ! SurveyJS_Pro::requires( __CLASS__, self::BASE_REQUIRES ) ) {
+            return;
+        }
         add_action( self::DELETE_HOOK, array( __CLASS__, 'delete_pdf' ) );
         add_filter( 'surveyjs_form_settings_defaults', array( __CLASS__, 'defaults' ) );
         add_filter( 'surveyjs_form_settings_sanitize', array( __CLASS__, 'sanitize' ), 10, 2 );

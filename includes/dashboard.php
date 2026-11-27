@@ -14,7 +14,22 @@ class SurveyJS_Pro_Dashboard {
     private static $hook = '';
     private static $data = null;
 
+    const BASE_REQUIRES = array(
+        'SurveyJS_SurveyJS::CORE_SCRIPT',
+        'SurveyJS_SurveyJS::UI_SCRIPT',
+        'SurveyJS_SurveyJS::CORE_STYLE',
+        'SurveyJS_SurveyJS::CAPABILITY',
+        'SurveyJS_SurveyJS::MENU_SLUG',
+        'SurveyJS_Forms::names',
+        'SurveyJS_Entries::table',
+        'SurveyJS_Entries::status_label',
+        'SurveyJS_Entries::format_date',
+    );
+
     public static function init() {
+        if ( ! SurveyJS_Pro::requires( __CLASS__, self::BASE_REQUIRES ) ) {
+            return;
+        }
         add_action( 'surveyjs_admin_menu', array( __CLASS__, 'add_page' ), 10, 2 );
         add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
     }
@@ -199,7 +214,7 @@ class SurveyJS_Pro_Dashboard {
     }
 
     public static function views_enabled() {
-        return class_exists( 'SurveyJS_Form_Stats' ) && SurveyJS_Form_Stats::enabled();
+        return SurveyJS_Pro::base_provides( array( 'SurveyJS_Form_Stats::enabled', 'SurveyJS_Form_Stats::totals', 'SurveyJS_Form_Stats::timeline', 'SurveyJS_Form_Stats::format_conversion' ) ) && SurveyJS_Form_Stats::enabled();
     }
 
     private static function views_timeline( $form_ids, $period ) {

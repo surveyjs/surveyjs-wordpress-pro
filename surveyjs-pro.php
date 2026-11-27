@@ -16,6 +16,11 @@ Domain Path: /languages
 */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+// A second copy of the add-on (another folder name) would redeclare every class.
+if ( defined( 'SURVEYJS_PRO_VERSION' ) ) {
+    return;
+}
+
 define( 'SURVEYJS_PRO_VERSION', '3.2.4' );
 define( 'SURVEYJS_PRO_DB_VERSION', '1' );
 define( 'SURVEYJS_PRO_MIN_BASE_VERSION', '3.2.4' );

@@ -5,7 +5,16 @@ class SurveyJS_Pro_AI {
 
     const SENSITIVE_SETTINGS = array( 'proPdfAttachNotification', 'proPdfAttachAutoReply', 'proPdfEmailLink', 'proPdfLinkDays' );
 
+    const BASE_REQUIRES = array(
+        'SurveyJS_Forms::names',
+        'SurveyJS_AI_Abilities::register_ability',
+        'SurveyJS_AI_Abilities::DATA_NOTICE',
+    );
+
     public static function init() {
+        if ( ! SurveyJS_Pro::requires( __CLASS__, self::BASE_REQUIRES ) ) {
+            return;
+        }
         add_action( 'surveyjs_ai_register_abilities', array( __CLASS__, 'register' ) );
         add_filter( 'surveyjs_ai_form_settings_schema', array( __CLASS__, 'form_settings_schema' ) );
         add_filter( 'surveyjs_ai_sensitive_form_settings', array( __CLASS__, 'sensitive_settings' ) );
@@ -32,9 +41,6 @@ class SurveyJS_Pro_AI {
     }
 
     public static function register() {
-        if ( ! class_exists( 'SurveyJS_AI_Abilities' ) ) {
-            return;
-        }
         SurveyJS_AI_Abilities::register_ability( 'surveyjs-pro/get-settings', array(
             'label'            => __( 'Get SurveyJS Forms Add-on settings', 'surveyjs-pro' ),
             'description'      => 'Returns the site-wide settings of SurveyJS Forms Add-on: whether forms are edited in Survey Creator, the color mode and the style of Survey Creator, Charts and Dashboard, and whether a SurveyJS license key is entered. PDF settings are per form: the proPdf* keys of surveyjs-get-form-settings. ' . SurveyJS_AI_Abilities::DATA_NOTICE,

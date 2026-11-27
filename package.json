@@ -5,7 +5,8 @@
     "build": "node scripts/build.js",
     "copy-libs": "node scripts/copy-libs.js",
     "make-pot": "node scripts/make-pot.js",
-    "test:e2e": "playwright test --project=setup --project=e2e"
+    "test:e2e": "playwright test --project=setup --project=e2e",
+    "test:unit": "playwright test --project=unit"
   },
   "devDependencies": {
     "@playwright/test": "1.48.2",

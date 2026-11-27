@@ -11,7 +11,27 @@ class SurveyJS_Pro_Pdf {
     const DEFAULT_ACCENT = '#19b394';
     const LETTER_LOCALES = array( 'en_US', 'en_CA', 'fr_CA', 'es_MX', 'es_CL', 'es_CO', 'es_VE', 'es_GT', 'es_CR', 'es_PR', 'es_US' );
 
+    const BASE_REQUIRES = array(
+        'SurveyJS_SurveyJS::CORE_SCRIPT',
+        'SurveyJS_SurveyJS::UI_SCRIPT',
+        'SurveyJS_SurveyJS::CORE_STYLE',
+        'SurveyJS_SurveyJS::EDITOR_SCRIPT',
+        'SurveyJS_SurveyJS::CAPABILITY',
+        'SurveyJS_Form_Settings::get',
+        'SurveyJS_Forms::get',
+        'SurveyJS_Forms::find',
+        'SurveyJS_Client::decode_survey_json',
+        'SurveyJS_Themes::decode',
+        'SurveyJS_Entries::query',
+        'SurveyJS_Entries::STATUSES',
+        'SurveyJS_Entries::format_date',
+        'SurveyJS_Uploaded_Files::with_admin_urls',
+    );
+
     public static function init() {
+        if ( ! SurveyJS_Pro::requires( __CLASS__, self::BASE_REQUIRES ) ) {
+            return;
+        }
         add_filter( 'surveyjs_form_settings_defaults', array( __CLASS__, 'defaults' ) );
         add_filter( 'surveyjs_form_settings_sanitize', array( __CLASS__, 'sanitize' ), 10, 2 );
         add_filter( 'surveyjs_editor_tabs', array( __CLASS__, 'editor_tabs' ) );
