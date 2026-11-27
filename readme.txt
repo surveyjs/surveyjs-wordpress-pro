@@ -34,7 +34,7 @@ Survey Creator: build forms visually right in the form editor — drag & drop de
 When the AI connection of SurveyJS Forms is on (SurveyJS Forms > Settings > AI MCP), the add-on adds to it:
 
 * PDF settings of each form (page size, fonts, colors, header, footer, watermark, Download PDF button, PDF in emails and others): the AI app changes them like other form settings, as a draft that you review and save in the form editor. The form editor warns when the AI changed PDF attachments or PDF links in emails.
-* The add-on's admin settings: Survey Creator on or off, its color mode and style. They change only the WordPress admin and apply right away. The AI app can't read or change the license key.
+* The add-on's admin settings: Survey Creator on or off, its color mode and style. They change only the WordPress admin and apply right away.
 
 The add-on sends nothing to external services for this.
 
@@ -44,7 +44,6 @@ The add-on needs SurveyJS Forms 3.2.4 or later. When SurveyJS Forms is missing o
 
 1. Install and activate SurveyJS Forms from the WordPress.org plugin directory.
 2. Upload the SurveyJS Forms Add-on zip in Plugins > Add New > Upload Plugin and activate it.
-3. Enter your SurveyJS license key in SurveyJS Forms > Settings > Add-on.
 
 On multisite, network-activate the add-on so it can follow SurveyJS Forms updates.
 

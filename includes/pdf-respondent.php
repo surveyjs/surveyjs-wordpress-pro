@@ -163,7 +163,7 @@ class SurveyJS_Addon_Pdf_Respondent {
         if ( wp_script_is( self::SCRIPT, 'registered' ) || ! SurveyJS_Addon_Libs::register() ) {
             return;
         }
-        wp_register_script( self::SCRIPT, plugins_url( 'assets/pdf-respondent.js', SURVEYJS_ADDON_FILE ), array( SurveyJS_Addon_Libs::LICENSE_HANDLE ), SURVEYJS_ADDON_VERSION, true );
+        wp_register_script( self::SCRIPT, plugins_url( 'assets/pdf-respondent.js', SURVEYJS_ADDON_FILE ), array( SurveyJS_SurveyJS::CORE_SCRIPT ), SURVEYJS_ADDON_VERSION, true );
         $config = $extra + array(
             'scripts'     => array(
                 'jspdf'    => SurveyJS_Addon_Libs::script_url( 'jspdf' ),

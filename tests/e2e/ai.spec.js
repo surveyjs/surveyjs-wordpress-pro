@@ -60,9 +60,7 @@ test.describe("AI connection (MCP) with the add-on", () => {
     expect(tools).toEqual(expect.arrayContaining(["surveyjs-forms-addon-get-settings", "surveyjs-forms-addon-update-settings", "surveyjs-get-form-settings"]));
 
     const settings = await tool("surveyjs-forms-addon-get-settings");
-    expect(settings.settings).toHaveProperty("creator");
-    expect(settings.settings).toHaveProperty("license_key_entered");
-    expect(JSON.stringify(settings)).not.toContain(state.addonSettings.license_key || "no-license-key");
+    expect(Object.keys(settings.settings).sort()).toEqual(["admin_style", "admin_theme", "creator"]);
 
     const theme = state.addonSettings.admin_theme === "dark" ? "light" : "dark";
     const updated = await tool("surveyjs-forms-addon-update-settings", { admin_theme: theme });

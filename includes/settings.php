@@ -12,7 +12,6 @@ class SurveyJS_Addon_Settings {
 
     public static function defaults() {
         return array(
-            'license_key' => '',
             'creator'     => true,
             'admin_theme' => 'auto',
             'admin_style' => true,
@@ -21,11 +20,7 @@ class SurveyJS_Addon_Settings {
 
     public static function all() {
         $settings = get_option( self::OPTION, array() );
-        return array_merge( self::defaults(), is_array( $settings ) ? $settings : array() );
-    }
-
-    public static function license_key() {
-        return (string) self::all()['license_key'];
+        return array_intersect_key( array_merge( self::defaults(), is_array( $settings ) ? $settings : array() ), self::defaults() );
     }
 
     public static function feature( $name ) {
@@ -42,27 +37,19 @@ class SurveyJS_Addon_Settings {
             'sanitize_callback' => array( __CLASS__, 'sanitize' ),
             'default'           => self::defaults(),
         ) );
-        add_settings_section( self::SECTION, esc_html__( 'SurveyJS Forms Add-on', 'surveyjs-forms-addon' ), array( __CLASS__, 'render_section' ), $page );
+        add_settings_section( self::SECTION, esc_html__( 'SurveyJS Forms Add-on', 'surveyjs-forms-addon' ), null, $page );
         add_settings_field( 'surveyjs_addon_creator', esc_html__( 'Form editor', 'surveyjs-forms-addon' ), array( __CLASS__, 'render_creator' ), $page, self::SECTION );
-        add_settings_field( 'surveyjs_addon_license_key', esc_html__( 'SurveyJS License Key', 'surveyjs-forms-addon' ), array( __CLASS__, 'render_license_key' ), $page, self::SECTION, array( 'label_for' => 'sjs-addon-license-key' ) );
     }
 
     public static function sanitize( $input ) {
         $input = is_array( $input ) ? $input : array();
         $sanitized = self::all();
-        if ( isset( $input['license_key'] ) ) {
-            $sanitized['license_key'] = trim( sanitize_text_field( (string) $input['license_key'] ) );
-        }
         $sanitized['creator'] = ! empty( $input['creator'] );
         $sanitized['admin_style'] = ! empty( $input['admin_style'] );
         if ( isset( $input['admin_theme'] ) && in_array( $input['admin_theme'], SurveyJS_Addon_Admin_Theme::MODES, true ) ) {
             $sanitized['admin_theme'] = $input['admin_theme'];
         }
-        return array_intersect_key( $sanitized, self::defaults() );
-    }
-
-    public static function render_section() {
-        echo '<p>' . esc_html__( 'One SurveyJS license key covers Survey Creator, PDF Generator and Dashboard used by this plugin.', 'surveyjs-forms-addon' ) . '</p>';
+        return $sanitized;
     }
 
     public static function render_creator() {
@@ -72,14 +59,6 @@ class SurveyJS_Addon_Settings {
             checked( self::feature( 'creator' ), true, false ),
             esc_html__( 'Edit forms in Survey Creator', 'surveyjs-forms-addon' ),
             esc_html__( 'Turn off to edit forms the classic way, as in the free version: the Config tab (JSON editor) comes back instead of Survey Creator. Your forms stay as they are, and you can turn Creator on again at any time.', 'surveyjs-forms-addon' )
-        );
-    }
-
-    public static function render_license_key() {
-        printf(
-            '<input type="text" name="%1$s[license_key]" id="sjs-addon-license-key" class="regular-text code" value="%2$s" autocomplete="off" spellcheck="false" />',
-            esc_attr( self::OPTION ),
-            esc_attr( self::license_key() )
         );
     }
 }

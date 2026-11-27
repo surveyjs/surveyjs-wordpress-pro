@@ -8,14 +8,14 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-27T16:07:14+00:00\n"
+"POT-Creation-Date: 2026-11-27T16:18:23+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: surveyjs-forms-addon\n"
 
 #. Plugin Name of the plugin
 #: surveyjs-forms-addon.php
-#: includes/settings.php:45
+#: includes/settings.php:40
 msgid "SurveyJS Forms Add-on"
 msgstr ""
 
@@ -72,11 +72,11 @@ msgstr ""
 msgid "Survey Creator takes the admin color scheme, font size, input fields and compact sizes of the WordPress admin. Turn off to use the default SurveyJS look. Color mode applies either way."
 msgstr ""
 
-#: includes/ai.php:45
+#: includes/ai.php:44
 msgid "Get SurveyJS Forms Add-on settings"
 msgstr ""
 
-#: includes/ai.php:51
+#: includes/ai.php:50
 msgid "Update SurveyJS Forms Add-on settings"
 msgstr ""
 
@@ -887,23 +887,15 @@ msgstr ""
 msgid "Install SurveyJS Forms"
 msgstr ""
 
-#: includes/settings.php:46
+#: includes/settings.php:41
 msgid "Form editor"
 msgstr ""
 
-#: includes/settings.php:47
-msgid "SurveyJS License Key"
-msgstr ""
-
-#: includes/settings.php:65
-msgid "One SurveyJS license key covers Survey Creator, PDF Generator and Dashboard used by this plugin."
-msgstr ""
-
-#: includes/settings.php:73
+#: includes/settings.php:60
 msgid "Edit forms in Survey Creator"
 msgstr ""
 
-#: includes/settings.php:74
+#: includes/settings.php:61
 msgid "Turn off to edit forms the classic way, as in the free version: the Config tab (JSON editor) comes back instead of Survey Creator. Your forms stay as they are, and you can turn Creator on again at any time."
 msgstr ""
 

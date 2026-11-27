@@ -25,7 +25,6 @@ class SurveyJS_Addon_AI {
 
     public static function secret_values( $values ) {
         $values = (array) $values;
-        $values[] = SurveyJS_Addon_Settings::license_key();
         if ( SurveyJS_Addon_Pdf_Password::available() ) {
             foreach ( SurveyJS_Forms::names() as $form ) {
                 $values[] = SurveyJS_Addon_Pdf_Password::password( (int) $form->id );
@@ -43,13 +42,13 @@ class SurveyJS_Addon_AI {
     public static function register() {
         SurveyJS_AI_Abilities::register_ability( 'surveyjs-forms-addon/get-settings', array(
             'label'            => __( 'Get SurveyJS Forms Add-on settings', 'surveyjs-forms-addon' ),
-            'description'      => 'Returns the site-wide settings of SurveyJS Forms Add-on: whether forms are edited in Survey Creator, the color mode and the style of Survey Creator, Charts and Dashboard, and whether a SurveyJS license key is entered. PDF settings are per form: the addonPdf* keys of surveyjs-get-form-settings. ' . SurveyJS_AI_Abilities::DATA_NOTICE,
+            'description'      => 'Returns the site-wide settings of SurveyJS Forms Add-on: whether forms are edited in Survey Creator, and the color mode and the style of Survey Creator, Charts and Dashboard. PDF settings are per form: the addonPdf* keys of surveyjs-get-form-settings. ' . SurveyJS_AI_Abilities::DATA_NOTICE,
             'execute_callback' => array( __CLASS__, 'get_settings' ),
             'meta'             => array( 'annotations' => array( 'readonly' => true, 'destructive' => false, 'idempotent' => true ) ),
         ) );
         SurveyJS_AI_Abilities::register_ability( 'surveyjs-forms-addon/update-settings', array(
             'label'            => __( 'Update SurveyJS Forms Add-on settings', 'surveyjs-forms-addon' ),
-            'description'      => 'Changes how the form editor looks for site administrators: creator (edit forms in Survey Creator instead of the JSON editor), admin_theme (color mode), admin_style (match the WordPress admin style). Pass only the keys to change. These settings apply right away, not as a draft, and respondents see no difference. The license key can be changed only by a person in the WordPress admin.',
+            'description'      => 'Changes how the form editor looks for site administrators: creator (edit forms in Survey Creator instead of the JSON editor), admin_theme (color mode), admin_style (match the WordPress admin style). Pass only the keys to change. These settings apply right away, not as a draft, and respondents see no difference.',
             'input_schema'     => array(
                 'type'       => 'object',
                 'properties' => array(
@@ -77,10 +76,9 @@ class SurveyJS_Addon_AI {
     private static function settings_view() {
         $settings = SurveyJS_Addon_Settings::all();
         return array(
-            'creator'             => (bool) $settings['creator'],
-            'admin_theme'         => (string) $settings['admin_theme'],
-            'admin_style'         => (bool) $settings['admin_style'],
-            'license_key_entered' => '' !== SurveyJS_Addon_Settings::license_key(),
+            'creator'     => (bool) $settings['creator'],
+            'admin_theme' => (string) $settings['admin_theme'],
+            'admin_style' => (bool) $settings['admin_style'],
         );
     }
 

@@ -38,15 +38,4 @@ class SurveyJS_Addon_Install {
         update_option( self::LOCK_OPTION, time(), false );
         return true;
     }
-
-    private static function upgrade_to_1() {
-        if ( '' !== SurveyJS_Addon_Settings::license_key() ) {
-            return;
-        }
-        $base = (array) get_option( 'surveyjs-settings' );
-        $key = trim( sanitize_text_field( (string) ( $base['license_key'] ?? '' ) ) );
-        if ( '' !== $key ) {
-            SurveyJS_Addon_Settings::update( array( 'license_key' => $key ) );
-        }
-    }
 }

@@ -13,9 +13,9 @@ Plugin files are at the repository root, so `git archive` gives the plugin zip a
 | `surveyjs-forms-addon.php` | Plugin header (`Requires Plugins: surveyjs`, `Update URI`), constants, `require`s, boot on `plugins_loaded`. |
 | `includes/plugin.php` | `SurveyJS_Addon`: SurveyJS Forms version guard and its admin notice, boots the rest, fires `surveyjs_addon_loaded`. |
 | `includes/install.php` | `SurveyJS_Addon_Install`: migrations on `init` by a stored version number. |
-| `includes/settings.php` | `SurveyJS_Addon_Settings`: the add-on section on SurveyJS Forms' Settings page (license key). |
+| `includes/settings.php` | `SurveyJS_Addon_Settings`: the add-on section on SurveyJS Forms' Settings page. |
 | `includes/updater.php` | `SurveyJS_Addon_Updater`: the add-on follows SurveyJS Forms updates and shows the version notice (see "Updates"). |
-| `includes/libs.php` | `SurveyJS_Addon_Libs`: registers/enqueues the SurveyJS libraries and applies the license key. |
+| `includes/libs.php` | `SurveyJS_Addon_Libs`: registers/enqueues the SurveyJS libraries. |
 | `includes/admin-theme.php`, `assets/admin-theme.{css,js}` | `SurveyJS_Addon_Admin_Theme`: one palette and light/dark mode for Creator, Charts and Dashboard (see "Admin colors"). |
 | `includes/creator.php`, `assets/creator.js`, `assets/creator.css` | `SurveyJS_Addon_Creator`: Survey Creator in the form editor (see "Creator"). |
 | `includes/analytics.php`, `assets/analytics.js`, `assets/analytics.css` | `SurveyJS_Addon_Analytics`: the Charts view of the results page. |
@@ -41,8 +41,6 @@ WordPress loads `surveyjs-forms-addon/` before `surveyjs/` (alphabetical), so no
 ### Migrations
 
 On WordPress VIP `wpcom_vip_load_plugin()` does not fire activation hooks, so there is no activation hook. `SurveyJS_Addon_Install::maybe_upgrade()` runs on `init` (priority 1) and calls `upgrade_to_N()` for every N between the stored `surveyjs_addon_db_version` and `SURVEYJS_ADDON_DB_VERSION`, under a lock option. To add a migration: bump `SURVEYJS_ADDON_DB_VERSION` and add `private static function upgrade_to_<N>()`. Use `dbDelta()` for the add-on tables.
-
-`upgrade_to_1()` copies SurveyJS Forms' old license key (`surveyjs-settings['license_key']`) into the add-on's setting when the add-on's is empty.
 
 ### Libraries
 
@@ -101,8 +99,6 @@ SurveyJS_Addon_Libs::enqueue( 'analytics' );           // chart.js + datalabels 
 
 `enqueue()` returns `false` for an unknown bundle. `script_url( $name )` returns the versioned URL of a script handle's file (for loading it on demand, e.g. `pdf-spacious`), or `''`. Call it from `admin_enqueue_scripts` or `surveyjs_admin_enqueue_scripts`. To make your own script depend on a library, call `SurveyJS_Addon_Libs::register()` (or `enqueue()`) first and use `SurveyJS_Addon_Libs::handle( $name )` as the dependency. Handles (`surveyjs-forms-addon-<name>`): `creator-core`, `creator`, `jspdf`, `pdf`, `pdf-spacious`, `chartjs`, `chartjs-datalabels`, `analytics`; styles `creator`, `analytics`.
 
-**License key.** All library handles depend on `surveyjs-forms-addon-license`, a script without a file that runs `Survey.setLicenseKey(<key>)` right after survey-core when the key is set. One key covers Creator, PDF and Dashboard. Don't call `setLicenseKey` yourself.
-
 ```php
 add_action( 'surveyjs_admin_enqueue_scripts', function ( $page ) {
     if ( 'surveyjs_editor' === $page && SurveyJS_Addon_Libs::enqueue( 'creator' ) ) {
@@ -145,7 +141,7 @@ Color mode — Settings → Add-on → "Color mode" (`surveyjs_addon_settings[ad
 
 ### Settings
 
-`SurveyJS_Addon_Settings` registers the option `surveyjs_addon_settings` in SurveyJS Forms' option group, so it is saved by SurveyJS Forms' Settings form (SurveyJS Forms > Settings, Add-on tab). Every section that is not SurveyJS Forms' goes to the Add-on tab, and saving that tab saves only the options of the group other than SurveyJS Forms' `surveyjs-settings` (the General and Spam Protection tabs save only `surveyjs-settings`), so a tab never empties the options of another. API: `SurveyJS_Addon_Settings::all()`, `license_key()`, `update( array $values )`, `defaults()`. To add a global the add-on setting: add its key to `defaults()`, sanitize it in `sanitize()`, and add a field in `register()` (or your own section on `surveyjs_register_settings`).
+`SurveyJS_Addon_Settings` registers the option `surveyjs_addon_settings` in SurveyJS Forms' option group, so it is saved by SurveyJS Forms' Settings form (SurveyJS Forms > Settings, Add-on tab). Every section that is not SurveyJS Forms' goes to the Add-on tab, and saving that tab saves only the options of the group other than SurveyJS Forms' `surveyjs-settings` (the General and Spam Protection tabs save only `surveyjs-settings`), so a tab never empties the options of another. API: `SurveyJS_Addon_Settings::all()` (only the keys of `defaults()`), `update( array $values )`, `defaults()`. To add a global the add-on setting: add its key to `defaults()`, sanitize it in `sanitize()`, and add a field in `register()` (or your own section on `surveyjs_register_settings`).
 
 ### Updates
 
@@ -191,7 +187,7 @@ Survey Creator V3 replaces the JSON editing in SurveyJS Forms' form editor (Edit
 `SurveyJS_Addon_Pdf_Respondent` (`includes/pdf-respondent.php`, `assets/pdf-respondent.js`) adds the "After submit" row to the PDF tab through the add-on's action `surveyjs_addon_pdf_editor_rows` (argument: the form `$survey`; fires inside the tab's `<table class="form-table">`, before the Export row), the "PDF Attachment" rows and the "PDF Link in Emails" group to the Email tab through SurveyJS Forms' `surveyjs_editor_email_rows`, and works only through the SurveyJS Forms hooks below. All PDFs are made in the browser by `createPdf` of `assets/pdf.js`, which exposes `window.SurveyJSAddonPdf = { createPdf, download, fileBase }`; its `config.page` is `front` there, so it runs neither the editor nor the results code.
 
 - **Per-form settings** (all off by default): `addonPdfDownload`, `addonPdfAttachNotification`, `addonPdfAttachAutoReply`, `addonPdfEmailLink`, `addonPdfLinkDays` (0–365, default 30, 0 = no expiry).
-- **Front end.** For a form with `addonPdfDownload` or an attachment option on (and that email on), `surveyjs_enqueue_form_assets` enqueues `pdf-respondent.js` (footer, a few KB, depends on the license handle) and `surveyjs_form_client_config` adds `addonPdf` (`download`, `attach`, `settings`) to the form config. jsPDF, survey-pdf, the Spacious preset and `pdf.js` (~1 MB) are loaded on demand, in that order, by URL from `SurveyJS_Addon_Libs::script_url()`; the Noto Sans or IBM Plex Sans Hebrew font files only when the PDF needs them.
+- **Front end.** For a form with `addonPdfDownload` or an attachment option on (and that email on), `surveyjs_enqueue_form_assets` enqueues `pdf-respondent.js` (footer, a few KB, depends on survey-core) and `surveyjs_form_client_config` adds `addonPdf` (`download`, `attach`, `settings`) to the form config. jsPDF, survey-pdf, the Spacious preset and `pdf.js` (~1 MB) are loaded on demand, in that order, by URL from `SurveyJS_Addon_Libs::script_url()`; the Noto Sans or IBM Plex Sans Hebrew font files only when the PDF needs them.
 - **Download PDF after submit.** On `surveyjs:submitted` a button `.wp-sjs-addon-pdf-download button` (class `wp-element-button`) is added after the form; a click loads the libraries and downloads `<form title>-entry-<id>.pdf` built from the respondent's answers. `surveyjs_save_result_response` returns `addonPdf: { id, date }` for the entry header (no header when entries are not stored).
 - **Attachment.** On `surveyjs:before-submit` the browser builds the PDF and adds it as the file field `AddonPdf` (SurveyJS Forms then sends multipart). If it is not ready in 20 s, fails, or is over the size limit (`surveyjs_addon_pdf_attachment_max_size`, default 10 MB, capped by `wp_max_upload_size()` and by `post_max_size` together with the answers) the entry is sent without it. The server (`surveyjs_notification_attachments`) accepts it only in the `SurveyJS_SaveResult` request (nonce already checked by SurveyJS Forms), only for the recipient whose option is on, only a real upload within the size limit that starts with `%PDF-`; it is moved to `get_temp_dir()` under a random name, attached as `<form>-entry-<id>.pdf` (skipped if the email would exceed `SurveyJS_Notification::MAX_ATTACHMENTS_SIZE`) and deleted a day later by a one-off cron event (`surveyjs_addon_delete_pdf`), so mail plugins that queue emails still find it. The PDF is made by the respondent's browser, so it can be crafted; the stored entry stays the source of truth.
 - **Link in emails.** Mail tags `{pdf_link}` (HTML: a "Download PDF" link; text: the URL) and `{pdf_url}` (the URL) through `surveyjs_notification_tags`; empty unless `addonPdfEmailLink` is on and the entry is stored. The URL is `home_url( '/?surveyjs_pdf=<form>.<entry>.<expires>.<signature>' )`, signature = HMAC-SHA256 of `surveyjs-forms-addon-pdf|form|entry|expires` with `wp_salt( 'auth' )` (`SurveyJS_Addon_Pdf_Respondent::link_url()`). On `template_redirect` the page checks the signature, the expiry (users with `SurveyJS_SurveyJS::CAPABILITY` may open expired links), that the form is published and still has `addonPdfEmailLink` on, then prints a standalone page (`noindex`, `no-referrer`, no cache) with that entry only; the browser builds the PDF, shows it in a frame and offers Download PDF. File answers get admin URLs for admins and 24-hour signed URLs otherwise. Changing the salts or turning the option off invalidates all links.
@@ -494,7 +490,7 @@ Events of the form editor: `surveyjs:editor-flush` (before the AI chat reads the
 
 Other filters: `surveyjs_ai_question_types` (question types the JSON check accepts besides the built-in ones), `surveyjs_ai_instructions` (the MCP server instructions), `surveyjs_ai_docs_server_url` (the SurveyJS documentation MCP server), `surveyjs_ai_plugin_guide` (the plugin guide served by `surveyjs-get-plugin-guide` and `surveyjs://guide/plugin`; the add-on appends its features), `surveyjs_ai_chat_abilities` (abilities the AI chat may call), `surveyjs_ai_chat_system_instruction`, `surveyjs_ai_chat_providers` (provider rows of the chat checklist).
 
-The add-on (`includes/ai.php`) adds `surveyjs-forms-addon/get-settings` and `surveyjs-forms-addon/update-settings` (Creator, color mode, Creator style; never the license key), descriptions of the `addonPdf*` form settings, and marks PDF attachments and PDF links in emails as sensitive.
+The add-on (`includes/ai.php`) adds `surveyjs-forms-addon/get-settings` and `surveyjs-forms-addon/update-settings` (Creator, color mode, Creator style), descriptions of the `addonPdf*` form settings, and marks PDF attachments and PDF links in emails as sensitive.
 
 ### Other SurveyJS Forms hooks (already existed)
 

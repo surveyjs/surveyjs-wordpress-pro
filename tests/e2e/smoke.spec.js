@@ -8,19 +8,21 @@ const SETTINGS_URL = "/wp-admin/admin.php?page=surveyjs-settings&tab=addon";
 const BASE_LIBS = "/wp-content/plugins/surveyjs/libs/library/";
 const ADDON_LIBS = "/wp-content/plugins/surveyjs-forms-addon/libs/";
 
-function basePlugin(action) {
-  const output = execFileSync("docker", ["exec", "-i", WP_CONTAINER, "php", "--", action], {
-    input: fs.readFileSync(path.join(__dirname, "fixtures/base-plugin.php")),
+function php(fixture, ...args) {
+  const output = execFileSync("docker", ["exec", "-i", WP_CONTAINER, "php", "--", ...args], {
+    input: fs.readFileSync(path.join(__dirname, "fixtures", fixture)),
     stdio: ["pipe", "pipe", "ignore"]
   });
   return JSON.parse(output.toString().trim().split("\n").pop());
 }
 
-// The Add-on tab saves a field when it is left or on Enter.
-async function saveSettings(page) {
-  const saved = page.waitForResponse(r => r.url().includes("/wp-admin/options.php") && r.request().method() === "POST");
-  await page.keyboard.press("Enter");
-  await saved;
+function basePlugin(action) {
+  return php("base-plugin.php", action);
+}
+
+async function selectAndSave(select, value) {
+  await select.selectOption(value);
+  await expect.poll(() => php("addon-settings.php", "get").admin_theme).toBe(value);
 }
 
 async function addScripts(page, urls) {
@@ -36,21 +38,23 @@ test("The add-on is active next to SurveyJS Forms", async ({ page }) => {
   await expect(page.locator(".surveyjs-forms-addon-base-notice")).toHaveCount(0);
 });
 
-test("the license key is saved in the add-on section of Settings", async ({ page }) => {
-  await page.goto(SETTINGS_URL);
-  await expect(page.getByRole("heading", { name: "SurveyJS Forms Add-on" })).toBeVisible();
-  const field = page.getByLabel("SurveyJS License Key");
-  const original = await field.inputValue();
-  const key = `e2e-license-${Date.now()}`;
+test("The Add-on tab has no license key, and a license_key left in the stored settings is dropped on save", async ({ page }) => {
+  test.skip(!WP_CONTAINER, "Set WP_CONTAINER to the WordPress container name to write the stored settings");
+  const original = php("addon-settings.php", "get");
+  const stale = `e2e-stale-license-${Date.now()}`;
   try {
-    await field.fill(key);
-    await saveSettings(page);
+    php("addon-settings.php", "set", JSON.stringify({ ...(original || {}), license_key: stale }));
     await page.goto(SETTINGS_URL);
-    await expect(page.getByLabel("SurveyJS License Key")).toHaveValue(key);
+    await expect(page.getByRole("heading", { name: "SurveyJS Forms Add-on" })).toBeVisible();
+    await expect(page.locator("#wpbody-content")).not.toContainText(/license key/i);
+    expect(await page.content()).not.toContain(stale);
+    const mode = page.getByLabel("Color mode");
+    const current = await mode.inputValue();
+    await selectAndSave(mode, current === "dark" ? "light" : "dark");
+    await selectAndSave(mode, current);
+    expect(php("addon-settings.php", "get")).not.toHaveProperty("license_key");
   } finally {
-    await page.goto(SETTINGS_URL);
-    await page.getByLabel("SurveyJS License Key").fill(original);
-    await saveSettings(page);
+    php("addon-settings.php", "set", JSON.stringify(original));
   }
 });
 
@@ -77,12 +81,11 @@ test("The add-on libraries run on the Form Library shipped with SurveyJS Forms",
     new SurveyCreator.SurveyCreator({}).render(host);
     const pdf = await new SurveyPDF.SurveyPDF(json).raw();
     return {
-      setLicenseKey: typeof Survey.setLicenseKey,
       pdf: pdf.slice(0, 5),
       analytics: typeof SurveyAnalytics.VisualizationPanel
     };
   });
-  expect(result).toEqual({ setLicenseKey: "function", pdf: "%PDF-", analytics: "function" });
+  expect(result).toEqual({ pdf: "%PDF-", analytics: "function" });
   await expect(page.locator(".svc-creator")).toBeVisible();
   expect(errors).toEqual([]);
 });

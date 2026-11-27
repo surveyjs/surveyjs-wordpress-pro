@@ -6,7 +6,7 @@ SurveyJS Forms Add-on is an add-on for the free [SurveyJS Forms](https://wordpre
 - **Charts** on each form's Entries page and a **Dashboard** with entries across all forms.
 - **PDF export**: entries and blank forms as PDF, a Download PDF button for respondents, PDFs in emails, password-protected PDFs.
 
-With the AI connection of SurveyJS Forms on (SurveyJS Forms > Settings > AI MCP), AI apps such as Claude Code or Cursor also change the add-on's per-form PDF settings (as a draft, like all AI changes) and the add-on admin settings (Survey Creator on or off, color mode, style; applied right away). The license key stays out of reach of AI apps.
+With the AI connection of SurveyJS Forms on (SurveyJS Forms > Settings > AI MCP), AI apps such as Claude Code or Cursor also change the add-on's per-form PDF settings (as a draft, like all AI changes) and the add-on admin settings (Survey Creator on or off, color mode, style; applied right away).
 
 The add-on is distributed from [surveyjs.io](https://surveyjs.io/wordpress-addon) and as the Composer package `surveyjs/surveyjs-forms-addon`; it is not in the WordPress.org directory.
 
@@ -22,7 +22,6 @@ The add-on is distributed from [surveyjs.io](https://surveyjs.io/wordpress-addon
 1. Install and activate SurveyJS Forms: Plugins → Add New Plugin → search for "SurveyJS Forms".
 2. Download the SurveyJS Forms Add-on zip from https://surveyjs.io/wordpress-addon.
 3. Plugins → Add New Plugin → Upload Plugin → choose the zip → Install Now → Activate Plugin.
-4. Enter your SurveyJS license key in SurveyJS Forms → Settings → SurveyJS Forms Add-on.
 
 If you uploaded the add-on before SurveyJS Forms, WordPress doesn't let you activate it yet: in the add-on's row on the Plugins screen, follow "Requires: SurveyJS Forms" → Install Now → Activate, then activate the add-on.
 
