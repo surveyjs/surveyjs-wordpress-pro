@@ -10,7 +10,8 @@ Requires Plugins: surveyjs
 Update URI: https://surveyjs.io/wordpress-addon
 Author: Devsoft Baltic OÜ
 Author URI: https://surveyjs.io/
-License: See LICENSE.md
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: surveyjs-forms-addon
 Domain Path: /languages
 */

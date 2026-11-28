@@ -44,7 +44,7 @@ On WordPress VIP `wpcom_vip_load_plugin()` does not fire activation hooks, so th
 
 ### Libraries
 
-`package.json` pins exact versions. `npm run copy-libs` checks that every SurveyJS package equals `SURVEYJS_ADDON_LIBRARY_VERSION` and copies only the needed dist files into `libs/<package>/` (with each package's license file):
+`package.json` pins exact versions. `npm run copy-libs` checks that every SurveyJS package equals `SURVEYJS_ADDON_LIBRARY_VERSION` and copies only the needed dist files into `libs/<package>/` (with each package's license file; for the SurveyJS packages that is the developer license from npm, which LICENSE.md, Part 2, replaces for use as part of the add-on):
 
 | Package | Version | Files in `libs/` |
 |---|---|---|
@@ -60,7 +60,7 @@ On WordPress VIP `wpcom_vip_load_plugin()` does not fire activation hooks, so th
 
 **survey-core and survey-js-ui are not copied.** They come from SurveyJS Forms (`src/trunk/libs/library/`, v3.2.8), so a page never loads two copies of the Form Library (SurveyJS Forms' editor and results pages already load it). They are still in `package.json` to pin the peer version. SurveyJS Forms and the add-on are released with the same version, equal to the SurveyJS library version; when they differ, everything keeps working and the version notice offers to update the older plugin (see "Updates"). When SurveyJS Forms updates the Form Library, update `package.json`, `SURVEYJS_ADDON_LIBRARY_VERSION`, run `npm install && npm run copy-libs`, and release both plugins together.
 
-**Banner.** Creator, survey-pdf and survey-analytics depend on the script handle `surveyjs-forms-addon-license` (no file, depends on `SurveyJS_SurveyJS::CORE_SCRIPT`), whose inline script calls `Survey.setLicenseKey("embedded-wordpress")`. This value is not a license key: survey-core 3.2.8+ only stores it, and instead of the "developer license is required" text the libraries show "Powered by SurveyJS · White-label options" (link to `https://surveyjs.io/wordpress#white-label`): a small closable card in Creator and in Charts, a header line on every PDF page. There is no user-entered key.
+**Banner.** Creator, survey-pdf and survey-analytics depend on the script handle `surveyjs-forms-addon-license` (no file, depends on `SurveyJS_SurveyJS::CORE_SCRIPT`), whose inline script calls `Survey.setLicenseKey("embedded-wordpress")`. This value is not a license key: survey-core 3.2.8+ only stores it, and instead of the "developer license is required" text the libraries show "Powered by SurveyJS · White-label options" (link to `https://surveyjs.io/wordpress#white-label`): a small closable card in Creator and in Charts, a header line on every PDF page. There is no user-entered key. LICENSE.md (Part 2) allows this value only for running the libraries as part of the add-on.
 
 To add a file (e.g. a Creator locale, plotly/apexcharts builds), add it to `FILES` in `scripts/copy-libs.js`, rerun, and register a handle in `SurveyJS_Addon_Libs`. Only these packages and their direct runtime dependencies may be read from `node_modules`.
 

@@ -5,7 +5,8 @@ Requires at least: 6.5
 Tested up to: 7.1
 Stable tag: 3.2.4
 Requires PHP: 8.2
-License: See LICENSE.md
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Adds Survey Creator with the AI assistant, PDF export and analytics to SurveyJS Forms.
 
@@ -60,6 +61,14 @@ Turn this off with `define( 'SURVEYJS_ADDON_DISABLE_UPDATES', true );` in wp-con
 After SurveyJS Forms is updated, or when you click "Update SurveyJS Forms Add-on" in the version notice, the add-on downloads its latest zip from https://cdn.surveyjs.io/wordpress/surveyjs-forms-addon.zip. The request carries no site address or other data about your site; surveyjs.io sees only the IP address of your web server.
 
 This service is provided by Devsoft Baltic OÜ: [Terms of Use](https://surveyjs.io/terms-use), [Privacy Policy](https://surveyjs.io/privacy-policy).
+
+== Licensing ==
+
+The add-on's own code (PHP, JavaScript, CSS) is licensed under the GPLv2 or later.
+
+The SurveyJS libraries it includes, Survey Creator, PDF Generator and Dashboard (the folders libs/survey-creator-core, libs/survey-creator-js, libs/survey-pdf and libs/survey-analytics), are commercial software of Devsoft Baltic OÜ under a proprietary license. They are free to use only as part of this add-on in WordPress, on any number of sites you own or manage, including client sites, staging copies and private repositories. You may not extract them from the add-on or use them separately. To use these libraries in your own applications, get a SurveyJS developer license: https://surveyjs.io/licensing.
+
+The third-party libraries and fonts keep their own licenses (MIT, SIL Open Font License 1.1). See LICENSE.md in the add-on folder for all license terms.
 
 == Changelog ==
 

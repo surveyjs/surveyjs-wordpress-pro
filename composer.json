@@ -4,7 +4,7 @@
     "type": "wordpress-plugin",
     "keywords": ["wordpress", "wordpress-plugin", "surveyjs", "forms", "survey"],
     "homepage": "https://surveyjs.io/",
-    "license": "proprietary",
+    "license": "GPL-2.0-or-later AND LicenseRef-SurveyJS-Libraries",
     "authors": [
         {
             "name": "Devsoft Baltic OÜ",

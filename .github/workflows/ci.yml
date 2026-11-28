@@ -98,8 +98,6 @@ jobs:
       php-paths: dist/surveyjs-forms-addon dist/vip/client-mu-plugins
       plugin-check-dir: dist/surveyjs-forms-addon
       plugin-check-ignore-codes: |
-        plugin_header_invalid_license
-        invalid_license
         plugin_updater_detected
       e2e-base-dir: dist/vip/plugins/surveyjs
       e2e-addon-dir: dist/surveyjs-forms-addon

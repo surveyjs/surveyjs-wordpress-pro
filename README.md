@@ -149,7 +149,11 @@ A `composer.json` or a `vendor/` folder alone isn't enough, so a site that uses 
 
 ## License
 
-See [LICENSE.md](LICENSE.md). The SurveyJS libraries and third-party libraries in `libs/` and the PDF fonts in `assets/fonts/` (SIL Open Font License) have their own license files.
+The add-on has a split license; the full terms are in [LICENSE.md](LICENSE.md):
+
+- The add-on code (PHP, JavaScript, CSS, translations) is under the [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html), with an additional permission to combine it with the SurveyJS libraries. The GPL text is in [license.txt](license.txt).
+- The SurveyJS libraries in `libs/survey-creator-core`, `libs/survey-creator-js`, `libs/survey-pdf` and `libs/survey-analytics` are proprietary. Site owners use them free of charge, only as part of the add-on in WordPress (LICENSE.md, Part 2). The `LICENSE` file in each of these folders is the SurveyJS developer license from npm; it does not apply to use as part of the add-on. Any other use needs a [SurveyJS developer license](https://surveyjs.io/licensing).
+- jsPDF, Chart.js and chartjs-plugin-datalabels in `libs/` are MIT-licensed; the PDF fonts in `assets/fonts/` are under the SIL Open Font License 1.1. Their license files are in their folders.
 
 ## Support
 
