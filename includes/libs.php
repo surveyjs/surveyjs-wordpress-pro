@@ -4,6 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class SurveyJS_Addon_Libs {
 
     const PREFIX = 'surveyjs-forms-addon-';
+    const LICENSE_HANDLE = 'surveyjs-forms-addon-license';
+    const EMBEDDED_LICENSE = 'embedded-wordpress';
 
     private static $registered = false;
 
@@ -13,14 +15,14 @@ class SurveyJS_Addon_Libs {
 
     private static function scripts() {
         return array(
-            'creator-core'        => array( 'survey-creator-core/survey-creator-core.min.js', array( SurveyJS_SurveyJS::CORE_SCRIPT ) ),
+            'creator-core'        => array( 'survey-creator-core/survey-creator-core.min.js', array( self::LICENSE_HANDLE ) ),
             'creator'             => array( 'survey-creator-js/survey-creator-js.min.js', array( self::handle( 'creator-core' ), SurveyJS_SurveyJS::UI_SCRIPT ) ),
             'jspdf'               => array( 'jspdf/jspdf.umd.min.js', array() ),
-            'pdf'                 => array( 'survey-pdf/survey.pdf.min.js', array( SurveyJS_SurveyJS::CORE_SCRIPT, self::handle( 'jspdf' ) ) ),
+            'pdf'                 => array( 'survey-pdf/survey.pdf.min.js', array( self::LICENSE_HANDLE, self::handle( 'jspdf' ) ) ),
             'pdf-spacious'        => array( 'survey-pdf/spacious.min.js', array() ),
             'chartjs'             => array( 'chart.js/chart.umd.min.js', array() ),
             'chartjs-datalabels'  => array( 'chartjs-plugin-datalabels/chartjs-plugin-datalabels.min.js', array( self::handle( 'chartjs' ) ) ),
-            'analytics'           => array( 'survey-analytics/survey.analytics.min.js', array( SurveyJS_SurveyJS::CORE_SCRIPT, self::handle( 'chartjs' ), self::handle( 'chartjs-datalabels' ) ) ),
+            'analytics'           => array( 'survey-analytics/survey.analytics.min.js', array( self::LICENSE_HANDLE, self::handle( 'chartjs' ), self::handle( 'chartjs-datalabels' ) ) ),
         );
     }
 
@@ -46,6 +48,8 @@ class SurveyJS_Addon_Libs {
         if ( ! SurveyJS_Addon::base_provides( array( 'SurveyJS_SurveyJS::CORE_SCRIPT', 'SurveyJS_SurveyJS::UI_SCRIPT', 'SurveyJS_SurveyJS::CORE_STYLE' ) ) ) {
             return false;
         }
+        wp_register_script( self::LICENSE_HANDLE, false, array( SurveyJS_SurveyJS::CORE_SCRIPT ), SURVEYJS_ADDON_VERSION, true );
+        wp_add_inline_script( self::LICENSE_HANDLE, 'Survey.setLicenseKey(' . wp_json_encode( self::EMBEDDED_LICENSE ) . ');' );
         foreach ( self::scripts() as $name => $script ) {
             wp_register_script( self::handle( $name ), self::url( $script[0] ), $script[1], SURVEYJS_ADDON_VERSION );
         }

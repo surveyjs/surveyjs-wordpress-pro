@@ -48,17 +48,19 @@ On WordPress VIP `wpcom_vip_load_plugin()` does not fire activation hooks, so th
 
 | Package | Version | Files in `libs/` |
 |---|---|---|
-| survey-creator-core | 3.2.4 | `survey-creator-core.min.js`, `survey-creator-core.min.css`, `images/`, `i18n/*.min.js` (Creator UI translations, 36 languages; `index` and `english` are skipped) |
-| survey-creator-js | 3.2.4 | `survey-creator-js.min.js` |
-| survey-pdf | 3.2.4 | `survey.pdf.min.js`, `spacious.min.js` (from `layouts/`, the Spacious layout preset, global `DocLayout.Spacious`) |
-| survey-analytics | 3.2.4 | `survey.analytics.min.js/.css` (Chart.js) |
+| survey-creator-core | 3.2.8 | `survey-creator-core.min.js`, `survey-creator-core.min.css`, `images/`, `i18n/*.min.js` (Creator UI translations, 36 languages; `index` and `english` are skipped) |
+| survey-creator-js | 3.2.8 | `survey-creator-js.min.js` |
+| survey-pdf | 3.2.8 | `survey.pdf.min.js`, `spacious.min.js` (from `layouts/`, the Spacious layout preset, global `DocLayout.Spacious`) |
+| survey-analytics | 3.2.8 | `survey.analytics.min.js/.css` (Chart.js) |
 | jspdf | 4.2.1 | `jspdf.umd.min.js` (needed by survey-pdf) |
 | chart.js | 4.6.1 | `chart.umd.min.js` (needed by survey-analytics) |
 | chartjs-plugin-datalabels | 2.2.0 | `chartjs-plugin-datalabels.min.js` (optional for survey-analytics; register it with `Chart.register(ChartDataLabels)` if wanted) |
 
 **No PHP libraries.** PDF encryption is the add-on's own code on PHP's openssl (see "PDF password").
 
-**survey-core and survey-js-ui are not copied.** They come from SurveyJS Forms (`src/trunk/libs/library/`, v3.2.4), so a page never loads two copies of the Form Library (SurveyJS Forms' editor and results pages already load it). They are still in `package.json` to pin the peer version. SurveyJS Forms and the add-on are released with the same version, equal to the SurveyJS library version; when they differ, everything keeps working and the version notice offers to update the older plugin (see "Updates"). When SurveyJS Forms updates the Form Library, update `package.json`, `SURVEYJS_ADDON_LIBRARY_VERSION`, run `npm install && npm run copy-libs`, and release both plugins together.
+**survey-core and survey-js-ui are not copied.** They come from SurveyJS Forms (`src/trunk/libs/library/`, v3.2.8), so a page never loads two copies of the Form Library (SurveyJS Forms' editor and results pages already load it). They are still in `package.json` to pin the peer version. SurveyJS Forms and the add-on are released with the same version, equal to the SurveyJS library version; when they differ, everything keeps working and the version notice offers to update the older plugin (see "Updates"). When SurveyJS Forms updates the Form Library, update `package.json`, `SURVEYJS_ADDON_LIBRARY_VERSION`, run `npm install && npm run copy-libs`, and release both plugins together.
+
+**Banner.** Creator, survey-pdf and survey-analytics depend on the script handle `surveyjs-forms-addon-license` (no file, depends on `SurveyJS_SurveyJS::CORE_SCRIPT`), whose inline script calls `Survey.setLicenseKey("embedded-wordpress")`. This value is not a license key: survey-core 3.2.8+ only stores it, and instead of the "developer license is required" text the libraries show "Powered by SurveyJS · White-label options" (link to `https://surveyjs.io/wordpress#white-label`): a small closable card in Creator and in Charts, a header line on every PDF page. There is no user-entered key.
 
 To add a file (e.g. a Creator locale, plotly/apexcharts builds), add it to `FILES` in `scripts/copy-libs.js`, rerun, and register a handle in `SurveyJS_Addon_Libs`. Only these packages and their direct runtime dependencies may be read from `node_modules`.
 

@@ -24,7 +24,7 @@ if ( defined( 'SURVEYJS_ADDON_VERSION' ) ) {
 define( 'SURVEYJS_ADDON_VERSION', '3.2.4' );
 define( 'SURVEYJS_ADDON_DB_VERSION', '1' );
 define( 'SURVEYJS_ADDON_MIN_BASE_VERSION', '3.2.4' );
-define( 'SURVEYJS_ADDON_LIBRARY_VERSION', '3.2.4' );
+define( 'SURVEYJS_ADDON_LIBRARY_VERSION', '3.2.8' );
 define( 'SURVEYJS_ADDON_FILE', __FILE__ );
 
 require_once __DIR__ . '/includes/plugin.php';

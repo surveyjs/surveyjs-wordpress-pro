@@ -13,11 +13,11 @@
     "chart.js": "4.6.1",
     "chartjs-plugin-datalabels": "2.2.0",
     "jspdf": "4.2.1",
-    "survey-analytics": "3.2.4",
-    "survey-core": "3.2.4",
-    "survey-creator-core": "3.2.4",
-    "survey-creator-js": "3.2.4",
-    "survey-js-ui": "3.2.4",
-    "survey-pdf": "3.2.4"
+    "survey-analytics": "3.2.8",
+    "survey-core": "3.2.8",
+    "survey-creator-core": "3.2.8",
+    "survey-creator-js": "3.2.8",
+    "survey-js-ui": "3.2.8",
+    "survey-pdf": "3.2.8"
   }
 }
